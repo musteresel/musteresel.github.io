@@ -26,9 +26,28 @@
     $endif$
     <style type="text/css">
       body {
+      padding-left: 1em;
+      padding-right: 1em;
       margin-left: auto;
       margin-right: auto;
-      max-width: 36em;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
       }
     </style>
     $if(highlighting-css)$
@@ -36,37 +55,37 @@
       $highlighting-css$
     </style>
     $endif$
-    $for(css)$
-    <link rel="stylesheet" href="$css$">
-    $endfor$
     $if(math)$
     $math$
     $endif$
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
-      $for(header-includes)$
-      $header-includes$
-      $endfor$
-      </head>
+  </head>
   <body>
-    $if(title)$
     <header>
-      <h1 class="title">$title$</h1>
-      $if(subtitle)$
-      <p class="subtitle">$subtitle$</p>
-      $endif$
-      $for(authors)$
-      <p class="author">$authors$</p>
-      $endfor$
-      $if(date)$
-      <p class="date">$date$</p>
-      $endif$
+      <h1 class="heading">musteresel's blog</h1>
     </header>
-    $endif$
-    $body$
-    $for(include-after)$
-    $include-after$
-    $endfor$
+    <hr>
+    <article>
+      $if(title)$
+      <header>
+        <h1 class="title">$title$</h1>
+        $if(subtitle)$
+        <p class="subtitle">$subtitle$</p>
+        $endif$
+        $for(authors)$
+        <p class="author">$authors$</p>
+        $endfor$
+        $if(date)$
+        <p class="date">$date$</p>
+        $endif$
+      </header>
+      $endif$
+      $body$
+      $for(include-after)$
+      $include-after$
+      $endfor$
+    </article>
   </body>
 </html>
