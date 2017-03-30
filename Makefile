@@ -24,6 +24,10 @@ default: index.html about.html posts/2017/03/a-simple-test.html
 	mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html,$^) -o $@ $<
 
+%.link: %.md extract-link.html
+	mkdir -p $(dir $@)
+	pandoc --template $(filter %extract-link.html,$^) \
+	  -V path=$(patsubst %.link,%.html,$@) -o $@ $<
 
 .PHONY: clean
 clean:
