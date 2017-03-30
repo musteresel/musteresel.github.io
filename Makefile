@@ -16,7 +16,7 @@ else
 VPATH = $(path_to_this_makefile)
 
 
-default: index.html about.html
+default: index.html about.html posts/2017/03/a-simple-test.html
 
 
 # Build html files from markdown with pandoc
