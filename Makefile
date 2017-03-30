@@ -21,6 +21,7 @@ default: index.html about.html
 
 # Build html files from markdown with pandoc
 %.html: %.md template.html
+	mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html,$^) -o $@ $<
 
 
