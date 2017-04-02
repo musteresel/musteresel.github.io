@@ -19,6 +19,9 @@
     $if(description)$
     <meta name="description" content="$description$">
     $endif$
+    $if(htmlbase)$
+    <base href="$htmlbase$">
+    $endif$
     <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
     <style type="text/css">code{white-space: pre;}</style>
     $if(quotes)$
@@ -64,7 +67,7 @@
   </head>
   <body>
     <header>
-      <h1 class="heading">musteresel's blog</h1>
+      <h1 class="heading"><a href="./index.html">musteresel's blog</a></h1>
     </header>
     <hr>
     <article>
