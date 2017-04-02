@@ -37,7 +37,7 @@ YEARSANDMONTHSLISTS = \
 
 
 # By default, build all sites: special sites, posts and listings
-default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS)
+default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) recent.html
 
 
 # Shell command used to get the path back up from the target to the
@@ -83,6 +83,16 @@ include links.mk
 	  -f html -t html \
 	  -o $@ $< -V title=INDEX -V pagetitle=INDEX \
 	  -V htmlbase=$(shell $(path_up))
+
+
+# Get the last 5 words (posts) from POSTFILES
+most_recent_posts = \
+  $(wordlist $(words X $(wordlist 4, \
+                       $(words $(POSTFILES)), \
+                       $(POSTFILES))), \
+             5, \
+             $(POSTFILES:.html=.link))
+recent.links: $(most_recent_posts)
 
 
 .PHONY: clean
