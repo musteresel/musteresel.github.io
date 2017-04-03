@@ -86,13 +86,9 @@ include links.mk
 
 
 # Get the last 5 words (posts) from POSTFILES
-most_recent_posts = \
-  $(wordlist $(words X $(wordlist 6, \
-                       $(words $(POSTFILES)), \
-                       $(POSTFILES))), \
-             $(words $(POSTFILES)), \
-             $(POSTFILES:.html=.link))
-recent-wrong-order.links: $(most_recent_posts)
+include $(path_to_this_makefile)/last-n.mk
+most_recent_posts = $(call last-n,5,$(POSTFILES))
+recent-wrong-order.links: $(most_recent_posts:.html=.link)
 recent.links: recent-wrong-order.links
 	tac $< > $@
 
