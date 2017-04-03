@@ -92,7 +92,9 @@ most_recent_posts = \
                        $(POSTFILES))), \
              5, \
              $(POSTFILES:.html=.link))
-recent.links: $(most_recent_posts)
+recent-wrong-order.links: $(most_recent_posts)
+recent.links: recent-wrong-order.links
+	tac $< > $@
 
 
 .PHONY: clean
