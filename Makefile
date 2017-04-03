@@ -87,7 +87,7 @@ include links.mk
 
 # Get the last 5 words (posts) from POSTFILES
 most_recent_posts = \
-  $(wordlist $(words X $(wordlist 4, \
+  $(wordlist $(words X $(wordlist 6, \
                        $(words $(POSTFILES)), \
                        $(POSTFILES))), \
              5, \
