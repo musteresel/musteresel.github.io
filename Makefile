@@ -90,7 +90,7 @@ most_recent_posts = \
   $(wordlist $(words X $(wordlist 6, \
                        $(words $(POSTFILES)), \
                        $(POSTFILES))), \
-             5, \
+             $(words $(POSTFILES)), \
              $(POSTFILES:.html=.link))
 recent-wrong-order.links: $(most_recent_posts)
 recent.links: recent-wrong-order.links
