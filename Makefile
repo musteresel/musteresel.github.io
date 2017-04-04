@@ -37,7 +37,7 @@ YEARSANDMONTHSLISTS = \
 
 
 # By default, build all sites: special sites, posts and listings
-default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) recent.html
+default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS)
 
 
 # Shell command used to get the path back up from the target to the
@@ -46,11 +46,17 @@ default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) recent.html
 path_up = realpath -m --relative-to $(abspath $(dir $@)) $(CURDIR)
 
 
+# Append the list of the most recent posts after the content of the
+# index page.
+index.html: PANDOC_FLAGS=-A recent.links
+index.html: recent.links
+
+
 # Build html files from markdown with pandoc
 %.html: %.md template.html.in
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) -o $@ $< \
-	  -V htmlbase=$(shell $(path_up))
+	  -V htmlbase=$(shell $(path_up)) $(PANDOC_FLAGS)
 
 
 # Use pandoc to create a link to the post, suitable for inclusion in
