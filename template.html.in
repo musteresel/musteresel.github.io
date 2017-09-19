@@ -36,6 +36,10 @@
       max-width: 42em;
       font-size: 100%;
       font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
       }
       .heading {
       color: #002560;
