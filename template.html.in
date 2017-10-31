@@ -56,6 +56,9 @@
       color: white;
       background-color: #008aa3;
       }
+      footer {
+      font-size: 75%;
+      }
     </style>
     $if(highlighting-css)$
     <style type="text/css">
@@ -94,5 +97,9 @@
       $include-after$
       $endfor$
     </article>
+    <hr>
+    <footer>
+      <a href="./legal.html">Legal Notice / Impressum</a>
+    </footer>
   </body>
 </html>

@@ -37,7 +37,8 @@ YEARSANDMONTHSLISTS = \
 
 
 # By default, build all sites: special sites, posts and listings
-default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS)
+default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
+         legal.html
 
 
 # Shell command used to get the path back up from the target to the
