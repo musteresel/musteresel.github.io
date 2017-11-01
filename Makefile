@@ -38,7 +38,12 @@ YEARSANDMONTHSLISTS = \
 
 # By default, build all sites: special sites, posts and listings
 default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
-         legal.html
+         legal.html tags
+
+
+# Meta target to build all tag index sites.
+.PHONY: tags
+tags:
 
 
 # Shell command used to get the path back up from the target to the
@@ -66,6 +71,35 @@ index.html: recent.links
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %extract-link.html.in,$^) \
 	  -V path=$(patsubst %.link,%.html,$@) -o $@ $<
+
+
+# Use pandoc to extract the tags a post is tagged with from a post
+# file.  Write the tags sorted to the file such that all-tags can be
+# created by a simpler merge operation.
+%.tags: %.md extract-tags.txt.in
+	@mkdir -p $(dir $@)
+	pandoc --template $(filter %extract-tags.txt.in,$^) \
+	  $< | sort -u -o $@
+
+
+# Merge .tags files of all posts (which contain a sorted list of
+# tags), remove duplicates.
+all-tags: $(POSTFILES:.html=.tags) Makefile
+	sort -u -m $(filter %.tags,$^) -o $@
+
+# Create and include a makefile with rules and prerequisites for each
+# tag.
+tags.mk: all-tags Makefile
+	while read tag; do \
+	  printf "tags: posts/tagged/%s/index.html\n" $$tag; \
+	  printf "posts/tagged/%s/index.links: " $$tag; \
+	  files=$$(grep -lF $$tag $(POSTFILES:.html=.tags)); \
+	  for file in $${files}; do \
+	    printf " %s.link" $${file%.tags}; \
+	  done; \
+	  echo; \
+	done < $(filter %all-tags,$^) > $@
+include tags.mk
 
 
 # To create a list of posts, the links to all those posts are

@@ -90,6 +90,12 @@
         $if(date)$
         <p class="date">$date$</p>
         $endif$
+        $if(tags)$
+        <p class="tags">tagged:
+          $for(tags)$
+          <a href="./posts/tagged/$tags$/index.html">$tags$</a>$sep$,
+          $endfor$</p>
+        $endif$
       </header>
       $endif$
       $body$
