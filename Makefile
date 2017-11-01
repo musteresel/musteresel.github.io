@@ -71,6 +71,7 @@ index.html: recent.links
 # To create a list of posts, the links to all those posts are
 # concatenated in the order in which they're specified.
 %.links:
+	@mkdir -p $(dir $@)
 	cat $(filter %.link,$^) > $@
 
 
