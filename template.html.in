@@ -59,6 +59,9 @@
       footer {
       font-size: 75%;
       }
+      .not-my-info {
+      font-size: 0;
+      }
     </style>
     $if(highlighting-css)$
     <style type="text/css">
