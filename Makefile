@@ -139,5 +139,13 @@ recent.links: recent-wrong-order.links
 clean:
 	rm -rf $(CURDIR)/*
 
+.PHONY: clean-for-release
+clean-for-release:
+	rm recent.links recent-wrong-order.links
+	rm $(POSTFILES:.html=.link)
+	rm $(POSTFILES:.html=.tags)
+	rm all-tags
+	rm links.mk tags.mk
+	find . -type f -name '*.links' -delete
 
 endif
