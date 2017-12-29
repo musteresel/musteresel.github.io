@@ -92,6 +92,7 @@ all-tags: $(POSTFILES:.html=.tags) Makefile
 tags.mk: all-tags Makefile
 	while read tag; do \
 	  printf "tags: posts/tagged/%s/index.html\n" $$tag; \
+	  printf "posts/tagged/%s/index.html: TITLE=\"tagged: %s\"\n" $$tag $$tag; \
 	  printf "posts/tagged/%s/index.links: " $$tag; \
 	  files=$$(grep -lF $$tag $(POSTFILES:.html=.tags)); \
 	  for file in $${files}; do \
@@ -113,6 +114,7 @@ include tags.mk
 # of the lists (YYYY.links and YYYY/MM.links)
 links.mk: Makefile
 	$(foreach ym,$(YEARSANDMONTHS),\
+	  echo "posts/$(ym)/index.html: TITLE=$(ym)" >> $@; \
 	  echo "posts/$(ym)/index.links: $(filter posts/$(ym)%, $(POSTFILES:.html=.link))" >> $@;)
 include links.mk
 
@@ -123,7 +125,7 @@ include links.mk
 	mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) \
 	  -f html -t html \
-	  -o $@ $< -V title=INDEX -V pagetitle=INDEX \
+	  -o $@ $< -V title=$(TITLE) -V pagetitle=$(TITLE) \
 	  -V htmlbase=$(shell $(path_up))
 
 
