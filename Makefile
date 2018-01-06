@@ -50,19 +50,23 @@ tags:
 # root of the build directory. This is used to specify the html base
 # tag to make relative links work everywhere.
 path_up = realpath -m --relative-to $(abspath $(dir $@)) $(CURDIR)
+relative_links_filter = \
+  --filter pandoc-project-relative-links \
+  -M pathToProjectRoot=$(shell $(path_up))
 
 
 # Append the list of the most recent posts after the content of the
 # index page.
-index.html: PANDOC_FLAGS=-A recent.links
-index.html: recent.links
+index.html: PANDOC_FLAGS=-A recent.html.in
+index.html: recent.html.in
 
 
 # Build html files from markdown with pandoc
 %.html: %.md template.html.in
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) -o $@ $< \
-	  -V htmlbase=$(shell $(path_up)) $(PANDOC_FLAGS)
+	  $(PANDOC_FLAGS) \
+	  $(relative_links_filter)
 
 
 # Use pandoc to create a link to the post, suitable for inclusion in
@@ -126,7 +130,7 @@ include links.mk
 	pandoc --template $(filter %template.html.in,$^) \
 	  -f html -t html \
 	  -o $@ $< -V title=$(TITLE) -V pagetitle=$(TITLE) \
-	  -V htmlbase=$(shell $(path_up))
+	  $(relative_links_filter)
 
 
 # Get the last 5 words (posts) from POSTFILES
@@ -135,6 +139,8 @@ most_recent_posts = $(call last-n,5,$(POSTFILES))
 recent-wrong-order.links: $(most_recent_posts:.html=.link)
 recent.links: recent-wrong-order.links
 	tac $< > $@
+recent.html.in: recent.links
+	pandoc -f html -t html -o $@ $< $(relative_links_filter)
 
 
 .PHONY: clean
@@ -143,7 +149,7 @@ clean:
 
 .PHONY: clean-for-release
 clean-for-release:
-	rm recent.links recent-wrong-order.links
+	rm recent.links recent-wrong-order.links recent.html.in
 	rm $(POSTFILES:.html=.link)
 	rm $(POSTFILES:.html=.tags)
 	rm all-tags

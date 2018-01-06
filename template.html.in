@@ -19,9 +19,6 @@
     $if(description)$
     <meta name="description" content="$description$">
     $endif$
-    $if(htmlbase)$
-    <base href="$htmlbase$">
-    $endif$
     <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
     <style type="text/css">code{white-space: pre;}</style>
     $if(quotes)$
@@ -95,7 +92,7 @@
   </head>
   <body>
     <header>
-      <h1 class="heading"><a href="./index.html">musteresel's blog</a></h1>
+      <h1 class="heading"><a href="$pathToProjectRoot$/index.html">musteresel's blog</a></h1>
     </header>
     <hr>
     <article>
@@ -114,7 +111,7 @@
         $if(tags)$
         <p class="tags">tagged:
           $for(tags)$
-          <a href="./posts/tagged/$tags$/index.html">$tags$</a>$sep$,
+          <a href="$pathToProjectRoot$/posts/tagged/$tags$/index.html">$tags$</a>$sep$,
           $endfor$</p>
         $endif$
       </header>
@@ -126,7 +123,7 @@
     </article>
     <hr>
     <footer>
-      <a href="./legal.html">Legal Notice / Impressum</a>
+      <a href="$pathToProjectRoot$/legal.html">Legal Notice / Impressum</a>
     </footer>
   </body>
 </html>
