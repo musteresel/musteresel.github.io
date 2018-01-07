@@ -11,11 +11,12 @@ here posts about programming in general, programming languages, linux
 and NixOS related stuff and also some occasional theory. Most of the
 time I program in C, C++, Common Lisp or Python.
 
-If you want, you can [contact me][]. If you want, you can
-also learn more [about me][].
+If you want, you can also learn more [about me][].  There's also my
+email address in case you want to contact me.
 
+[about me]: about.html
 
 ## Most recent posts
 
-[contact me]: mailto:musteresel+blog@gmail.com
-[about me]: about.html
+
+

@@ -22,6 +22,31 @@ first fool to try that obvious name, so I replaced the "-mann" (*man*)
 with "-esel" (*donkey*, but colloquially used to mean *fool*) and -
 tada - that name wasn't already taken.
 
+## Contact
+
+Just write me an email:
+
+<script type="text/javascript">
+function makeMyInfoAccessible() {
+  var elements = document.getElementsByClassName("not-my-info")
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].innerHTML = "";
+  }
+}
+</script>
+<noscript>
+
+**Copy/Paste only works with JavaScript enabled! / *Kopieren und Einfügen funktioniert nur bei aktiviertem JavaScript!* **
+
+</noscript>
+<div onmouseover="makeMyInfoAccessible()">
+
+> mus<span>t<span class="not-my-info">e &#64;r&#64;&#64;unt
+ </span>er</span><span class="not-my-info">
+ els</span>esel+blog&#64;g<span class="not-my-info">narl
+ </span>ma<span>i</span>l.<span><span><span>co</span></span></span>m
+
+</div>
 
 ## Around the web
 
