@@ -52,8 +52,9 @@ function makeMyInfoAccessible() {
 
  - [Github](https://github.com/musteresel)
  -
-   [Stack Overflow][SO] and related sites
+   [Stack Overflow][SO] and [related sites][SE-accounts]
  - [SourceForge](https://sourceforge.net/u/musteresel/profile)
  - [Xing](https://www.xing.com/profile/Daniel_Jour)
 
 [SO]: https://stackoverflow.com/users/1116364/daniel-jour
+[SE-accounts]: https://stackexchange.com/users/1126622/daniel-jour?tab=accounts
