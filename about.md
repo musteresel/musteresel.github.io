@@ -4,7 +4,7 @@ keywords: musteresel, Daniel Jour
 lang: en
 ---
 
-My name is Daniel Jour.  Before I married you'd call me Daniel
+My name is Daniel Jour.  Before I got married you'd call me Daniel
 Oertwig, though.  I'm an enthusiastic hobby programmer with more than
 10 years of experience.  I've a B.Sc. in Aerospace Computer Science
 and am currently finishing my M.Sc in Computer Science.  I've stumbled
