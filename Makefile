@@ -18,7 +18,11 @@ VPATH = $(path_to_this_makefile)
 
 # List of all posts, with year/month and filename. Note that the posts
 # must be specified in the correct order: by date.
-POSTS = 2017/03/a-simple-test.html
+POSTS = \
+  2017/04/make-get-last-n-of-list.html \
+  2017/04/shell-path-up.html \
+  2017/05/g++-catch-std-ios_base-failure.html \
+  2018/01/pandoc-project-relative-links.html
 
 
 # Add the posts/ prefix to get paths to the post files.
