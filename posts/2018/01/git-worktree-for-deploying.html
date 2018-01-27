@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2018-01-27">
+                <title>Using git worktree for deploying to GitHub Pages</title>
+    <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+      body {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
+      }
+      footer {
+      font-size: 75%;
+      }
+      .not-my-info {
+      font-size: 0;
+      }
+    </style>
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+    <script>
+      window.addEventListener("load", function(){
+      window.cookieconsent.initialise({
+      "palette": {
+      "popup": {"background": "#252e39"},
+      "button": {"background": "#14a7d0"}
+      },
+      "theme": "classic",
+      "position": "bottom-right",
+      "content": {
+      "message": "This website uses cookies! / Diese Seite nutzt Cookies!",
+      "dismiss": "OK",
+      "link": "Learn more / Mehr erfahren"
+      }
+      })});
+    </script>
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <h1 class="heading"><a href="../../../index.html">musteresel's blog</a></h1>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Using git worktree for deploying to GitHub Pages</h1>
+                                <p class="date">2018-01-27</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/blog/index.html">blog</a>,
+                    <a href="../../../posts/tagged/git/index.html">git</a></p>
+              </header>
+            <p>GitHub Pages can be <a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/">configured</a> to publish from a <code>gh-pages</code> branch, or - in case of a &quot;user page&quot; - it uses the <code>master</code> branch for publishing.</p>
+<p>I generate the files for publishing with my own blog system, whose sources are in a <code>sources-master</code> branch. The generated files are written into a subfolder <code>build/</code> (which is in <code>.gitignore</code> so that generated files won't end up on the sources branch). In order to add any changes in <code>build/</code> to the (in my case) <code>master</code> branch there are <a href="https://gist.github.com/cobyism/4730490">different approaches</a>, but I think I found a better one:</p>
+<h2 id="git-worktrees">git worktrees</h2>
+<p>git <a href="https://git-scm.com/docs/git-worktree">supports</a> multiple &quot;worktrees&quot;. A worktree is the part of your repository (except for bare repositories) you normally interact with when you change and add files. Normally one works with the single &quot;main&quot; worktree. Adding a new worktree is extremely easy though and allows one to keep the main worktree in any (however dirty) state it's currently in:</p>
+<pre class="shell"><code>git worktree add ./build master
+cd ./build
+touch some-new-file
+git add some-new-file
+git commit -m &quot;added some new file&quot;</code></pre>
+<p>This checks out the branch <code>master</code> into the subdirectory <code>./build</code> (can also be an absolute path, of course). Then it changes into said directory, creates and adds a new file to the repository and commits this change. This commit now goes directly to the <code>master</code> branch, regardless of which branch or commit the main worktree currently is on.</p>
+<p>The worktree (or better, the information about it in the <code>.git</code> repository) is eventually deleted when the containing directory (<code>./build</code> here) is removed.</p>
+<p>For deploying, this means I can:</p>
+<ol style="list-style-type: decimal">
+<li>Build the files to publish in <code>./build</code></li>
+<li>Check if <code>./build</code> is a worktree using <code>git worktree list</code>
+<ul>
+<li><p>if it is, make sure it's up to date:</p>
+<pre class="shell"><code>cd ./build
+git checkout master
+git pull
+cd ..</code></pre></li>
+<li><p>else, create the new worktree: <code>git worktree add ./build master</code></p></li>
+</ul></li>
+<li>change into the the directory <code>./build</code></li>
+<li>Add all files <code>git add .</code></li>
+<li>Commit (and optionally push directly)</li>
+</ol>
+<p>For step 4 it's important to have a <code>.gitignore</code> file on the <code>master</code> branch so that any files which should not be published (for example caches or auxilary files from the build) will be ignored.</p>
+<h2 id="advantages">Advantages</h2>
+<ul>
+<li><p>There are no generated files on the same branch (read visible during development / writing) as the source files. (The <code>git subtree</code> method suffers from this issue.)</p></li>
+<li><p>It's a single (local) repository that I'm working with. No need to <code>clone</code>, no space wasted, no duplicate (local) repository configurations.</p></li>
+</ul>
+          </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+    </footer>
+  </body>
+</html>
