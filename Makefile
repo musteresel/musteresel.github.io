@@ -67,12 +67,18 @@ index.html: PANDOC_FLAGS=-A recent.html.in
 index.html: recent.html.in
 
 
+ADD_POSTREF=-V postref=$@
+index.html: ADD_POSTREF=
+legal.html: ADD_POSTREF=
+about.html: ADD_POSTREF=
+
 # Build html files from markdown with pandoc
 %.html: %.md template.html.in
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) -o $@ $< \
 	  $(PANDOC_FLAGS) \
-	  $(relative_links_filter)
+	  $(relative_links_filter) \
+	  $(ADD_POSTREF)
 
 
 # Use pandoc to create a link to the post, suitable for inclusion in

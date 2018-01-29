@@ -102,6 +102,12 @@
       $for(include-after)$
       $include-after$
       $endfor$
+      $if(postref)$<hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=$postref$">
+          Send me a message regarding this post</a>
+      </footer>
+      $endif$
     </article>
     <hr>
     <footer>
