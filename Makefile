@@ -66,9 +66,11 @@ relative_links_filter = \
 index.html: PANDOC_FLAGS=-A recent.html.in
 index.html: recent.html.in
 
+ADD_SUFFIX=-V "title-suffix=musteresel's blog"
 
 ADD_POSTREF=-V postref=$@
 index.html: ADD_POSTREF=
+index.html: ADD_SUFFIX=
 legal.html: ADD_POSTREF=
 about.html: ADD_POSTREF=
 
@@ -78,7 +80,7 @@ about.html: ADD_POSTREF=
 	pandoc --template $(filter %template.html.in,$^) -o $@ $< \
 	  $(PANDOC_FLAGS) \
 	  $(relative_links_filter) \
-	  $(ADD_POSTREF)
+	  $(ADD_POSTREF) $(ADD_SUFFIX)
 
 
 # Use pandoc to create a link to the post, suitable for inclusion in
@@ -142,7 +144,7 @@ include links.mk
 	pandoc --template $(filter %template.html.in,$^) \
 	  -f html -t html \
 	  -o $@ $< -V title=$(TITLE) -V pagetitle=$(TITLE) \
-	  $(relative_links_filter)
+	  $(relative_links_filter) $(ADD_SUFFIX)
 
 
 # Get the last 5 words (posts) from POSTFILES
