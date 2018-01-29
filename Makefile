@@ -44,7 +44,7 @@ YEARSANDMONTHSLISTS = \
 
 # By default, build all sites: special sites, posts and listings
 default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
-         legal.html tags
+         legal.html tags all-posts.html
 
 
 # Meta target to build all tag index sites.
@@ -147,6 +147,12 @@ recent.links: recent-wrong-order.links
 	tac $< > $@
 recent.html.in: recent.links
 	pandoc -f html -t html -o $@ $< $(relative_links_filter)
+
+
+all-posts.html: TITLE="All posts, most recent first"
+all-posts-wrong-order.links: $(POSTFILES:.html=.link)
+all-posts.links: all-posts-wrong-order.links
+	tac $< > $@
 
 
 .PHONY: clean

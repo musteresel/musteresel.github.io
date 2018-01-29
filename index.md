@@ -16,7 +16,7 @@ email address in case you want to contact me.
 
 [about me]: about.html
 
-## Most recent posts
+## Most recent posts ([all posts](all-posts.html))
 
 
 
