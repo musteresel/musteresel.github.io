@@ -176,8 +176,6 @@ clean-for-release: default
 
 .PHONY: release
 release: default clean-for-release
-	git checkout master
-	git pull
 	git add .
 	git commit -m "Build output of $(shell cd $(path_to_this_makefile); git log '--format=format:%H' sources-master -1)"
 
