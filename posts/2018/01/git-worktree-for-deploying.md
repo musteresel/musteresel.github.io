@@ -47,8 +47,7 @@ repository) is eventually deleted when the containing directory
 
 For deploying, this means I can:
 
- 1. Build the files to publish in `./build`
- 2. Check if `./build` is a worktree using `git worktree list`
+ 1. Check if `./build` is a worktree using `git worktree list`
     - if it is, make sure it's up to date:
 
         ```shell
@@ -61,7 +60,8 @@ For deploying, this means I can:
      - else, create the new worktree:
        `git worktree add ./build master`
 
- 3. change into the the directory `./build`
+ 2. Build the files to publish in `./build`
+ 3. Change into the the directory `./build`
  4. Add all files `git add .`
  5. Commit (and optionally push directly)
 
