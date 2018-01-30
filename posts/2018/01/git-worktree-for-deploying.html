@@ -45,6 +45,10 @@
       .not-my-info {
       font-size: 0;
       }
+      pre > code {
+      overflow-x: auto;
+      display: block;
+      }
     </style>
             <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
@@ -76,7 +80,6 @@ git commit -m &quot;added some new file&quot;</code></pre>
 <p>The worktree (or better, the information about it in the <code>.git</code> repository) is eventually deleted when the containing directory (<code>./build</code> here) is removed.</p>
 <p>For deploying, this means I can:</p>
 <ol style="list-style-type: decimal">
-<li>Build the files to publish in <code>./build</code></li>
 <li>Check if <code>./build</code> is a worktree using <code>git worktree list</code>
 <ul>
 <li><p>if it is, make sure it's up to date:</p>
@@ -86,7 +89,8 @@ git pull
 cd ..</code></pre></li>
 <li><p>else, create the new worktree: <code>git worktree add ./build master</code></p></li>
 </ul></li>
-<li>change into the the directory <code>./build</code></li>
+<li>Build the files to publish in <code>./build</code></li>
+<li>Change into the the directory <code>./build</code></li>
 <li>Add all files <code>git add .</code></li>
 <li>Commit (and optionally push directly)</li>
 </ol>
