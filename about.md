@@ -48,6 +48,12 @@ function makeMyInfoAccessible() {
 
 </div>
 
+Or, alternatively, you can also [send me a message via Google
+Forms][forms].  You should add your email address if you want
+an answer, though.
+
+[forms]: https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=about.html
+
 ## Around the web
 
  - [Github](https://github.com/musteresel)
