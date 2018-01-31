@@ -18,7 +18,7 @@ $(shell $(path_up))
 
 As a shell command outside of a Makefile this can look like this:
 
-```shell
+```bash
 realpath -m --relative-to  $(dirname FILE) BASEDIR
 ```
 

@@ -26,7 +26,7 @@ the single "main" worktree.  Adding a new worktree is extremely easy
 though and allows one to keep the main worktree in any (however dirty)
 state it's currently in:
 
-```shell
+```bash
 git worktree add ./build master
 cd ./build
 touch some-new-file
@@ -50,7 +50,7 @@ For deploying, this means I can:
  1. Check if `./build` is a worktree using `git worktree list`
     - if it is, make sure it's up to date:
 
-        ```shell
+        ```bash
         cd ./build
         git checkout master
         git pull

@@ -50,7 +50,7 @@ Contributions are welcome!
 
 Running
 
-```shell
+```bash
 pandoc -t markdown -i in.md \
   --filter pandoc-project-relative-links \
   -M pathToProjectRoot=../../..
