@@ -108,7 +108,7 @@
 <span class="co"># later used like:</span>
 <span class="ch">$(</span><span class="kw">shell</span><span class="st"> </span><span class="ch">$(</span><span class="dt">path_up</span><span class="ch">))</span></code></pre></div>
 <p>As a shell command outside of a Makefile this can look like this:</p>
-<pre class="shell"><code>realpath -m --relative-to  $(dirname FILE) BASEDIR</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">realpath</span> -m --relative-to  <span class="va">$(</span><span class="fu">dirname</span> FILE<span class="va">)</span> BASEDIR</code></pre></div>
 <p>Note that this is the <code>realpath</code> command from the GNU coreutils. As noted in <a href="https://unix.stackexchange.com/a/136527/23529">this answer on UNIX Stack Exchange</a> there are many different implementations of <code>realpath</code> with different features.</p>
             <hr>
       <footer>

@@ -115,9 +115,9 @@
 <p><strong>This is extremely inconvenient!</strong> Thus I wrote a filter for Pandoc to turn absolute URLs (file paths, rather) into links relative to the project root. It leaves relative links like <code>appendix/data.txt</code> or <code>#section</code> unchanged and rather turns absolute file paths (<code>/posts/foo/bar.html</code>) into links relative to the project root by prefixing them with a given <code>pathToProjectRoot</code>.</p>
 <p>You can find the <a href="https://github.com/musteresel/pandoc-project-relative-links">filter on Github</a>. It's written in Haskell. Contributions are welcome!</p>
 <p>Running</p>
-<pre class="shell"><code>pandoc -t markdown -i in.md \
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">pandoc</span> -t markdown -i in.md \
   --filter pandoc-project-relative-links \
-  -M pathToProjectRoot=../../..</code></pre>
+  -M pathToProjectRoot=../../..</code></pre></div>
 <p>turns an <code>in.md</code> like</p>
 <div class="sourceCode"><pre class="sourceCode markdown"><code class="sourceCode markdown">This is a <span class="ot">[relative link](relative/link.html)</span> and this a [project
 relative link](/project/relative.html).  <span class="ot">[This](#thing)</span> is also
