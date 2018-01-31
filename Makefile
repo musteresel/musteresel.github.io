@@ -114,7 +114,7 @@ tags.mk: all-tags Makefile
 	  printf "tags: posts/tagged/%s/index.html\n" $$tag; \
 	  printf "posts/tagged/%s/index.html: TITLE=\"tagged: %s\"\n" $$tag $$tag; \
 	  printf "posts/tagged/%s/index.links: " $$tag; \
-	  files=$$(grep -lF $$tag $(POSTFILES:.html=.tags)); \
+	  files=$$(grep -lxF $$tag $(POSTFILES:.html=.tags)); \
 	  for file in $${files}; do \
 	    printf " %s.link" $${file%.tags}; \
 	  done; \
