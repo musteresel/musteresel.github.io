@@ -26,11 +26,8 @@ sums it up pretty well.  In short:
     `console.get_protocol`
  5. Get the "location" of the console: `console.get_location`
  6. Depending on the locations protocol ...
-    - if it's `https`, then use
-      [`gnutls-cli`](https://www.gnutls.org/manual/html_node/gnutls_002dcli-Invocation.html)
-      or [`openssl
-      s_client`](https://wiki.openssl.org/index.php/Manual:S_client(1)),
-      ...
+    - if it's `https`, then use [`gnutls-cli`][gnutls-cli] or
+      [`openssl s_client`][s_client], ...
     - otherwise (`http`) using `telnet` is sufficient to connect to
       the location's host
  7. Encode username and password for authorization:
@@ -65,3 +62,6 @@ Also note that - contrary to the Xen API docs (shipped with the Xen
 SDK) - one needs to make the HTTP connect request with `HTTP/1.1` (got
 the idea to try this from [this only partly related
 discussion](https://discussions.citrix.com/topic/243319-how-to-retrieve-vnc-consoles-via-the-xenserver-sdk-api/)).
+
+[gnutls-cli]: https://www.gnutls.org/manual/html_node/gnutls_002dcli-Invocation.html
+[s_client]: https://wiki.openssl.org/index.php/Manual:S_client(1)
