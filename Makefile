@@ -28,7 +28,8 @@ POSTS = \
   2018/01/pandoc-project-relative-links.html \
   2018/01/git-worktree-for-deploying.html \
   2018/01/git-worktree-gotcha-removed-directory.html \
-  2018/02/bash-specify-password-cmdline-argument-interactively.html
+  2018/02/bash-specify-password-cmdline-argument-interactively.html \
+  2018/02/vnc-ssh-tunnel-xen-vm.html
 
 
 # Add the posts/ prefix to get paths to the post files.
