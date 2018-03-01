@@ -7,7 +7,7 @@ language: en
 
 Some time ago I [accessed the "console" of a Xen VM over a http
 tunnel][xen-console-http-post], which was working but rather
-unpleasant due to a crippled terminal.  Today I needed to the same
+unpleasant due to a crippled terminal.  Today I needed to do the same
 again, so I set out to look for a more comfortable alternative...
 
 Thankfully, I do have SSH access to the Xen server on which my VM is
