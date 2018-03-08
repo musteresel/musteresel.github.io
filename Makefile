@@ -22,6 +22,7 @@ POSTS = \
   2017/04/make-get-last-n-of-list.html \
   2017/04/shell-path-up.html \
   2017/05/g++-catch-std-ios_base-failure.html \
+  2017/07/c++-swapping-done-right.html \
   2017/07/xen-vm-console-connection.html \
   2017/12/python-strings-are-no-sequences.html \
   2017/12/specify-correct-handling-return-values.html \
