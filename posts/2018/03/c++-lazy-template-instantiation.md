@@ -5,7 +5,7 @@ tags: [c++, c++-templates]
 language: en
 ...
 
-One (tiny) piece of code that I often find usefull when
+One (tiny) piece of code that I often find useful when
 meta-programming:
 
 ~~~c++
