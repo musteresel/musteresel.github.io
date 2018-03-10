@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2018-03-09">
+                <title>Lazy instantiation of C++ templates – musteresel's blog</title>
+    <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+      body {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
+      }
+      footer {
+      font-size: 75%;
+      }
+      .not-my-info {
+      font-size: 0;
+      }
+      pre > code {
+      overflow-x: auto;
+      display: block;
+      }
+    </style>
+        <style type="text/css">
+      div.sourceCode { overflow-x: auto; }
+      table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+        margin: 0; padding: 0; vertical-align: baseline; border: none; }
+      table.sourceCode { width: 100%; line-height: 100%; }
+      td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+      td.sourceCode { padding-left: 5px; }
+      code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code > span.dt { color: #902000; } /* DataType */
+      code > span.dv { color: #40a070; } /* DecVal */
+      code > span.bn { color: #40a070; } /* BaseN */
+      code > span.fl { color: #40a070; } /* Float */
+      code > span.ch { color: #4070a0; } /* Char */
+      code > span.st { color: #4070a0; } /* String */
+      code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code > span.ot { color: #007020; } /* Other */
+      code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code > span.fu { color: #06287e; } /* Function */
+      code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+      code > span.cn { color: #880000; } /* Constant */
+      code > span.sc { color: #4070a0; } /* SpecialChar */
+      code > span.vs { color: #4070a0; } /* VerbatimString */
+      code > span.ss { color: #bb6688; } /* SpecialString */
+      code > span.im { } /* Import */
+      code > span.va { color: #19177c; } /* Variable */
+      code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code > span.op { color: #666666; } /* Operator */
+      code > span.bu { } /* BuiltIn */
+      code > span.ex { } /* Extension */
+      code > span.pp { color: #bc7a00; } /* Preprocessor */
+      code > span.at { color: #7d9029; } /* Attribute */
+      code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <h1 class="heading"><a href="../../../index.html">musteresel's blog</a></h1>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Lazy instantiation of C++ templates</h1>
+                                <p class="date">2018-03-09</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/c++/index.html">c++</a>,
+                    <a href="../../../posts/tagged/c++-templates/index.html">c++-templates</a></p>
+              </header>
+            <p>One (tiny) piece of code that I often find usefull when meta-programming:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">template</span>
+&lt;
+  <span class="kw">template</span>&lt;<span class="kw">class</span>...&gt; <span class="kw">class</span> T,
+  <span class="kw">typename</span>... Args
+&gt;
+<span class="kw">struct</span> lazy_template {
+  <span class="kw">using</span> instantiated = T&lt;Args...&gt;;
+};</code></pre></div>
+<p>Where does this help? For example when there's some condition based on which I want different types (so <code>std::conditional</code>) and these types are templates which can only be instantiated <em>if</em> the condition is true respective false (and otherwise result in a compiler error).</p>
+<p>Extremely simplified example:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&lt;type_traits&gt;</span>
+
+<span class="kw">template</span>&lt;<span class="kw">typename</span>&gt;
+<span class="kw">struct</span> good {
+  <span class="at">static</span> <span class="at">const</span> <span class="dt">bool</span> value = <span class="kw">true</span>;
+};
+
+<span class="kw">template</span>&lt;<span class="kw">typename</span>&gt;
+<span class="kw">struct</span> bad; <span class="co">// declaration only, cannot be instantiated</span>
+
+<span class="dt">int</span> main() {
+  <span class="co">// std::conditional&lt;good&lt;char&gt;, bad&lt;int&gt;&gt;::type fails</span>
+  <span class="kw">using</span> tmpl = <span class="bu">std::</span>conditional&lt;
+    <span class="kw">true</span>,
+    lazy_template&lt;good, <span class="dt">char</span>&gt;,
+    lazy_template&lt;bad, <span class="dt">int</span>&gt;&gt;::type;
+  <span class="co">// Instantiation happens only after this point, and only for the</span>
+  <span class="co">// good template.</span>
+  <span class="cf">return</span> tmpl::instantiated::value;
+}</code></pre></div>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/03/c++-lazy-template-instantiation.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+    </footer>
+  </body>
+</html>
