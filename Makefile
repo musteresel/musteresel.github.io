@@ -97,7 +97,8 @@ about.html: ADD_POSTREF=
 %.link: %.md extract-link.html.in
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %extract-link.html.in,$^) \
-	  -V path=$(patsubst %.link,%.html,$@) -o $@ $<
+	  -V path=$(patsubst %.link,%.html,$@) -o $@.new $<
+	cmp --silent $@ $@.new && rm $@.new || mv $@.new $@
 
 
 # Use pandoc to extract the tags a post is tagged with from a post
@@ -112,7 +113,8 @@ about.html: ADD_POSTREF=
 # Merge .tags files of all posts (which contain a sorted list of
 # tags), remove duplicates.
 all-tags: $(POSTFILES:.html=.tags) Makefile
-	sort -u -m $(filter %.tags,$^) -o $@
+	sort -u -m $(filter %.tags,$^) -o $@.new
+	cmp --silent $@ $@.new && rm $@.new || mv $@.new $@
 
 # Create and include a makefile with rules and prerequisites for each
 # tag.
