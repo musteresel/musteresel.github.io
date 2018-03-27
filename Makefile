@@ -33,7 +33,8 @@ POSTS = \
   2018/02/vnc-ssh-tunnel-xen-vm.html \
   2018/02/xen-migrate-vdi-to-other-storage-repository.html \
   2018/03/cmake-phony-like-target-for-docs.html \
-  2018/03/c++-lazy-template-instantiation.html
+  2018/03/c++-lazy-template-instantiation.html \
+  2018/03/exploit-hnap-security-flaw-dlink-dir-615.html
 
 
 # Add the posts/ prefix to get paths to the post files.
