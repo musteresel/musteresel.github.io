@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2018-04-15">
+                <title>Installing Windows 10 over PXE with dnsmasq, pxelinux and WinPE – musteresel's blog</title>
+    <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+      body {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
+      }
+      footer {
+      font-size: 75%;
+      }
+      .not-my-info {
+      font-size: 0;
+      }
+      pre > code {
+      overflow-x: auto;
+      display: block;
+      }
+    </style>
+        <style type="text/css">
+      a.sourceLine { display: inline-block; line-height: 1.25; }
+      a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+      a.sourceLine:empty { height: 1.2em; position: absolute; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode { white-space: pre; position: relative; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      code.sourceCode { white-space: pre-wrap; }
+      a.sourceLine { text-indent: -1em; padding-left: 1em; }
+      }
+      pre.numberSource a.sourceLine
+        { position: relative; }
+      pre.numberSource a.sourceLine:empty
+        { position: absolute; }
+      pre.numberSource a.sourceLine::before
+        { content: attr(data-line-number);
+          position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+          border: none; pointer-events: all;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {  }
+      @media screen {
+      a.sourceLine::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <h1 class="heading"><a href="../../../index.html">musteresel's blog</a></h1>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Installing Windows 10 over PXE with dnsmasq, pxelinux and WinPE</h1>
+                                <p class="date">2018-04-15</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/network/index.html">network</a>,
+                    <a href="../../../posts/tagged/windows/index.html">windows</a></p>
+              </header>
+            <p>So I needed to install Windows 10 on some laptop - without optical drive - here. I downloaded the iso from Microsoft, used <code>dd</code> to copy it to an SD card and tried to boot from it - without success. After various attempts to fix booting from SD (or USB) on that laptop with that (non-damaged) iso I decided to go a bit further:</p>
+<h2 id="overview">Overview</h2>
+<p>The approach I ended up with needs some systems / servers to play nicely together. First of all, I connected the laptop directly per an ethernet cable to a NixOS machine.</p>
+<p><em>What happens at boot?</em></p>
+<ul>
+<li>The laptop boots, PXE (“network boot”) selected as primary boot option.</li>
+<li>The BIOS tries to get an IP address and a “boot-filename” via DHCP.</li>
+<li>The BIOS tries to connect to a <a href="https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol">TFTP</a> server and download a file with the boot-filename. It then boots that file.</li>
+<li>That file should be a special bootloader, <a href="https://www.syslinux.org/wiki/index.php?title=PXELINUX">pxelinux</a> in my case, which uses TFTP to load further program modules, especially the <a href="https://www.syslinux.org/wiki/index.php?title=MEMDISK">memdisk</a> module.</li>
+<li>The bootloader boots the memdisk module. This loads a special minimalistic windows operating system called <a href="https://en.wikipedia.org/wiki/Windows_Preinstallation_Environment">“Windows PE”</a> or short “WinPE” into main memory (over TFTP) and boots it.</li>
+<li>WinPE runs <code>wpeinit</code> to detect hardware, followed by <code>ipconfig</code> to get network settings via DHCP.</li>
+<li>WinPE can now access a <a href="https://en.wikipedia.org/wiki/Server_Message_Block">SMB network drive</a> which contains the files from the Windows install iso and run <code>setup.exe</code> to start the installation.</li>
+</ul>
+<p><em>What’s needed?</em></p>
+<ul>
+<li>A DHCP server supporting PXE. <a href="https://en.wikipedia.org/wiki/DHCPD">(ISC-)dhcpd</a> <a href="https://www.debian.org/releases/stable/i386/ch04s05.html.en">works</a> but <a href="https://en.wikipedia.org/wiki/Dnsmasq">dnsmasq</a> is a much better choice in my case because it also has a builtin TFTP server. It also supports <a href="https://wiki.archlinux.org/index.php/dnsmasq#PXE_server">being a proxy</a> DHCP server if there’s already a DHCP server on the network which doesn’t support PXE.</li>
+<li>A TFTP server. dnsmasq does this for me, but there’s also tftp-hpa.</li>
+<li>pxelinux and memdisk. Both are often part of syslinux packages.</li>
+<li>A compatible WinPE iso. This can be created from the Windows install iso using <a href="https://wimlib.net/">wimlib</a>.</li>
+<li>A SMB/CIFS server. I use <a href="https://www.samba.org/">Samba</a> on the NixOS machine, but a Windows server would do, too.</li>
+</ul>
+<h2 id="the-firewall">The firewall</h2>
+<p>Fighting against the my own firewall on the NixOS machine is unnecessary, I just allow any traffic from the laptop:</p>
+<pre><code>iptables -I INPUT 1 -i eno1 -j ACCEPT</code></pre>
+<h2 id="the-dhcp-server">The DHCP server</h2>
+<p>With nothing configured (except the BIOS of the laptop for network boot) and the two systems connected by the ethernet cable it is possible to check that the BIOS is actually looking for a DHCP server by running <code>tcpdump -ttttnnvvS -i eno1</code> (where <code>eno1</code> is the - unconfigured - ethernet network interface on the NixOS machine):</p>
+<pre><code>2018-04-15 15:25:14.037484 IP (tos 0x0, ttl 20, id 0, offset 0, flags [none], proto UDP (17), length 576)
+    0.0.0.0.68 &gt; 255.255.255.255.67: [udp sum ok] BOOTP/DHCP, Request from 20:6a:8a:0f:74:75, length 548, xid 0x8b0f7475, secs 4, Flags [Broadcast] (0x8000)
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+          Vendor-rfc1048 Extensions
+            Magic Cookie 0x63825363
+            DHCP-Message Option 53, length 1: Discover
+            Parameter-Request Option 55, length 36: 
+              Subnet-Mask, Time-Zone, Default-Gateway, Time-Server
+              IEN-Name-Server, Domain-Name-Server, RL, Hostname
+              BS, Domain-Name, SS, RP
+              EP, RSZ, TTL, BR
+              YD, YS, NTP, Vendor-Option
+              Requested-IP, Lease-Time, Server-ID, RN
+              RB, Vendor-Class, TFTP, BF
+              Option 128, Option 129, Option 130, Option 131
+              Option 132, Option 133, Option 134, Option 135
+            MSZ Option 57, length 2: 1260
+            GUID Option 97, length 17: 0.214.110.241.0.166.215.17.223.159.26.249.56.166.111.192.84
+            ARCH Option 93, length 2: 0
+            NDI Option 94, length 3: 1.2.1
+            Vendor-Class Option 60, length 32: &quot;PXEClient:Arch:00000:UNDI:002001&quot;
+</code></pre>
+<p>This is a <code>BOOTP/DHCP</code> request (with a <code>DHCPDISCOVER</code> inside) from <code>20:6a:8a:0f:74:75</code> with no IP address assigned (thus <code>0.0.0.0</code>) to the broadcast address <code>255.255.255.255</code>. It’s sending from port <code>67</code> (client side DHCP) to port <code>68</code> (server side DHCP) and asking for various network parameters, including <code>BF</code> (the so called boot filename) and <code>TFTP</code>.</p>
+<p>Starting <code>dnsmasq -C dnsmasq.conf</code> with</p>
+<pre><code>port=0 # disable DNS server
+interface=eno1
+bind-interfaces
+dhcp-option=3,192.168.42.1 # default gateway
+dhcp-option=6,8.8.8.8,8.8.4.4 # dns servers
+dhcp-range=192.168.42.10,192.168.42.20,12h</code></pre>
+<p>results in the NixOS machine answering:</p>
+<pre><code>2018-04-15 15:42:01.801824 IP (tos 0xc0, ttl 64, id 43076, offset 0, flags [none], proto UDP (17), length 328)
+    192.168.42.1.67 &gt; 255.255.255.255.68: [bad udp cksum 0xebee -&gt; 0x8eff!] BOOTP/DHCP, Reply, length 300, xid 0x9c0f7475, secs 38, Flags [Broadcast] (0x8000)
+          Your-IP 192.168.42.17
+          Server-IP 192.168.42.1
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+          Vendor-rfc1048 Extensions
+            Magic Cookie 0x63825363
+            DHCP-Message Option 53, length 1: Offer
+            Server-ID Option 54, length 4: 192.168.42.1
+            Lease-Time Option 51, length 4: 43200
+            RN Option 58, length 4: 21600
+            RB Option 59, length 4: 37800
+            Subnet-Mask Option 1, length 4: 255.255.255.0
+            BR Option 28, length 4: 192.168.42.255
+            Domain-Name-Server Option 6, length 8: 8.8.8.8,8.8.4.4
+            Default-Gateway Option 3, length 4: 192.168.42.1
+</code></pre>
+<p>This offers an IP address (<code>192.168.42.17</code> here) to the laptop (mac <code>20:6a:8a:0f:74:75</code>), sends DNS information, the default gateway and some other stuff. <strong>But the BIOS ignores it</strong> and keeps sending <code>DHCPDISCOVER</code> requests. That’s because the reply - the <code>DHCPOFFER</code> - doesn’t include a boot-filename. After some seconds the BIOS on the laptop thus announces:</p>
+<blockquote>
+<p>PXE-E53 no boot filename received</p>
+</blockquote>
+<p>To fix this, I need to tell dnsmasq to send a boot filename by adding this to the config:</p>
+<pre><code>dhcp-boot=boot/pxelinux.0</code></pre>
+<p>Then, the exchange between the machines reads as follows:</p>
+<pre><code>2018-04-15 15:51:14.641613 IP (tos 0x0, ttl 20, id 5, offset 0, flags [none], proto UDP (17), length 576)
+    0.0.0.0.68 &gt; 255.255.255.255.67: [udp sum ok] BOOTP/DHCP, Request from 20:6a:8a:0f:74:75, length 548, xid 0x900f7475, secs 14, Flags [Broadcast] (0x8000)
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+// ...
+            DHCP-Message Option 53, length 1: Discover
+// ...
+
+2018-04-15 15:51:15.558948 IP (tos 0xc0, ttl 64, id 12988, offset 0, flags [none], proto UDP (17), length 342)
+    192.168.42.1.67 &gt; 255.255.255.255.68: [bad udp cksum 0xebfc -&gt; 0xc4bd!] BOOTP/DHCP, Reply, length 314, xid 0x8f0f7475, secs 12, Flags [Broadcast] (0x8000)
+          Your-IP 192.168.42.17
+          Server-IP 192.168.42.1
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+// ...
+            DHCP-Message Option 53, length 1: Offer
+// ...
+            BF Option 67, length 16: &quot;boot/pxelinux.0^@&quot;
+// ...
+
+2018-04-15 15:51:16.728848 IP (tos 0x0, ttl 20, id 6, offset 0, flags [none], proto UDP (17), length 576)
+    0.0.0.0.68 &gt; 255.255.255.255.67: [udp sum ok] BOOTP/DHCP, Request from 20:6a:8a:0f:74:75, length 548, xid 0x900f7475, secs 14, Flags [Broadcast] (0x8000)
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+// ...
+            DHCP-Message Option 53, length 1: Request
+// ...
+
+2018-04-15 15:51:16.821564 IP (tos 0xc0, ttl 64, id 13949, offset 0, flags [none], proto UDP (17), length 342)
+    192.168.42.1.67 &gt; 255.255.255.255.68: [bad udp cksum 0xebfc -&gt; 0xc0bb!] BOOTP/DHCP, Reply, length 314, xid 0x900f7475, secs 14, Flags [Broadcast] (0x8000)
+          Your-IP 192.168.42.17
+          Server-IP 192.168.42.1
+          Client-Ethernet-Address 20:6a:8a:0f:74:75
+// ...
+            DHCP-Message Option 53, length 1: ACK
+// ...
+            BF Option 67, length 16: &quot;boot/pxelinux.0^@&quot;
+</code></pre>
+<p>The replies from the NixOS DHCP server notably now contain the <code>BF</code> option. Moreover the complete Discover, Offer, Request, ACK cycle is now complete - thus the laptop now has IP address <code>192.168.42.17</code>.</p>
+<h2 id="the-tftp-server-pxelinux-and-memdisk">The TFTP server, pxelinux and memdisk</h2>
+<p>Next, the BIOS asks (via <code>ARP</code>) who’s <code>192.168.42.1</code> (the DHCP server, probably because it doesn’t know better) and sends a TFTP <code>RRQ</code> resource request for the boot filename. The NixOS machine blocks the request because there’s (currently) no TFTP server running on it:</p>
+<pre><code>2018-04-15 15:51:16.823557 ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 192.168.42.1 tell 192.168.42.17, length 46
+2018-04-15 15:51:16.823576 ARP, Ethernet (len 6), IPv4 (len 4), Reply 192.168.42.1 is-at 34:e6:d7:1a:33:48, length 28
+2018-04-15 15:51:16.823672 IP (tos 0x0, ttl 20, id 7, offset 0, flags [none], proto UDP (17), length 60)
+    192.168.42.17.2070 &gt; 192.168.42.1.69: [udp sum ok]  32 RRQ &quot;boot/pxelinux.0&quot; octet tsize 0
+2018-04-15 15:51:16.823755 IP (tos 0xc0, ttl 64, id 28676, offset 0, flags [none], proto ICMP (1), length 88)
+    192.168.42.1 &gt; 192.168.42.17: ICMP 192.168.42.1 udp port 69 unreachable, length 68</code></pre>
+<p>After numerous tries the BIOS then fails with the error message:</p>
+<blockquote>
+<p>PXE-E32: TFTP open timeout</p>
+</blockquote>
+<p>So I add this to <code>dnsmasq.conf</code>:</p>
+<pre><code>enable-tftp
+tftp-root=/tmp/win-pxe/tftp</code></pre>
+<p>Also I create a file <code>/tmp/win-pxe/tftp/boot/pxelinux.cfg/default</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="dt">UI         menu.c32</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="dt">MENU TITLE Network Boot</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="dt">TIMEOUT    50</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="dt">LABEL      winpe</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="dt">MENU LABEL Boot Windows PE from network</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="dt">KERNEL     /memdisk</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="dt">INITRD     winpe.iso</span></a>
+<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="dt">APPEND     iso raw</span></a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="dt">LABEL      localboot</span></a>
+<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="dt">MENU LABEL Boot from local disk</span></a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="dt">LOCALBOOT  0</span></a></code></pre></div>
+<p>Turning the laptop on again now boots pxelinux with the menu, given that the required files are in <code>/tmp/win-pxe-tftp/</code>:</p>
+<pre><code>dnsmasq: started, version 2.78 DNS disabled
+dnsmasq: compile time options: IPv6 GNU-getopt DBus no-i18n IDN DHCP DHCPv6 no-Lua TFTP conntrack ipset auth DNSSEC loop-detect inotify
+dnsmasq-dhcp: DHCP, IP range 192.168.42.10 -- 192.168.42.20, lease time 12h
+dnsmasq-dhcp: DHCP, sockets bound exclusively to interface eno1
+dnsmasq-tftp: TFTP root is /tmp/win-pxe/tftp 
+dnsmasq-dhcp: DHCPDISCOVER(eno1) 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPOFFER(eno1) 192.168.42.17 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPREQUEST(eno1) 192.168.42.17 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPACK(eno1) 192.168.42.17 20:6a:8a:0f:74:75 
+dnsmasq-tftp: error 0 TFTP Aborted received from 192.168.42.17
+dnsmasq-tftp: failed sending /tmp/win-pxe/tftp/boot/pxelinux.0 to 192.168.42.17
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/pxelinux.0 to 192.168.42.17
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/ldlinux.c32 to 192.168.42.17
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/d66ef100-a6d7-11df-9f1a-f938a66fc054 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/01-20-6a-8a-0f-74-75 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A82A11 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A82A1 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A82A not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A82 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A8 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0A not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C0 not found
+dnsmasq-tftp: file /tmp/win-pxe/tftp/boot/pxelinux.cfg/C not found
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/pxelinux.cfg/default to 192.168.42.17
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/menu.c32 to 192.168.42.17
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/libutil.c32 to 192.168.42.17
+dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/pxelinux.cfg/default to 192.168.42.17</code></pre>
+<h2 id="wait-winpe.iso">Wait … <code>winpe.iso</code>?</h2>
+<p>This is where wimlib comes into play. That’s a library (and set of programs) that work with Windows Imaging files. It contains <code>mkwinpeimg</code> which allows to create a (even customized) WinPE iso from either a Windows install iso or a “Windows Automated Installation Kit (WAIK)”. I use a Windows install iso. I mount the iso to be able to access its contents:</p>
+<pre><code>mount -o loop,ro /tmp/isos/Win10_1709_German_x64.iso /tmp/win10iso/</code></pre>
+<p>I also create a <code>start.cmd</code> script to define what’s happening once Windows PE boots:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="dt">cmd.exe</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="dt">pause</span></a></code></pre></div>
+<p>Then I can create the WinPE iso:</p>
+<pre><code>mkwinpeimg --iso --windows-dir=/tmp/win10iso \
+  --start-script=/tmp/win-pxe/start.cmd /tmp/winpe.iso</code></pre>
+<p>This first failed with an unexpected error (I have lots of free disk space):</p>
+<pre><code>// ...
+[ERROR] Error writing raw data to WIM file: No space left on device                                                                                              [BUSY] 
+ERROR: Exiting with error code 72:
+       Failed to write data to a file.
+</code></pre>
+<p>An educated guess later I decided to explicitly specify a temporary directory on my disk (with much of free space) by adding <code>--tmp-dir=/home/mustersel/temporary</code> to the <code>mkwinpeimg</code> command line. This gives me a <code>winpe.iso</code> file with a size of about 316M, which I place in <code>/tmp/win-pxe/boot/</code>.</p>
+<h2 id="booting-winpe">Booting WinPE</h2>
+<p>On the laptop, I select “Boot Windows PE from network”. This causes the memdisk module to be sent via TFTP:</p>
+<pre><code>dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot//memdisk to 192.168.42.17</code></pre>
+<p>Then on the laptop memdisk shows:</p>
+<blockquote>
+<p>Loading winpe.iso</p>
+</blockquote>
+<p>Looking at the NixOS machine reveals that memdisk loads <code>winpe.iso</code> also via TFTP (which is a rather slow protocol, so this takes some time):</p>
+<pre><code>dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/winpe.iso to 192.168.42.17</code></pre>
+<p>The laptop then greets me with some Windows loading screen, followed by a command line.</p>
+<h2 id="on-winpe-in-cmd.exe">On WinPE in <code>cmd.exe</code></h2>
+<p>According to the <a href="https://wiki.archlinux.org/index.php/Windows_PE">ArchWiki page on Windows PE</a> I need to run the following once I’m on the Windows command line:</p>
+<pre><code>wpeinit
+ipconfig</code></pre>
+<p>According to <a href="https://docs.microsoft.com/de-de/windows-hardware/manufacture/desktop/wpeinit-and-startnetcmd-using-winpe-startup-scripts">some Microsoft page</a> <code>wpeinit</code> “[..] installs Plug and Play devices, [..], and loads network resources”. <code>ipconfig</code> <a href="https://en.wikipedia.org/wiki/Ipconfig">seems to be</a> the equivalent to <code>ifconfig</code>, run without arguments it probably set up networking. After running these commands I could see on the NixOS machine how the laptop running WinPE requested an IP via DHCP. Note the hostname <code>minint-t10cd8a</code> that is logged - it’s no longer the BIOS doing the DHCP but the WinPE environment:</p>
+<pre><code>dnsmasq-dhcp: DHCPDISCOVER(eno1) 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPOFFER(eno1) 192.168.42.17 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPREQUEST(eno1) 192.168.42.17 20:6a:8a:0f:74:75 
+dnsmasq-dhcp: DHCPACK(eno1) 192.168.42.17 20:6a:8a:0f:74:75 minint-t10cd8a</code></pre>
+<p>For the next steps WinPE needs access to all of the Windows install iso.</p>
+<h1 id="the-samba-server">The Samba server</h1>
+<p>Setting up a SMB/CIFS network drive with Samba is pretty easy. I use the following config, but most of it is actually unnecessary:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">[global]</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="dt">map to guest </span><span class="ot">=</span><span class="st"> Bad User </span><span class="co"># Required</span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="dt">workgroup </span><span class="ot">=</span><span class="st"> home</span></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="dt">log level </span><span class="ot">=</span><span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="dt">unix extensions </span><span class="ot">=</span><span class="st"> </span><span class="kw">No</span></a>
+<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="dt">client min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></a>
+<a class="sourceLine" id="cb19-7" data-line-number="7"><span class="dt">client max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb19-9" data-line-number="9"><span class="dt">min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></a>
+<a class="sourceLine" id="cb19-10" data-line-number="10"><span class="dt">max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></a>
+<a class="sourceLine" id="cb19-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="dt">state directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
+<a class="sourceLine" id="cb19-13" data-line-number="13"><span class="dt">pid directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
+<a class="sourceLine" id="cb19-14" data-line-number="14"><span class="dt">cache directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
+<a class="sourceLine" id="cb19-15" data-line-number="15"><span class="dt">lock directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
+<a class="sourceLine" id="cb19-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co"># &quot;guest&quot; in between [] is the name of the share</span></a>
+<a class="sourceLine" id="cb19-18" data-line-number="18"><span class="kw">[guest]</span></a>
+<a class="sourceLine" id="cb19-19" data-line-number="19"><span class="dt">path </span><span class="ot">=</span><span class="st"> /tmp/win10iso </span><span class="co"># Required</span></a>
+<a class="sourceLine" id="cb19-20" data-line-number="20"><span class="dt">readonly </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span></a>
+<a class="sourceLine" id="cb19-21" data-line-number="21"><span class="dt">guest ok </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span><span class="st"> </span><span class="co"># Required</span></a></code></pre></div>
+<p>I can then “mount” this network drive from within WinPE with:</p>
+<pre><code>net use I:\\192.168.42.1\GUEST</code></pre>
+<p>This <em>should</em> make the contents of the Windows install iso (which is mounted to <code>/tmp/win10iso</code> on the NixOS machine) available under <code>I:</code> from WinPE. But I ran into the following issue: On the NixOS machine I got:</p>
+<pre><code>// ...
+Server exit (NT_STATUS_CONNECTION_RESET)
+Terminated</code></pre>
+<p>Basically Samba just died. On the WinPE side the error message read:</p>
+<pre><code>System error 58 has occurred. The specified server cannot perform the requested operation</code></pre>
+<p>The solution is unintuitive but simple. I just need to access the network share with some username and password (doesn’t matter which, can be just random strings):</p>
+<pre><code>net use I: \\192.168.42.1\GUEST /user:user pass</code></pre>
+<p>I actually spent quite a lot of time searching for this solution, even though it’s right in the <a href="https://wiki.archlinux.org/index.php/Windows_PE#System_error_58_has_occurred._The_specified_server_cannot_perform_the_requested_operation">ArchWiki page down at the bottom</a>…</p>
+<h1 id="finally-the-setup">Finally, the setup</h1>
+<pre><code>I:\setup.exe</code></pre>
+<p>This starts the Windows install setup, which is guided and thus easy to follow … <em>until</em> it complained with a mysterical message that I couldn’t use the partitions I <em>just</em> created and formatted:</p>
+<blockquote>
+<p>We couldn’t create a new partition or locate an existing one. For more information, see the Setup log files.</p>
+</blockquote>
+<p>After I <a href="https://msdn.microsoft.com/de-de/library/windows/hardware/dn938373(v=vs.85).aspx">found</a> (there were lots of files in these directories - I just scrolled over them one after the other) these “Setup log files” I noticed messages like these:</p>
+<pre><code>install drive does not meet requirements for installation
+Couldn&#39;t find boot disk on this BIOS-based computer</code></pre>
+<p>The “solution” was to <a href="https://blogs.technet.microsoft.com/asiasupp/2012/03/06/error-we-couldnt-create-a-new-partition-or-locate-an-existing-one-for-more-information-see-the-setup-log-files-when-you-try-to-install-windows-8-cp/">remove the SD card</a> that still was in the card reader from my attempts at booting Windows from that SD card. Apparently the Windows installer otherwise tries to install Windows on that SD card instead of on the (just partioned) drive. <em>Sigh.</em></p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/04/install-windows-over-pxe-with-dnsmasq-pxelinux-winpe.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+    </footer>
+  </body>
+</html>
