@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2019-07-11">
+                <title>Build an Android App Bundle (*.aab) from the command line – musteresel's blog</title>
+    <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+      body {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
+      }
+      footer {
+      font-size: 75%;
+      }
+      .not-my-info {
+      font-size: 0;
+      }
+      pre > code {
+      overflow-x: auto;
+      display: block;
+      }
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <h1 class="heading"><a href="../../../index.html">musteresel's blog</a></h1>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Build an Android App Bundle (*.aab) from the command line</h1>
+                                <p class="date">2019-07-11</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/android/index.html">android</a></p>
+              </header>
+            <p>Here’s how I’m building an Android App Bundle (*.aab) file from the command line, without Gradle:</p>
+<ol type="1">
+<li><p>Get the necessary tools: <code>aapt2</code> and <code>bundletool</code>. <code>aapt2</code> is the second version of the Android Asset Packaging Tool. It’s available (I used manual download from Maven) <a href="https://developer.android.com/studio/command-line/aapt2">here</a>. The downloaded jar file contained the <code>aapt2</code> executable. <code>bundletool</code> is used to work with App bundles, available from <a href="https://github.com/google/bundletool/releases">it’s GitHub repository</a>. I downloaded <code>bundletool-all-0.10.0.jar</code>, which can be run with <code>java -jar path/to/above/bundletool.jar</code>. Apart from these two the following steps need <code>javac</code> (the Java compiler), <code>jarsigner</code> (part of the JDK for me), <code>dx</code> (part of the Android SDK build tools; used to convert Java bytecode to Dalvik bytecode) and <code>zip</code>/<code>unzip</code>.</p></li>
+<li><p>“Compile” all resources using <code>aapt2</code>: Every resource file of the base module needs to be compiled:</p>
+<pre><code>aapt2 compile project/app/src/main/res/**/* -o compiled_resources</code></pre>
+<p>This fills the <code>compiled_resources</code> directory with files such as <code>layout_activity_main.xml.flat</code>.</p></li>
+<li><p>“Link” the resources into a temporary APK, generating the <code>R.java</code> file along the way and converting the resources into protobuf format:</p>
+<pre><code>aapt2 link --proto-format -o temporary.apk \
+           -I android_sdk/platforms/android-NN/android.jar \
+           --manifest project/app/src/main/AndroidManifest.xml \
+           -R compiled_resources/*.flat \
+           --auto-add-overlay --java gen</code></pre>
+<p>This creates the <code>temporary.apk</code> which contains the resources and the manifest in protobuf (Google Protocol Buffers) format and also generates <code>R.java</code> (under <code>gen/my/package/R.java</code>) which is used by Java code to reference resources. It needs to “include” (it doesn’t really contain it, just cross-checks references) the <code>android.jar</code> for the target platform (part of the Android SDK).</p></li>
+<li><p>Compile the Java source files. Since <code>R.java</code> is now generated, I can compile the Java sources:</p>
+<pre><code>javac -source 1.7 -target 1.7 \
+      -bootclasspath $JAVA_HOME/jre/lib/rt.jar \
+      -classpath android_sdk/platforms/android-NN/android.jar \
+      -d classes \
+      gen/**/*.java project/app/src/main/java/**/*.java</code></pre>
+<p>This creates <code>.class</code> files in the <code>classes</code> directory. Depending on dependencies the classpath needs to include other paths/jars.</p></li>
+<li><p>Extract the previously generated temporary APK:</p>
+<pre><code>unzip temporary.apk -d staging   </code></pre>
+<p>An APK is nothing but a fancy zip file, so this puts all contents of the <code>temporary.apk</code> into the <code>staging</code> directory.</p></li>
+<li><p>Prepare files to be bundled as the base module. The end result is a <code>staging</code> directory which can be zipped as a base module. First step is to move the <code>staging/AndroidManifest.xml</code> into <code>staging/manifest/</code> (a directory to be created). Next I create <code>stating/dex/</code> and use <code>dx</code> to convert the Java bytecode (in the <code>.class</code> files) to Dalvik bytecode (suitable for running on Android):</p>
+<pre><code>dx --dex --output=staging/dex/classes.dex classes/</code></pre></li>
+<li><p>Create a zip file of the contents of the base module: <code>(cd staging; zip -r ../base.zip *)</code></p></li>
+<li><p>Build the bundle: <code>bundletool build-bundle --modules=base.zip --output=bundle.aab</code></p></li>
+<li><p>Sign it: <code>jarsigner -keystore mykeystore.jks bundle.aab my-id</code></p></li>
+</ol>
+<p>Done :)</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/07/build-android-app-bundle-on-command-line.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+    </footer>
+  </body>
+</html>
