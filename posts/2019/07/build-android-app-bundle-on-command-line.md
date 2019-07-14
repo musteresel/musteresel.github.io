@@ -93,3 +93,14 @@ without Gradle:
 9. Sign it: `jarsigner -keystore mykeystore.jks bundle.aab my-id`
 
 Done :)
+
+Notes:
+
+- Versions I used: `aapt2-3.4.1-5326820-linux.jar`,
+  `bundletool-all-0.10.0.jar`, build-tools `28.0.3`, platform version
+  `28`, `javac 1.8.0_212` (openjdk)
+  
+- References: [Android APK from command
+  line](https://www.hanshq.net/command-line-android.html), [Build
+  bundle with
+  bundletool](https://developer.android.com/studio/build/building-cmdline#build_bundle)
