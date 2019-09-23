@@ -37,7 +37,8 @@ POSTS = \
   2018/03/exploit-hnap-security-flaw-dlink-dir-615.html \
   2018/04/install-windows-over-pxe-with-dnsmasq-pxelinux-winpe.html \
   2018/05/nix-disable-binary-cache.html \
-  2019/07/build-android-app-bundle-on-command-line.html
+  2019/07/build-android-app-bundle-on-command-line.html \
+  2019/09/object-files-with-same-name-in-static-library.html
 
 
 # Add the posts/ prefix to get paths to the post files.
