@@ -2,7 +2,7 @@ language: nix
 script:
   - nix-env -iA cachix -f https://cachix.org/api/v1/install
   - cachix use musteresel
-  - if [ -n "$CACHIX_SIGNING_KEY" ]; then (cd utils/pandoc-project-relative-links; nix-build | cachix push musteresel); fi
+  - if [ -n "$CACHIX_SIGNING_KEY" ]; then (cd utils/pandoc-project-relative-links; nix-build | cachix push musteresel; rm result); fi
   - nix-shell shell.nix --run make
 deploy:
   provider: pages
