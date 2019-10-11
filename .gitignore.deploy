@@ -1,0 +1,7 @@
+recent.html.in
+*.link
+*.tags
+all-tags
+links.mk
+tags.mk
+*.links
