@@ -11,7 +11,7 @@ into GCC ... but sometimes it's just easier to slap a regex on the
 problem.  In this case **getting the names of the directly included
 files**:
 
-~~~
+~~~bash
 grep -oP '#[[:blank:]]*include[[:blank:]]*("|<)\K[\w.\/]+(?=("|>))' FILE
 ~~~
 
@@ -43,7 +43,7 @@ may return false positives due to:
 And of course it doesn't care about conditional compilation ... so
 this will yield `foo`:
 
-~~~
+~~~c
 #if 0
 #include "foo"
 #endif

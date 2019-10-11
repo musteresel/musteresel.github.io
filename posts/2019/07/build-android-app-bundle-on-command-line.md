@@ -24,7 +24,7 @@ without Gradle:
 2. "Compile" all resources using `aapt2`:  Every resource file of the
    base module needs to be compiled:
    
-   ~~~
+   ~~~bash
    aapt2 compile project/app/src/main/res/**/* -o compiled_resources
    ~~~
    
@@ -35,7 +35,7 @@ without Gradle:
    file along the way and converting the resources into protobuf
    format:
    
-   ~~~
+   ~~~bash
    aapt2 link --proto-format -o temporary.apk \
               -I android_sdk/platforms/android-NN/android.jar \
               --manifest project/app/src/main/AndroidManifest.xml \
@@ -53,7 +53,7 @@ without Gradle:
 4. Compile the Java source files.  Since `R.java` is now generated, I
    can compile the Java sources:
    
-   ~~~
+   ~~~bash
    javac -source 1.7 -target 1.7 \
          -bootclasspath $JAVA_HOME/jre/lib/rt.jar \
          -classpath android_sdk/platforms/android-NN/android.jar \
@@ -66,7 +66,7 @@ without Gradle:
 
 5. Extract the previously generated temporary APK:
 
-    ~~~
+    ~~~bash
     unzip temporary.apk -d staging   
     ~~~
    
@@ -81,7 +81,7 @@ without Gradle:
    `.class` files) to Dalvik bytecode (suitable for running on
    Android):
    
-   ~~~
+   ~~~bash
    dx --dex --output=staging/dex/classes.dex classes/
    ~~~
 

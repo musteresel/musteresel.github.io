@@ -7,7 +7,7 @@ tags: [c, c++, cmake]
 
 The setup:
 
-~~~
+~~~bash
 # find . -type f
 ./foo/name.c
 ./bar/name.c
@@ -19,7 +19,7 @@ names though!
 
 `CMakeLists.txt` contains:
 
-~~~
+~~~cmake
 cmake_minimum_required(VERSION 3.12)
 add_library(foo OBJECT foo/name.c)
 add_library(bar OBJECT bar/name.c)
@@ -31,7 +31,7 @@ It creates two `OBJECT` libraries with names `foo` and `bar`, and a
 
 Inspecting the created `libfinal.a` shows:
 
-~~~
+~~~bash
 # ar t libfinal.a 
 name.c.o
 name.c.o
@@ -40,7 +40,7 @@ name.c.o
 So both object files are in the library.  Showing the offset of these
 files also clearly shows that these are different files:
 
-~~~
+~~~bash
 # ar tO libfinal.a 
 name.c.o 0x94
 name.c.o 0x570
