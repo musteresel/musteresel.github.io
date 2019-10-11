@@ -51,41 +51,68 @@
       }
     </style>
         <style type="text/css">
-      div.sourceCode { overflow-x: auto; }
-      table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-        margin: 0; padding: 0; vertical-align: baseline; border: none; }
-      table.sourceCode { width: 100%; line-height: 100%; }
-      td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-      td.sourceCode { padding-left: 5px; }
-      code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code > span.dt { color: #902000; } /* DataType */
-      code > span.dv { color: #40a070; } /* DecVal */
-      code > span.bn { color: #40a070; } /* BaseN */
-      code > span.fl { color: #40a070; } /* Float */
-      code > span.ch { color: #4070a0; } /* Char */
-      code > span.st { color: #4070a0; } /* String */
-      code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code > span.ot { color: #007020; } /* Other */
-      code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code > span.fu { color: #06287e; } /* Function */
-      code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      code > span.cn { color: #880000; } /* Constant */
-      code > span.sc { color: #4070a0; } /* SpecialChar */
-      code > span.vs { color: #4070a0; } /* VerbatimString */
-      code > span.ss { color: #bb6688; } /* SpecialString */
-      code > span.im { } /* Import */
-      code > span.va { color: #19177c; } /* Variable */
-      code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code > span.op { color: #666666; } /* Operator */
-      code > span.bu { } /* BuiltIn */
-      code > span.ex { } /* Extension */
-      code > span.pp { color: #bc7a00; } /* Preprocessor */
-      code > span.at { color: #7d9029; } /* Attribute */
-      code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
     </style>
             <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
@@ -103,23 +130,23 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/xen/index.html">xen</a></p>
               </header>
-            <p>Some time ago I <a href="../../../posts/2017/07/xen-vm-console-connection.html">accessed the &quot;console&quot; of a Xen VM over a http tunnel</a>, which was working but rather unpleasant due to a crippled terminal. Today I needed to do the same again, so I set out to look for a more comfortable alternative...</p>
+            <p>Some time ago I <a href="../../../posts/2017/07/xen-vm-console-connection.html">accessed the “console” of a Xen VM over a http tunnel</a>, which was working but rather unpleasant due to a crippled terminal. Today I needed to do the same again, so I set out to look for a more comfortable alternative…</p>
 <p>Thankfully, I do have SSH access to the Xen server on which my VM is running, so following <a href="https://www.citrix.com/blogs/2011/02/18/using-vnc-to-connect-to-a-xenserver-vms-console/">this post from Citrix</a> I am able to work with my VM without having to use XenCenter or a similar software:</p>
-<ol style="list-style-type: decimal">
-<li>Connect to the Xen Server per SSH, and run the following commands there.</li>
-<li><p>Get the &quot;domain id&quot; of the virtual machine and the &quot;host uuid&quot; of the host it is running on (important when the Xen server manages multiple hosts), where <code>LABEL</code> is my virtual machine's label:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">xe</span> vm-list params=dom-id,resident-on name-label=LABEL
-<span class="co"># resident-on ( RO)    : UUID</span>
-<span class="co">#          dom-id ( RO): DOMID</span></code></pre></div></li>
+<ol type="1">
+<li><p>Connect to the Xen Server per SSH, and run the following commands there.</p></li>
+<li><p>Get the “domain id” of the virtual machine and the “host uuid” of the host it is running on (important when the Xen server manages multiple hosts), where <code>LABEL</code> is my virtual machine’s label:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">xe</span> vm-list params=dom-id,resident-on name-label=LABEL</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co"># resident-on ( RO)    : UUID</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#          dom-id ( RO): DOMID</span></span></code></pre></div></li>
 <li><p>If the Xen server manages multiple hosts, then get the IP of the host on which the virtual machine is running:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">xe</span> pif-list management=true params=IP host-uuid=UUID
-<span class="co"># IP ( RO)    : HOSTIP</span></code></pre></div>
-Connect per SSH to that host, and run the following command there.</li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">xe</span> pif-list management=true params=IP host-uuid=UUID</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co"># IP ( RO)    : HOSTIP</span></span></code></pre></div>
+<p>Connect per SSH to that host, and run the following command there.</p></li>
 <li><p>Get the VNC port of the virtual machine:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">xenstore-read</span> /local/domain/DOMID/console/vnc-port
-<span class="co"># PORT</span></code></pre></div></li>
-<li><p>On the local machine, open a SSH tunnel to the host and redirect a local port (<code>LOCALPORT</code>) to the host's <code>localhost:PORT</code> (where <code>PORT</code> is the VNC port from above):</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ssh</span> -L LOCALPORT:localhost:PORT HOSTIP</code></pre></div></li>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">xenstore-read</span> /local/domain/DOMID/console/vnc-port</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co"># PORT</span></span></code></pre></div></li>
+<li><p>On the local machine, open a SSH tunnel to the host and redirect a local port (<code>LOCALPORT</code>) to the host’s <code>localhost:PORT</code> (where <code>PORT</code> is the VNC port from above):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">ssh</span> -L LOCALPORT:localhost:PORT HOSTIP</span></code></pre></div></li>
 <li><p>Use some VNC viewer on the local machine and connect to <code>localhost:LOCALPORT</code></p></li>
 </ol>
 <p>This works extremely well, just a bit laggy sometimes, but certainly good enough to setup a SSH server on the virtual machine.</p>

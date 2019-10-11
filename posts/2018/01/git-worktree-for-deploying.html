@@ -51,41 +51,68 @@
       }
     </style>
         <style type="text/css">
-      div.sourceCode { overflow-x: auto; }
-      table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-        margin: 0; padding: 0; vertical-align: baseline; border: none; }
-      table.sourceCode { width: 100%; line-height: 100%; }
-      td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-      td.sourceCode { padding-left: 5px; }
-      code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code > span.dt { color: #902000; } /* DataType */
-      code > span.dv { color: #40a070; } /* DecVal */
-      code > span.bn { color: #40a070; } /* BaseN */
-      code > span.fl { color: #40a070; } /* Float */
-      code > span.ch { color: #4070a0; } /* Char */
-      code > span.st { color: #4070a0; } /* String */
-      code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code > span.ot { color: #007020; } /* Other */
-      code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code > span.fu { color: #06287e; } /* Function */
-      code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      code > span.cn { color: #880000; } /* Constant */
-      code > span.sc { color: #4070a0; } /* SpecialChar */
-      code > span.vs { color: #4070a0; } /* VerbatimString */
-      code > span.ss { color: #bb6688; } /* SpecialString */
-      code > span.im { } /* Import */
-      code > span.va { color: #19177c; } /* Variable */
-      code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code > span.op { color: #666666; } /* Operator */
-      code > span.bu { } /* BuiltIn */
-      code > span.ex { } /* Extension */
-      code > span.pp { color: #bc7a00; } /* Preprocessor */
-      code > span.at { color: #7d9029; } /* Attribute */
-      code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
     </style>
             <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
@@ -104,26 +131,26 @@
                     <a href="../../../posts/tagged/blog/index.html">blog</a>,
                     <a href="../../../posts/tagged/git/index.html">git</a></p>
               </header>
-            <p>GitHub Pages can be <a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/">configured</a> to publish from a <code>gh-pages</code> branch, or - in case of a &quot;user page&quot; - it uses the <code>master</code> branch for publishing.</p>
-<p>I generate the files for publishing with my own blog system, whose sources are in a <code>sources-master</code> branch. The generated files are written into a subfolder <code>build/</code> (which is in <code>.gitignore</code> so that generated files won't end up on the sources branch). In order to add any changes in <code>build/</code> to the (in my case) <code>master</code> branch there are <a href="https://gist.github.com/cobyism/4730490">different approaches</a>, but I think I found a better one:</p>
+            <p>GitHub Pages can be <a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/">configured</a> to publish from a <code>gh-pages</code> branch, or - in case of a “user page” - it uses the <code>master</code> branch for publishing.</p>
+<p>I generate the files for publishing with my own blog system, whose sources are in a <code>sources-master</code> branch. The generated files are written into a subfolder <code>build/</code> (which is in <code>.gitignore</code> so that generated files won’t end up on the sources branch). In order to add any changes in <code>build/</code> to the (in my case) <code>master</code> branch there are <a href="https://gist.github.com/cobyism/4730490">different approaches</a>, but I think I found a better one:</p>
 <h2 id="git-worktrees">git worktrees</h2>
-<p>git <a href="https://git-scm.com/docs/git-worktree">supports</a> multiple &quot;worktrees&quot;. A worktree is the part of your repository (except for bare repositories) you normally interact with when you change and add files. Normally one works with the single &quot;main&quot; worktree. Adding a new worktree is extremely easy though and allows one to keep the main worktree in any (however dirty) state it's currently in:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> worktree add ./build master
-<span class="bu">cd</span> ./build
-<span class="fu">touch</span> some-new-file
-<span class="fu">git</span> add some-new-file
-<span class="fu">git</span> commit -m <span class="st">&quot;added some new file&quot;</span></code></pre></div>
+<p>git <a href="https://git-scm.com/docs/git-worktree">supports</a> multiple “worktrees”. A worktree is the part of your repository (except for bare repositories) you normally interact with when you change and add files. Normally one works with the single “main” worktree. Adding a new worktree is extremely easy though and allows one to keep the main worktree in any (however dirty) state it’s currently in:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">git</span> worktree add ./build master</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="bu">cd</span> ./build</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">touch</span> some-new-file</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">git</span> add some-new-file</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">git</span> commit -m <span class="st">&quot;added some new file&quot;</span></span></code></pre></div>
 <p>This checks out the branch <code>master</code> into the subdirectory <code>./build</code> (can also be an absolute path, of course). Then it changes into said directory, creates and adds a new file to the repository and commits this change. This commit now goes directly to the <code>master</code> branch, regardless of which branch or commit the main worktree currently is on.</p>
 <p>The worktree (or better, the information about it in the <code>.git</code> repository) is eventually deleted when the containing directory (<code>./build</code> here) is removed.</p>
 <p>For deploying, this means I can:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Check if <code>./build</code> is a worktree using <code>git worktree list</code>
 <ul>
-<li><p>if it is, make sure it's up to date:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">cd</span> ./build
-<span class="fu">git</span> checkout master
-<span class="fu">git</span> pull
-<span class="bu">cd</span> ..</code></pre></div></li>
+<li><p>if it is, make sure it’s up to date:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> ./build</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">git</span> checkout master</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">git</span> pull</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="bu">cd</span> ..</span></code></pre></div></li>
 <li><p>else, create the new worktree: <code>git worktree add ./build master</code></p></li>
 </ul></li>
 <li>Build the files to publish in <code>./build</code></li>
@@ -131,11 +158,11 @@
 <li>Add all files <code>git add .</code></li>
 <li>Commit (and optionally push directly)</li>
 </ol>
-<p>For step 4 it's important to have a <code>.gitignore</code> file on the <code>master</code> branch so that any files which should not be published (for example caches or auxilary files from the build) will be ignored.</p>
+<p>For step 4 it’s important to have a <code>.gitignore</code> file on the <code>master</code> branch so that any files which should not be published (for example caches or auxilary files from the build) will be ignored.</p>
 <h2 id="advantages">Advantages</h2>
 <ul>
 <li><p>There are no generated files on the same branch (read visible during development / writing) as the source files. (The <code>git subtree</code> method suffers from this issue.)</p></li>
-<li><p>It's a single (local) repository that I'm working with. No need to <code>clone</code>, no space wasted, no duplicate (local) repository configurations.</p></li>
+<li><p>It’s a single (local) repository that I’m working with. No need to <code>clone</code>, no space wasted, no duplicate (local) repository configurations.</p></li>
 </ul>
             <hr>
       <footer>

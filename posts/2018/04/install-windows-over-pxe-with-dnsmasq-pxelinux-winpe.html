@@ -51,28 +51,27 @@
       }
     </style>
         <style type="text/css">
-      a.sourceLine { display: inline-block; line-height: 1.25; }
-      a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-      a.sourceLine:empty { height: 1.2em; position: absolute; }
-      .sourceCode { overflow: visible; }
-      code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
       @media screen {
       div.sourceCode { overflow: auto; }
       }
       @media print {
-      code.sourceCode { white-space: pre-wrap; }
-      a.sourceLine { text-indent: -1em; padding-left: 1em; }
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
       }
-      pre.numberSource a.sourceLine
-        { position: relative; }
-      pre.numberSource a.sourceLine:empty
-        { position: absolute; }
-      pre.numberSource a.sourceLine::before
-        { content: attr(data-line-number);
-          position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-          border: none; pointer-events: all;
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
           -webkit-touch-callout: none; -webkit-user-select: none;
           -khtml-user-select: none; -moz-user-select: none;
           -ms-user-select: none; user-select: none;
@@ -81,9 +80,9 @@
         }
       pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
       div.sourceCode
-        {  }
+        {   }
       @media screen {
-      a.sourceLine::before { text-decoration: underline; }
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
       }
       code span.al { color: #ff0000; font-weight: bold; } /* Alert */
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -265,19 +264,19 @@ dhcp-range=192.168.42.10,192.168.42.20,12h</code></pre>
 <pre><code>enable-tftp
 tftp-root=/tmp/win-pxe/tftp</code></pre>
 <p>Also I create a file <code>/tmp/win-pxe/tftp/boot/pxelinux.cfg/default</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="dt">UI         menu.c32</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="dt">MENU TITLE Network Boot</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="dt">TIMEOUT    50</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="dt">LABEL      winpe</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="dt">MENU LABEL Boot Windows PE from network</span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="dt">KERNEL     /memdisk</span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="dt">INITRD     winpe.iso</span></a>
-<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="dt">APPEND     iso raw</span></a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="dt">LABEL      localboot</span></a>
-<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="dt">MENU LABEL Boot from local disk</span></a>
-<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="dt">LOCALBOOT  0</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">UI         menu.c32</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="dt">MENU TITLE Network Boot</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="dt">TIMEOUT    50</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="dt">LABEL      winpe</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="dt">MENU LABEL Boot Windows PE from network</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="dt">KERNEL     /memdisk</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="dt">INITRD     winpe.iso</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="dt">APPEND     iso raw</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="dt">LABEL      localboot</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="dt">MENU LABEL Boot from local disk</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="dt">LOCALBOOT  0</span></span></code></pre></div>
 <p>Turning the laptop on again now boots pxelinux with the menu, given that the required files are in <code>/tmp/win-pxe-tftp/</code>:</p>
 <pre><code>dnsmasq: started, version 2.78 DNS disabled
 dnsmasq: compile time options: IPv6 GNU-getopt DBus no-i18n IDN DHCP DHCPv6 no-Lua TFTP conntrack ipset auth DNSSEC loop-detect inotify
@@ -310,8 +309,8 @@ dnsmasq-tftp: sent /tmp/win-pxe/tftp/boot/pxelinux.cfg/default to 192.168.42.17<
 <p>This is where wimlib comes into play. That’s a library (and set of programs) that work with Windows Imaging files. It contains <code>mkwinpeimg</code> which allows to create a (even customized) WinPE iso from either a Windows install iso or a “Windows Automated Installation Kit (WAIK)”. I use a Windows install iso. I mount the iso to be able to access its contents:</p>
 <pre><code>mount -o loop,ro /tmp/isos/Win10_1709_German_x64.iso /tmp/win10iso/</code></pre>
 <p>I also create a <code>start.cmd</code> script to define what’s happening once Windows PE boots:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="dt">cmd.exe</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="dt">pause</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">cmd.exe</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="dt">pause</span></span></code></pre></div>
 <p>Then I can create the WinPE iso:</p>
 <pre><code>mkwinpeimg --iso --windows-dir=/tmp/win10iso \
   --start-script=/tmp/win-pxe/start.cmd /tmp/winpe.iso</code></pre>
@@ -344,27 +343,27 @@ dnsmasq-dhcp: DHCPACK(eno1) 192.168.42.17 20:6a:8a:0f:74:75 minint-t10cd8a</code
 <p>For the next steps WinPE needs access to all of the Windows install iso.</p>
 <h1 id="the-samba-server">The Samba server</h1>
 <p>Setting up a SMB/CIFS network drive with Samba is pretty easy. I use the following config, but most of it is actually unnecessary:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode ini"><code class="sourceCode ini"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">[global]</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="dt">map to guest </span><span class="ot">=</span><span class="st"> Bad User </span><span class="co"># Required</span></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="dt">workgroup </span><span class="ot">=</span><span class="st"> home</span></a>
-<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="dt">log level </span><span class="ot">=</span><span class="st"> </span><span class="dv">5</span></a>
-<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="dt">unix extensions </span><span class="ot">=</span><span class="st"> </span><span class="kw">No</span></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="dt">client min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></a>
-<a class="sourceLine" id="cb19-7" data-line-number="7"><span class="dt">client max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></a>
-<a class="sourceLine" id="cb19-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb19-9" data-line-number="9"><span class="dt">min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></a>
-<a class="sourceLine" id="cb19-10" data-line-number="10"><span class="dt">max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></a>
-<a class="sourceLine" id="cb19-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="dt">state directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
-<a class="sourceLine" id="cb19-13" data-line-number="13"><span class="dt">pid directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
-<a class="sourceLine" id="cb19-14" data-line-number="14"><span class="dt">cache directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
-<a class="sourceLine" id="cb19-15" data-line-number="15"><span class="dt">lock directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></a>
-<a class="sourceLine" id="cb19-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co"># &quot;guest&quot; in between [] is the name of the share</span></a>
-<a class="sourceLine" id="cb19-18" data-line-number="18"><span class="kw">[guest]</span></a>
-<a class="sourceLine" id="cb19-19" data-line-number="19"><span class="dt">path </span><span class="ot">=</span><span class="st"> /tmp/win10iso </span><span class="co"># Required</span></a>
-<a class="sourceLine" id="cb19-20" data-line-number="20"><span class="dt">readonly </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span></a>
-<a class="sourceLine" id="cb19-21" data-line-number="21"><span class="dt">guest ok </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span><span class="st"> </span><span class="co"># Required</span></a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">[global]</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="dt">map to guest </span><span class="ot">=</span><span class="st"> Bad User # Required</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="dt">workgroup </span><span class="ot">=</span><span class="st"> home</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="dt">log level </span><span class="ot">=</span><span class="st"> </span><span class="dv">5</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="dt">unix extensions </span><span class="ot">=</span><span class="st"> </span><span class="kw">No</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="dt">client min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="dt">client max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="dt">min protocol </span><span class="ot">=</span><span class="st"> SMB2</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="dt">max protocol </span><span class="ot">=</span><span class="st"> SMB3</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="dt">state directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="dt">pid directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="dt">cache directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="dt">lock directory </span><span class="ot">=</span><span class="st"> /tmp/win-pxe/samba</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a></span>
+<span id="cb19-17"><a href="#cb19-17"></a><span class="co"># &quot;guest&quot; in between [] is the name of the share</span></span>
+<span id="cb19-18"><a href="#cb19-18"></a><span class="kw">[guest]</span></span>
+<span id="cb19-19"><a href="#cb19-19"></a><span class="dt">path </span><span class="ot">=</span><span class="st"> /tmp/win10iso # Required</span></span>
+<span id="cb19-20"><a href="#cb19-20"></a><span class="dt">readonly </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="dt">guest ok </span><span class="ot">=</span><span class="st"> </span><span class="kw">yes</span><span class="st"> # Required</span></span></code></pre></div>
 <p>I can then “mount” this network drive from within WinPE with:</p>
 <pre><code>net use I:\\192.168.42.1\GUEST</code></pre>
 <p>This <em>should</em> make the contents of the Windows install iso (which is mounted to <code>/tmp/win10iso</code> on the NixOS machine) available under <code>I:</code> from WinPE. But I ran into the following issue: On the NixOS machine I got:</p>

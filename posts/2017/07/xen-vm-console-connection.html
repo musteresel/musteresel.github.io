@@ -66,18 +66,18 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/xen/index.html">xen</a></p>
               </header>
-            <p>I need to setup some virtual machines running on a Xen server which don't have a ssh server running yet. One can access such VMs easily with Xen management software like XenCenter, but I prefer the UNIX philosophy &quot;do one thing and do it well&quot; and instead have a tool to do <em>just</em> that: give me a connection to one console of one virtual machine of some Xen server.</p>
+            <p>I need to setup some virtual machines running on a Xen server which don’t have a ssh server running yet. One can access such VMs easily with Xen management software like XenCenter, but I prefer the UNIX philosophy “do one thing and do it well” and instead have a tool to do <em>just</em> that: give me a connection to one console of one virtual machine of some Xen server.</p>
 <p>It took me a while to dig out the correct Xen API calls, but <a href="http://xapi-project.github.io/xen-api/consoles.html">description of consoles of the xapi-project</a> sums it up pretty well. In short:</p>
-<ol style="list-style-type: decimal">
-<li>Login at the Xen server to create new session with <code>Session.login_with_password</code></li>
-<li>Get a reference to the virtual machine, e.g. by name with <code>VM.get_by_name_label</code></li>
-<li>Get a list of consoles of that VM: <code>VM.get_consoles</code></li>
-<li>Find a console with protocol <code>vt100</code> by looking at <code>console.get_protocol</code></li>
-<li>Get the &quot;location&quot; of the console: <code>console.get_location</code></li>
-<li>Depending on the locations protocol ...
+<ol type="1">
+<li><p>Login at the Xen server to create new session with <code>Session.login_with_password</code></p></li>
+<li><p>Get a reference to the virtual machine, e.g. by name with <code>VM.get_by_name_label</code></p></li>
+<li><p>Get a list of consoles of that VM: <code>VM.get_consoles</code></p></li>
+<li><p>Find a console with protocol <code>vt100</code> by looking at <code>console.get_protocol</code></p></li>
+<li><p>Get the “location” of the console: <code>console.get_location</code></p></li>
+<li><p>Depending on the locations protocol …</p>
 <ul>
-<li>if it's <code>https</code>, then use <a href="https://www.gnutls.org/manual/html_node/gnutls_002dcli-Invocation.html"><code>gnutls-cli</code></a> or <a href="https://wiki.openssl.org/index.php/Manual:S_client(1)"><code>openssl s_client</code></a>, ...</li>
-<li>otherwise (<code>http</code>) using <code>telnet</code> is sufficient to connect to the location's host</li>
+<li>if it’s <code>https</code>, then use <a href="https://www.gnutls.org/manual/html_node/gnutls_002dcli-Invocation.html"><code>gnutls-cli</code></a> or <a href="https://wiki.openssl.org/index.php/Manual:S_client(1)"><code>openssl s_client</code></a>, …</li>
+<li>otherwise (<code>http</code>) using <code>telnet</code> is sufficient to connect to the location’s host</li>
 </ul></li>
 <li><p>Encode username and password for authorization:</p>
 <pre><code>echo -n &quot;user:pass&quot; | base64</code></pre></li>
@@ -88,7 +88,7 @@ Authorization: Basic &lt;encoded-user-pass&gt;
 </code></pre></li>
 <li><p>use connection as <code>vt100</code> terminal.</p></li>
 </ol>
-<p>Doing this manually on the command line actually worked pretty well, except the terminal was &quot;crippled&quot; (the local terminal probably needs to be configured somehow, probably like done in <a href="https://github.com/pyserial/pyserial/blob/master/serial/tools/miniterm.py">miniterm</a>). It worked good enough to install an ssh server, though.</p>
+<p>Doing this manually on the command line actually worked pretty well, except the terminal was “crippled” (the local terminal probably needs to be configured somehow, probably like done in <a href="https://github.com/pyserial/pyserial/blob/master/serial/tools/miniterm.py">miniterm</a>). It worked good enough to install an ssh server, though.</p>
 <p>The same should work with VNC consoles, too. Then I could setup a local port and redirect any traffic to the remote connection which I previously would set up like described above. Any VNC viewer should then be able to connect to my local port.</p>
 <p>Also note that - contrary to the Xen API docs (shipped with the Xen SDK) - one needs to make the HTTP connect request with <code>HTTP/1.1</code> (got the idea to try this from <a href="https://discussions.citrix.com/topic/243319-how-to-retrieve-vnc-consoles-via-the-xenserver-sdk-api/">this only partly related discussion</a>).</p>
             <hr>
