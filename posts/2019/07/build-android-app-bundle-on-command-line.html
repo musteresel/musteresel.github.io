@@ -50,6 +50,70 @@
       display: block;
       }
     </style>
+        <style type="text/css">
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
             <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
@@ -70,27 +134,27 @@
 <ol type="1">
 <li><p>Get the necessary tools: <code>aapt2</code> and <code>bundletool</code>. <code>aapt2</code> is the second version of the Android Asset Packaging Tool. It’s available (I used manual download from Maven) <a href="https://developer.android.com/studio/command-line/aapt2">here</a>. The downloaded jar file contained the <code>aapt2</code> executable. <code>bundletool</code> is used to work with App bundles, available from <a href="https://github.com/google/bundletool/releases">it’s GitHub repository</a>. I downloaded <code>bundletool-all-0.10.0.jar</code>, which can be run with <code>java -jar path/to/above/bundletool.jar</code>. Apart from these two the following steps need <code>javac</code> (the Java compiler), <code>jarsigner</code> (part of the JDK for me), <code>dx</code> (part of the Android SDK build tools; used to convert Java bytecode to Dalvik bytecode) and <code>zip</code>/<code>unzip</code>.</p></li>
 <li><p>“Compile” all resources using <code>aapt2</code>: Every resource file of the base module needs to be compiled:</p>
-<pre><code>aapt2 compile project/app/src/main/res/**/* -o compiled_resources</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">aapt2</span> compile project/app/src/main/res/**/* -o compiled_resources</span></code></pre></div>
 <p>This fills the <code>compiled_resources</code> directory with files such as <code>layout_activity_main.xml.flat</code>.</p></li>
 <li><p>“Link” the resources into a temporary APK, generating the <code>R.java</code> file along the way and converting the resources into protobuf format:</p>
-<pre><code>aapt2 link --proto-format -o temporary.apk \
-           -I android_sdk/platforms/android-NN/android.jar \
-           --manifest project/app/src/main/AndroidManifest.xml \
-           -R compiled_resources/*.flat \
-           --auto-add-overlay --java gen</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">aapt2</span> link --proto-format -o temporary.apk \</span>
+<span id="cb2-2"><a href="#cb2-2"></a>           -I android_sdk/platforms/android-NN/android.jar \</span>
+<span id="cb2-3"><a href="#cb2-3"></a>           --manifest project/app/src/main/AndroidManifest.xml \</span>
+<span id="cb2-4"><a href="#cb2-4"></a>           -R compiled_resources/*.flat \</span>
+<span id="cb2-5"><a href="#cb2-5"></a>           --auto-add-overlay --java gen</span></code></pre></div>
 <p>This creates the <code>temporary.apk</code> which contains the resources and the manifest in protobuf (Google Protocol Buffers) format and also generates <code>R.java</code> (under <code>gen/my/package/R.java</code>) which is used by Java code to reference resources. It needs to “include” (it doesn’t really contain it, just cross-checks references) the <code>android.jar</code> for the target platform (part of the Android SDK).</p></li>
 <li><p>Compile the Java source files. Since <code>R.java</code> is now generated, I can compile the Java sources:</p>
-<pre><code>javac -source 1.7 -target 1.7 \
-      -bootclasspath $JAVA_HOME/jre/lib/rt.jar \
-      -classpath android_sdk/platforms/android-NN/android.jar \
-      -d classes \
-      gen/**/*.java project/app/src/main/java/**/*.java</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">javac</span> -source 1.7 -target 1.7 \</span>
+<span id="cb3-2"><a href="#cb3-2"></a>      -bootclasspath <span class="va">$JAVA_HOME</span>/jre/lib/rt.jar \</span>
+<span id="cb3-3"><a href="#cb3-3"></a>      -classpath android_sdk/platforms/android-NN/android.jar \</span>
+<span id="cb3-4"><a href="#cb3-4"></a>      -d classes \</span>
+<span id="cb3-5"><a href="#cb3-5"></a>      gen/**/*.java project/app/src/main/java/**/*.java</span></code></pre></div>
 <p>This creates <code>.class</code> files in the <code>classes</code> directory. Depending on dependencies the classpath needs to include other paths/jars.</p></li>
 <li><p>Extract the previously generated temporary APK:</p>
-<pre><code>unzip temporary.apk -d staging   </code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">unzip</span> temporary.apk -d staging   </span></code></pre></div>
 <p>An APK is nothing but a fancy zip file, so this puts all contents of the <code>temporary.apk</code> into the <code>staging</code> directory.</p></li>
 <li><p>Prepare files to be bundled as the base module. The end result is a <code>staging</code> directory which can be zipped as a base module. First step is to move the <code>staging/AndroidManifest.xml</code> into <code>staging/manifest/</code> (a directory to be created). Next I create <code>stating/dex/</code> and use <code>dx</code> to convert the Java bytecode (in the <code>.class</code> files) to Dalvik bytecode (suitable for running on Android):</p>
-<pre><code>dx --dex --output=staging/dex/classes.dex classes/</code></pre></li>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="ex">dx</span> --dex --output=staging/dex/classes.dex classes/</span></code></pre></div></li>
 <li><p>Create a zip file of the contents of the base module: <code>(cd staging; zip -r ../base.zip *)</code></p></li>
 <li><p>Build the bundle: <code>bundletool build-bundle --modules=base.zip --output=bundle.aab</code></p></li>
 <li><p>Sign it: <code>jarsigner -keystore mykeystore.jks bundle.aab my-id</code></p></li>
