@@ -185,9 +185,4 @@ clean:
 	rm -rf $(CURDIR)/*
 
 
-.PHONY: release
-release: default
-	git add .
-	git commit -m "Build output of $(shell cd $(path_to_this_makefile); git log '--format=format:%H' sources-master -1)"
-
 endif
