@@ -179,7 +179,7 @@ all-posts-wrong-order.links: $(POSTFILES:.html=.link)
 all-posts.links: all-posts-wrong-order.links
 	tac $< > $@
 
-.PHONY: housekeeping
+.PHONY: housekeeping .gitignore
 housekeeping: .gitignore
 	touch .nojekyll
 
