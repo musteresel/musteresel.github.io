@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2019-10-15">
+                <title>CMake and a relative path to an installed linker script – musteresel's blog</title>
+    <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+      body {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 42em;
+      font-size: 100%;
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 24px;
+      }
+      div.sourceCode {
+      line-height: normal;
+      }
+      .heading {
+      color: #002560;
+      }
+      a:link, a:visited {
+      color: #008aa3;
+      text-decoration: none;
+      }
+      a:hover {
+      color: #004d60;
+      text-decoration: none;
+      }
+      a:active {
+      color: white;
+      background-color: #008aa3;
+      }
+      footer {
+      font-size: 75%;
+      }
+      .not-my-info {
+      font-size: 0;
+      }
+      pre > code {
+      overflow-x: auto;
+      display: block;
+      }
+    </style>
+        <style type="text/css">
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <h1 class="heading"><a href="../../../index.html">musteresel's blog</a></h1>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">CMake and a relative path to an installed linker script</h1>
+                                <p class="date">2019-10-15</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/cmake/index.html">cmake</a>,
+                    <a href="../../../posts/tagged/c/index.html">c</a>,
+                    <a href="../../../posts/tagged/c++/index.html">c++</a></p>
+              </header>
+            <p>Scenario: A static library <code>lib</code> is to be installed. To link against this static library requires special link flags and a linker script <code>script.ld</code>.</p>
+<p>For “GCC compatible” linkers the linker script is specified via the <code>-T</code> flag, followed by the path to the script. During build of the static library itself the linker script is within the project source directory; referencing that is no different than any other file. Assuming the linker script is put under <code>${CMAKE_INSTALL_PREFIX}/share/script.ld</code> when installed the straightforward solution looks like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># -T path/to/script.ld for build and install case</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">target_link_options</span>(lib <span class="ot">INTERFACE</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  -T <span class="ot">$&lt;</span><span class="kw">BUILD_INTERFACE</span><span class="ot">:script.ld&gt;</span> <span class="ot">$&lt;</span><span class="kw">INSTALL_INTERFACE</span><span class="ot">:share/script.ld&gt;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># actually install script.ld file</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">install</span>(<span class="ot">FILES</span> script.ld <span class="ot">DESTINATION</span> share/)</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># install liblib.a library, prepare export</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">install</span>(<span class="ot">TARGETS</span> lib</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  <span class="ot">EXPORT</span> lib-target</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="ot">ARCHIVE</span> <span class="ot">DESTINATION</span> lib/)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  </span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># install export (cmake files to be used by consumers of the lib)</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">install</span>(<span class="ot">EXPORT</span> lib-target</span>
+<span id="cb1-15"><a href="#cb1-15"></a>  <span class="ot">FILE</span> libTargets.cmake</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="ot">NAMESPACE</span> lib::</span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="ot">DESTINATION</span> cmake/)</span></code></pre></div>
+<p>This works as expected; assuming an empty <code>${CMAKE_INSTALL_PREFIX}</code> it produces a <code>/lib/liblib.a</code>, a <code>/share/script.ld</code> and a <code>/cmake/libTargets.cmake</code> (and probably also a <code>/cmake/libTargets-noconfig.cmake</code>) when installing via <code>make install</code>.</p>
+<p>If <code>/cmake/</code> is part of the CMake module search path or if <code>-Dlib_DIR=/cmake</code> is specified then the library can be used in another CMake build using <code>find_package(lib)</code> and <code>target_link_libraries(target lib::lib)</code>. The link flags will contain <code>-T /share/script.ld</code> and of course this path is valid, so everything is working fine.</p>
+<p><strong>This does not work together with a staging directory (<code>DESTDIR</code>), though!</strong></p>
+<p>E.g. for the library <code>make install DESTDIR=/stage</code> is called (perhaps because the library shall not actually be installed). Now using the “almost installed” library in <code>/stage</code> from another CMake build (e.g. <code>-Dlib_DIR=/stage/cmake</code>) works fine (the <code>liblib.a</code> is found as would any installed public headers) <em>except</em> for the linker script. Its path is hard wired to <code>/share/script.ld</code> after installing (even if only “almost”). The script is in <code>/stage/share/script.ld</code>, though.</p>
+<p>To fix this the best is to look at what happens with the path to <code>liblib.a</code>, because somehow CMake can find it even in the “almost installed” <code>/stage</code> directory:</p>
+<p><code>/stage/cmake/libTargets.cmake</code> includes (relative to itself) <code>libTargets-noconfig.cmake</code>. That later file contains code similar to:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">set</span>_target_properties(lib::lib PROPERTIES</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  IMPORTED_LOCATION_NOCONFIG <span class="st">&quot;</span><span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span><span class="st">/lib/liblib.a&quot;</span>)</span></code></pre></div>
+<p>What’s <code>${_IMPORT_PREFIX}</code>? It’s a variable computed in <code>/stage/cmake/libTargets.cmake</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Compute the installation prefix relative to this file.</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">get_filename_component</span>(_IMPORT_PREFIX <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co"># Use original install prefix when loaded through a</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co"># cross-prefix symbolic link such as /lib -&gt; /usr/lib.</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">get_filename_component</span>(_realCurr <span class="st">&quot;</span><span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span><span class="st">&quot;</span> <span class="ot">REALPATH</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">get_filename_component</span>(_realOrig <span class="st">&quot;/cmake&quot;</span> <span class="ot">REALPATH</span>)</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="kw">if</span>(_realCurr <span class="ot">STREQUAL</span> _realOrig)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="kw">set</span>(_IMPORT_PREFIX <span class="st">&quot;/cmake&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="kw">endif</span>()</span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="kw">unset</span>(_realOrig)</span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="kw">unset</span>(_realCurr)</span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="kw">get_filename_component</span>(_IMPORT_PREFIX <span class="st">&quot;</span><span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co"># (HERE, read about it below)</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="kw">if</span>(_IMPORT_PREFIX <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a>  <span class="kw">set</span>(_IMPORT_PREFIX <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="kw">endif</span>()</span></code></pre></div>
+<p>This basically walks up from the location of <code>libTargets.cmake</code> to where <code>${CMAKE_INSTALL_PREFIX}</code> would be. In this case, since <code>libTargets.cmake</code> is to be installed in <code>${CMAKE_INSTALL_PREFIX}/cmake/</code> it goes up just one level (at the <code>HERE</code> comment), but if it had been put e.g. to <code>${CMAKE_INSTALL_PREFIX}/lib/share/cmake/</code> then there would be 3 <code>get_filename_component</code> calls instead of just one.</p>
+<p>That way, at “use time” (e.g. during the <code>find_package(lib)</code> call) CMake uses <code>/stage/cmake/libTargets.cmake</code> to compute an <code>${_IMPORT_PREFIX}</code> of <code>/stage</code> which allows it to use <code>${_IMPORT_PREFIX}/lib/liblib.a</code> to refer to <code>/stage/lib/liblib.a</code> - the correct path to the static library. <strong>The important point is that this happens not as part of the configure / build / install process of the library, but rather during the configuration of another CMake build (which uses <code>find_package(lib)</code>)</strong>.</p>
+<p>Fixing the issue with the path to the linker script can be done in (at least) two ways now:</p>
+<p>CMake already computes the very helpful <code>_IMPORT_PREFIX</code> variable. In order to get “access” to it code needs to be either in <code>libTargets.cmake</code> or in any file included from that file. Modifying the <em>generated</em> file <code>libTargets.cmake</code> is not a good idea, but thankfully <code>libTargets.cmake</code> contains code to include files <code>libTargets-*.cmake</code> (like <code>libTargets-noconfig.cmake</code>):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Load information for each installed configuration.</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">get_filename_component</span>(_DIR <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">file</span>(<span class="ot">GLOB</span> CONFIG_FILES <span class="st">&quot;</span><span class="dv">${</span>_DIR<span class="dv">}</span><span class="st">/libTargets-*.cmake&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">foreach</span>(f <span class="dv">${</span>CONFIG_FILES<span class="dv">}</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">include</span>(<span class="dv">${</span>f<span class="dv">}</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">endforeach</span>()</span></code></pre></div>
+<p>A custom <code>libTargets-script.cmake</code> file installed to <code>cmake/</code> has therefore access to <code>_IMPORT_PREFIX</code> and can use it to set link options appropriately:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># contents of libTargets-script.cmake</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># note use of namespaced target name!</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">target_link_options</span>(lib::lib</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="ot">INTERFACE</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  -T <span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span>/share/script.ld)</span></code></pre></div>
+<p><em>Whether</em> this is “supported” (it works, but will it in the future?) by CMake? <em>I don’t know</em>.</p>
+<p>A thus possibly more robust (but also more verbose) approach is to recreate what CMake does with the <code>_IMPORT_PREFIX</code> variable in a (self-written) <code>libConfig.cmake</code>, to be installed to <code>cmake/</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># contents of libConfig.cmake.in</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">get_filename_component</span>(MYDIR <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">if</span> (<span class="ot">NOT</span> <span class="ot">TARGET</span> lib::lib)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="kw">include</span>(<span class="st">&quot;</span><span class="dv">${</span>MYDIR<span class="dv">}</span><span class="st">/multipleTargets.cmake&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">endif</span> ()</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co"># Compute the installation prefix relative to this file, like </span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co"># CMake does in libTargets.cmake .. this needs to be kept in sync and</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co"># needs to be adjusted e.g. if the (installed) path to this file changes</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="kw">get_filename_component</span>(_IMPORT_PREFIX <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="kw">get_filename_component</span>(_realCurr <span class="st">&quot;</span><span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span><span class="st">&quot;</span> <span class="ot">REALPATH</span>)</span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="kw">get_filename_component</span>(_realOrig <span class="st">&quot;</span><span class="bn">@</span>CMAKE_INSTALL_PREFIX<span class="bn">@</span><span class="st">/cmake&quot;</span> <span class="ot">REALPATH</span>)</span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="kw">if</span>(_realCurr <span class="ot">STREQUAL</span> _realOrig)</span>
+<span id="cb6-15"><a href="#cb6-15"></a>  <span class="kw">set</span>(_IMPORT_PREFIX <span class="st">&quot;</span><span class="bn">@</span>CMAKE_INSTALL_PREFIX<span class="bn">@</span><span class="st">/cmake&quot;</span>)</span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="kw">endif</span>()</span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="kw">unset</span>(_realOrig)</span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="kw">unset</span>(_realCurr)</span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="kw">get_filename_component</span>(_IMPORT_PREFIX <span class="st">&quot;</span><span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="kw">if</span>(_IMPORT_PREFIX <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb6-21"><a href="#cb6-21"></a>  <span class="kw">set</span>(_IMPORT_PREFIX <span class="st">&quot;&quot;</span>)</span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="kw">endif</span>()</span>
+<span id="cb6-23"><a href="#cb6-23"></a></span>
+<span id="cb6-24"><a href="#cb6-24"></a><span class="co"># note use of namespaced target name!</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a><span class="kw">target_link_options</span>(lib::lib</span>
+<span id="cb6-26"><a href="#cb6-26"></a>  <span class="ot">INTERFACE</span></span>
+<span id="cb6-27"><a href="#cb6-27"></a>  -T <span class="dv">${</span>_IMPORT_PREFIX<span class="dv">}</span>/share/script.ld)</span></code></pre></div>
+<p>The above file is <code>libConfig.cmake.in</code>, which needs to undergo substitution of <code>@CMAKE_INSTALL_PREFIX@</code> via <code>configure_file()</code> with <code>@ONLY</code> before installing.</p>
+<p>With either of these approaches it is possible to install a linker script and use it from other builds, even if the installation was only to a staging directory. And of course the staging directory can be moved around freely … e.g <code>mv /stage /somewhere/else</code> doesn’t break the build.</p>
+<p>Finally, this works for every path, e.g. also paths to data files.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/10/cmake-install-linker-script-relative-path.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+    </footer>
+  </body>
+</html>
