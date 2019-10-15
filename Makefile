@@ -39,7 +39,8 @@ POSTS = \
   2018/05/nix-disable-binary-cache.html \
   2019/07/build-android-app-bundle-on-command-line.html \
   2019/09/object-files-with-same-name-in-static-library.html \
-  2019/10/regex-for-c-preprocessor-includes.html
+  2019/10/regex-for-c-preprocessor-includes.html \
+  2019/10/cmake-install-linker-script-relative-path.html
 
 
 # Add the posts/ prefix to get paths to the post files.
