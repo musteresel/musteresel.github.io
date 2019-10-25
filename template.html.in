@@ -63,6 +63,29 @@
       overflow-x: auto;
       display: block;
       }
+      @media screen {
+      #cookie_div {
+          position: fixed;
+          bottom: 0;
+          left:10%;
+          background: lightgreen;
+          width: 80%;
+      }
+      #hidden_div {
+          visibility: hidden;
+      }
+      }
+      #no_div {
+          display: none;
+      }
+      @media print {
+          #cookie_div, #hidden_div {
+              display: none;
+          }
+      }
+      .button {
+          cursor: pointer;
+      }
     </style>
     $if(highlighting-css)$
     <style type="text/css">
@@ -75,6 +98,9 @@
     <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
+     <script async defer src="https://www.googletagmanager.com/gtag/js?id=UA-34701218-2"></script>
+     <script async defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+     <script async defer src="$pathToProjectRoot$/consent.js"></script>
   </head>
   <body>
     <header>
@@ -114,8 +140,34 @@
       $endif$
     </article>
     <hr>
-    <footer>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-5600657867858844"
+         data-ad-slot="6787904477"
+         data-ad-test="on"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <hr>
+    <footer id=>
       <a href="$pathToProjectRoot$/legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="$pathToProjectRoot$/cookies.html">Cookies</a>
     </footer>
+    <br />
+    <div id="no_div">
+      My site would like to use Cookies to personalize content and
+      adverts and to analyse traffic
+      (<a href="$pathToProjectRoot$/cookies.html">More Info</a>)
+      ... which Cookies do you allow?
+      <span style="white-space:nowrap;">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="button" onclick="AllowCookies();">All</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span class="button" onclick="DisallowCookies();">Just 1 to
+          hide this</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span class="button" onclick="AbsolutelyNoCookies();">None</span>
+      </span>
+    </div>
   </body>
 </html>
