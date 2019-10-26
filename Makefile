@@ -182,8 +182,6 @@ all-posts-wrong-order.links: $(POSTFILES:.html=.link)
 all-posts.links: all-posts-wrong-order.links
 	tac $< > $@
 
-consent.js: consent.orig.js
-	cp $< $@
 
 js.min.js: js.js
 	cp $< $@
