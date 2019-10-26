@@ -62,7 +62,7 @@ YEARSANDMONTHSLISTS = \
 # By default, build all sites: special sites, posts and listings
 default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
          legal.html tags all-posts.html \
-         housekeeping privacy.html js.min.js
+         housekeeping privacy.html js.min.js css.min.css
 
 
 # Meta target to build all tag index sites.
@@ -184,6 +184,9 @@ all-posts.links: all-posts-wrong-order.links
 
 
 js.min.js: js.js
+	cp $< $@
+
+css.min.css: css.css
 	cp $< $@
 
 .PHONY: housekeeping .gitignore
