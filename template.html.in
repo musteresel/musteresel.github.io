@@ -20,6 +20,7 @@
     <meta name="description" content="$description$">
     $endif$
     <title>$pagetitle$$if(title-suffix)$ – $title-suffix$$endif$</title>
+    <script async defer src="$pathToProjectRoot$/js.min.js"></script>
     <style type="text/css">code{white-space: pre;}</style>
     $if(quotes)$
     <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
@@ -114,8 +115,10 @@
       $endif$
     </article>
     <hr>
-    <footer>
+    <footer id=>
       <a href="$pathToProjectRoot$/legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="$pathToProjectRoot$/privacy.html">Privacy / Datenschutz</a>
     </footer>
   </body>
 </html>
