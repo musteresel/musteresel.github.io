@@ -77,19 +77,13 @@
     <![endif]-->
      <script>
        function CookieGetBlock() {
-           console.log('Cookie access blocked');
            return '';
        }
        function StorageGetBlock() {
-           console.log('Blocked access to local/session Storage');
            return undefined;
        }
-       function CookieSetBlock() {
-           console.log('Cookie setting blocked');
-       }
-       function StorageSetBlock() {
-           console.log('local/session Storage setting blocked');
-       }
+       function CookieSetBlock() {}
+       function StorageSetBlock() {}
        if (!document.__defineGetter__) {
            Object.defineProperty(document, 'cookie', {
                get: CookieGetBlock,
