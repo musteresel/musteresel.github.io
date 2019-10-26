@@ -40,7 +40,7 @@
   </head>
   <body>
     <header>
-      <p class="heading"><a href="$pathToProjectRoot$/index.html">musteresel's blog</a></h1>
+      <p class="heading"><a href="$pathToProjectRoot$/index.html">musteresel's blog</a></p>
     </header>
     <hr>
     <article>
@@ -76,7 +76,7 @@
       $endif$
     </article>
     <hr>
-    <footer id=>
+    <footer>
       <a href="$pathToProjectRoot$/legal.html">Legal Notice / Impressum</a>
       &nbsp;&nbsp;
       <a href="$pathToProjectRoot$/privacy.html">Privacy / Datenschutz</a>
