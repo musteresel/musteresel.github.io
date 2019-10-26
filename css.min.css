@@ -1,0 +1,45 @@
+body {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 42em;
+    font-size: 100%;
+    font-family: Verdana, Geneva, sans-serif;
+    line-height: 24px;
+}
+div.sourceCode {
+    line-height: normal;
+}
+.heading {
+    color: #002560;
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+a:link, a:visited {
+    color: #008aa3;
+    text-decoration: none;
+}
+a:hover {
+    color: #004d60;
+    text-decoration: none;
+}
+a:active {
+    color: white;
+    background-color: #008aa3;
+}
+footer {
+    font-size: 75%;
+}
+.not-my-info {
+    font-size: 0;
+}
+pre > code {
+    overflow-x: auto;
+    display: block;
+}
