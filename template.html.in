@@ -92,11 +92,8 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
        ga('set', 'allowAdFeatures', false);
        ga('set', 'anonymizeIp', true);
        ga('send', 'pageview');
-       window.addEventListener('beforeunload', function(e) {
-           // This does not seem to be working?
-           ga('send', 'pageview', {'sessionControl': 'end'});
-           ga('remove');
-       });
+       ga('send', 'pageview', {'sessionControl': 'end'});
+       ga('remove');
      </script>
   </head>
   <body>
