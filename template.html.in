@@ -21,13 +21,13 @@
     $endif$
     <title>$pagetitle$$if(title-suffix)$ – $title-suffix$$endif$</title>
     <script async defer src="$pathToProjectRoot$/js.min.js"></script>
-    <style type="text/css">code{white-space: pre;}</style>
+    <style>code{white-space: pre;}</style>
     $if(quotes)$
-    <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+    <style>q { quotes: "“" "”" "‘" "’"; }</style>
     $endif$
     <link rel="stylesheet" type="text/css" href="$pathToProjectRoot$/css.min.css">
     $if(highlighting-css)$
-    <style type="text/css">
+    <style>
       $highlighting-css$
     </style>
     $endif$
