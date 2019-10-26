@@ -61,8 +61,8 @@ YEARSANDMONTHSLISTS = \
 
 # By default, build all sites: special sites, posts and listings
 default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
-         legal.html tags all-posts.html consent.js \
-         housekeeping cookies.html
+         legal.html tags all-posts.html \
+         housekeeping privacy.html
 
 
 # Meta target to build all tag index sites.
