@@ -130,10 +130,13 @@ all-tags: $(POSTFILES:.html=.tags) Makefile
 	sort -u -m $(filter %.tags,$^) -o $@.new
 	cmp --silent $@ $@.new && rm $@.new || mv $@.new $@
 
+POSTLISTS=
+
 # Create and include a makefile with rules and prerequisites for each
 # tag.
 tags.mk: all-tags Makefile
 	while read tag; do \
+	  printf "POSTLISTS += posts/tagged/%s/index.html\n" $$tag; \
 	  printf "tags: posts/tagged/%s/index.html\n" $$tag; \
 	  printf "posts/tagged/%s/index.html: TITLE=\"tagged: %s\"\n" $$tag $$tag; \
 	  printf "posts/tagged/%s/index.links: " $$tag; \
@@ -164,8 +167,9 @@ include links.mk
 
 # Create a html page with the list of posts from a collection of
 # links.
-%.html: %.links template.html.in
-	mkdir -p $(dir $@)
+POSTLISTS += all-posts.html $(YEARSANDMONTHSLISTS)
+$(POSTLISTS): %.html: %.links template.html.in
+	@mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) \
 	  -f html -t html \
 	  -o $@ $< -V title=$(TITLE) -V pagetitle=$(TITLE) \
