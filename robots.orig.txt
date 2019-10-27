@@ -1,2 +1,3 @@
+Sitemap: https://musteresel.github.io/sitemap.txt
 User-agent: *
 Disallow:
