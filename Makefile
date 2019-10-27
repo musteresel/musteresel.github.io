@@ -67,7 +67,7 @@ TOPLEVEL_HTML = \
 default: $(TOPLEVEL_HTML) $(POSTFILES) $(YEARSANDMONTHSLISTS) \
          tags robots.txt \
          housekeeping js.min.js css.min.css \
-         googleaa3542155d10c4ea.html
+         googleaa3542155d10c4ea.html sitemap.txt
 
 
 # Meta target to build all tag index sites.
