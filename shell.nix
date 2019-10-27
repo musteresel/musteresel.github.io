@@ -1,9 +1,12 @@
 with import <nixpkgs> {};
 
 let
-  project-relative-links = import ./utils/pandoc-project-relative-links/default.nix {};
+  prl = callPackage (import ./utils/project-rel-links/prl.nix)
+{
+  python = python37;
+};
 in
 stdenv.mkDerivation {
   name = "musteresel-blog";
-  buildInputs = [pandoc project-relative-links];
+  buildInputs = [pandoc prl];
 }
