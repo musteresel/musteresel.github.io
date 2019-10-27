@@ -49,12 +49,11 @@ POSTFILES = $(addprefix posts/,$(POSTS))
 
 
 # Extract a list of YYYY/MM and YYYY from the list of posts. This is
-# used to generate monthly and yearly post listings. Note that the
-# list contains (lots of) duplicates.
+# used to generate monthly and yearly post listings.
 path_to_words = $(subst /, ,$(post))
-YEARSANDMONTHS = $(foreach post,$(POSTS),\
+YEARSANDMONTHS = $(sort $(foreach post,$(POSTS),\
   $(word 1,$(path_to_words)) \
-  $(word 1,$(path_to_words))/$(word 2,$(path_to_words)))
+  $(word 1,$(path_to_words))/$(word 2,$(path_to_words))))
 YEARSANDMONTHSLISTS = \
   $(addprefix posts/,$(addsuffix /index.html,$(YEARSANDMONTHS)))
 
