@@ -59,10 +59,15 @@ YEARSANDMONTHSLISTS = \
   $(addprefix posts/,$(addsuffix /index.html,$(YEARSANDMONTHS)))
 
 
+TOPLEVEL_HTML = \
+  index.html about.html legal.html \
+  all-posts.html privacy.html
+
+
 # By default, build all sites: special sites, posts and listings
-default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
-         legal.html tags all-posts.html robots.txt \
-         housekeeping privacy.html js.min.js css.min.css \
+default: $(TOPLEVEL_HTML) $(POSTFILES) $(YEARSANDMONTHSLISTS) \
+         tags robots.txt \
+         housekeeping js.min.js css.min.css \
          googleaa3542155d10c4ea.html
 
 
@@ -195,6 +200,17 @@ robots.txt: robots.orig.txt
 
 googleaa3542155d10c4ea.html: googleaa3542155d10c4ea.orig.html
 	cp $< $@
+
+DOMAIN=https://musteresel.github.io
+
+sitemap.txt: Makefile all-tags
+	while read tag; do \
+	  printf "$(DOMAIN)/posts/tagged/$$tag/index.html\n"; \
+	done < $(filter %all-tags,$^) > $@
+	for file in \
+	  $(POSTFILES) $(YEARSANDMONTHSLISTS) $(TOPLEVEL_HTML); do \
+	  printf "$(DOMAIN)/$$file\n"; \
+	done | sort -u >> $@
 
 .PHONY: housekeeping .gitignore
 housekeeping: .gitignore
