@@ -61,7 +61,7 @@ YEARSANDMONTHSLISTS = \
 
 # By default, build all sites: special sites, posts and listings
 default: index.html about.html $(POSTFILES) $(YEARSANDMONTHSLISTS) \
-         legal.html tags all-posts.html \
+         legal.html tags all-posts.html robots.txt \
          housekeeping privacy.html js.min.js css.min.css
 
 
@@ -187,6 +187,9 @@ js.min.js: js.js
 	cp $< $@
 
 css.min.css: css.css
+	cp $< $@
+
+robots.txt: robots.orig.txt
 	cp $< $@
 
 .PHONY: housekeeping .gitignore
