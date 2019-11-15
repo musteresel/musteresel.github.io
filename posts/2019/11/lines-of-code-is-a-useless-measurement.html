@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2019-11-15">
+                <title>Lines of Code is a useless measurement – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+        <style>
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Lines of Code is a useless measurement</h1>
+                                <p class="date">2019-11-15</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/c/index.html">c</a>,
+                    <a href="../../../posts/tagged/c++/index.html">c++</a></p>
+              </header>
+            <p>I’ve recently been asked how many lines of code I’ve written for some project. There are already numerous stories about why “lines of code” is not a reasonable measurement. Nevertheless I’d like to add my own - a bit contrived - example.</p>
+<p>Assuming the objective is to write a program which</p>
+<ul>
+<li>reads integer numbers from its standard input</li>
+<li>marks the numbers which are greater than 10</li>
+<li>prints out in reverse order a 1 for the numbers which are marked, and 0 otherwise</li>
+</ul>
+<p>I can then start off and write the following C++ program:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">int</span> main()</span>
+<span id="cb1-2"><a href="#cb1-2"></a>{ </span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt; data;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">int</span> i;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="cf">while</span> (<span class="bu">std::</span>cin &gt;&gt; i)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>  {</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    data.push_back(i);</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  }</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="cf">if</span> (!<span class="bu">std::</span>cin.eof())</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  {</span>
+<span id="cb1-11"><a href="#cb1-11"></a>    <span class="co">// handle error</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  }</span>
+<span id="cb1-13"><a href="#cb1-13"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;::const_iterator it = data.begin();</span>
+<span id="cb1-15"><a href="#cb1-15"></a>  <span class="cf">while</span> (it != data.end())</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  {</span>
+<span id="cb1-17"><a href="#cb1-17"></a>    <span class="dt">int</span> d = *it;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>    <span class="cf">if</span> (d &gt; <span class="dv">10</span>)</span>
+<span id="cb1-19"><a href="#cb1-19"></a>    {</span>
+<span id="cb1-20"><a href="#cb1-20"></a>      results.push_back(<span class="kw">true</span>);</span>
+<span id="cb1-21"><a href="#cb1-21"></a>    }</span>
+<span id="cb1-22"><a href="#cb1-22"></a>    <span class="cf">else</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>    {</span>
+<span id="cb1-24"><a href="#cb1-24"></a>      results.push_back(<span class="kw">false</span>);</span>
+<span id="cb1-25"><a href="#cb1-25"></a>    }</span>
+<span id="cb1-26"><a href="#cb1-26"></a>    ++it;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>  }</span>
+<span id="cb1-28"><a href="#cb1-28"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt;::reverse_iterator it2 = results.rbegin();</span>
+<span id="cb1-29"><a href="#cb1-29"></a>  <span class="cf">while</span> (it2 != results.rend())</span>
+<span id="cb1-30"><a href="#cb1-30"></a>  {</span>
+<span id="cb1-31"><a href="#cb1-31"></a>    <span class="bu">std::</span>cout &lt;&lt; *it2 &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>    ++it2;</span>
+<span id="cb1-33"><a href="#cb1-33"></a>  }</span>
+<span id="cb1-34"><a href="#cb1-34"></a>}</span></code></pre></div>
+<p>This is reasonably short and can be understood fairly well. I count <strong>34 lines of code</strong>.</p>
+<p>Of course this can also be written much more concisely:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">int</span> main() {</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="bu">std::</span>transform(<span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(<span class="bu">std::</span>cin), <span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(),</span>
+<span id="cb2-4"><a href="#cb2-4"></a>                 <span class="bu">std::</span>back_inserter(results),</span>
+<span id="cb2-5"><a href="#cb2-5"></a>                 [] (<span class="dt">int</span> d) { <span class="cf">return</span> d &gt; <span class="dv">10</span>; });</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="bu">std::</span>copy(results.rbegin(), results.rend(),</span>
+<span id="cb2-7"><a href="#cb2-7"></a>            <span class="bu">std::</span>ostream_iterator&lt;<span class="dt">bool</span>&gt;(<span class="bu">std::</span>cout, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>));</span>
+<span id="cb2-8"><a href="#cb2-8"></a>}</span></code></pre></div>
+<p>That’s <strong>8 lines of code</strong>.</p>
+<p>Now which is of those two versions is “better”? The first one requires less knowledge about the C++ standard library and can thus - presumably - be more easily understood. The second however is just so much more concise that it might be better for someone who knows - and thus understands - the used concepts from the C++ standard library.</p>
+<p>Does the number of lines of code help in anyway? I don’t think so. For some projects it can be beneficial to sacrifice conciseness in order to have code that’s more easily approchable for new (in general or just new to the project) developers. Others require concise code to remain at least somewhat overseeable.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/11/lines-of-code-is-a-useless-measurement.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>

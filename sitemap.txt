@@ -57,5 +57,7 @@ https://musteresel.github.io/posts/2019/10/cmake-install-linker-script-relative-
 https://musteresel.github.io/posts/2019/10/golden-tests-with-cmake.html
 https://musteresel.github.io/posts/2019/10/index.html
 https://musteresel.github.io/posts/2019/10/regex-for-c-preprocessor-includes.html
+https://musteresel.github.io/posts/2019/11/index.html
+https://musteresel.github.io/posts/2019/11/lines-of-code-is-a-useless-measurement.html
 https://musteresel.github.io/posts/2019/index.html
 https://musteresel.github.io/privacy.html
