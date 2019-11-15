@@ -41,7 +41,8 @@ POSTS = \
   2019/09/object-files-with-same-name-in-static-library.html \
   2019/10/regex-for-c-preprocessor-includes.html \
   2019/10/cmake-install-linker-script-relative-path.html \
-  2019/10/golden-tests-with-cmake.html
+  2019/10/golden-tests-with-cmake.html \
+  2019/11/lines-of-code-is-a-useless-measurement.html
 
 
 # Add the posts/ prefix to get paths to the post files.
