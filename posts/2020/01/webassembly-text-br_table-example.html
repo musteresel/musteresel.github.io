@@ -108,7 +108,7 @@
 <span id="cb2-9"><a href="#cb2-9"></a>  (i32.const <span class="dv">42</span>)</span>
 <span id="cb2-10"><a href="#cb2-10"></a>   )</span></code></pre></div>
 <p>The example above shows that <code>br_table</code> does not create a branch target on it’s own. Branch target <code>0</code> means the next outermost structured block, which in this case is the entire function. Therefore the <code>drop</code> and push of the 42 won’t be executed; thus this function returns 21.</p>
-<p>This also shows that in order for a <code>br_table</code> to be usefull (in the sense that it may branch to different branch targets) it <em>has</em> to be wrapped in at least one <code>block</code> (or <code>loop</code> etc). There is no way to continue <em>after</em> a <code>br_table</code> instruction.</p>
+<p>This also shows that in order for a <code>br_table</code> to be useful (in the sense that it may branch to different branch targets) it <em>has</em> to be wrapped in at least one <code>block</code> (or <code>loop</code> etc). There is no way to continue <em>after</em> a <code>br_table</code> instruction.</p>
 <p>A “switch” like construct will thus look like this:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb3-1"><a href="#cb3-1"></a>(func (<span class="kw">export</span> <span class="st">&quot;switch_like&quot;</span>) (param $p i32) (result i32)</span>
 <span id="cb3-2"><a href="#cb3-2"></a>  (<span class="kw">block</span></span>
