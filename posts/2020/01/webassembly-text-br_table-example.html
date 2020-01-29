@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2020-01-29">
+                <title>Examples of br_table in WebAssembly text – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+        <style>
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Examples of <code>br_table</code> in WebAssembly text</h1>
+                                <p class="date">2020-01-29</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/webassembly/index.html">webassembly</a></p>
+              </header>
+            <p>Somehow I found it surprisingly hard to find examples of how to use the <code>br_table</code> instruction from WebAssembly text (<code>*.wat</code>) files. Therefore I’ve written down a few examples here for reference:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb1-1"><a href="#cb1-1"></a>(func (<span class="kw">export</span> <span class="st">&quot;nop&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  (i32.const <span class="dv">1</span>)  <span class="co">;; value used to select a branch</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  (br_table <span class="dv">0</span>)) <span class="co">;; table branch with only a default branch</span></span></code></pre></div>
+<p>This is the simplest valid usage of <code>br_table</code>: It specifies a default branch target and nothing else. So whatever value is on the top of the stack; the <code>br_table</code> uses the default branch target (<code>0</code> in this case).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb2-1"><a href="#cb2-1"></a>(func (<span class="kw">export</span> <span class="st">&quot;early_exit&quot;</span>) (result i32)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  (i32.const <span class="dv">21</span>) <span class="co">;; push some constant value to the stack, to be</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>                 <span class="co">;; returned from the function</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  (i32.const <span class="dv">0</span>) <span class="co">;; value used to select a branch</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  (br_table <span class="dv">0</span>) <span class="co">;; table branch with only a default branch</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>               <span class="co">;; default -&gt; (br 0) ;; exits the function</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="co">;; code below here is never executed!</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  (drop) </span>
+<span id="cb2-9"><a href="#cb2-9"></a>  (i32.const <span class="dv">42</span>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>   )</span></code></pre></div>
+<p>The example above shows that <code>br_table</code> does not create a branch target on it’s own. Branch target <code>0</code> means the next outermost structured block, which in this case is the entire function. Therefore the <code>drop</code> and push of the 42 won’t be executed; thus this function returns 21.</p>
+<p>This also shows that in order for a <code>br_table</code> to be usefull (in the sense that it may branch to different branch targets) it <em>has</em> to be wrapped in at least one <code>block</code> (or <code>loop</code> etc). There is no way to continue <em>after</em> a <code>br_table</code> instruction.</p>
+<p>A “switch” like construct will thus look like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb3-1"><a href="#cb3-1"></a>(func (<span class="kw">export</span> <span class="st">&quot;switch_like&quot;</span>) (param $p i32) (result i32)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  (<span class="kw">block</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    (<span class="kw">block</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>      (<span class="kw">block</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>        (<span class="kw">block</span> (get_local $p)</span>
+<span id="cb3-6"><a href="#cb3-6"></a>               (br_table</span>
+<span id="cb3-7"><a href="#cb3-7"></a>                         <span class="dv">2</span>   <span class="co">;; p == 0 =&gt; (br 2)</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>                         <span class="dv">1</span>   <span class="co">;; p == 1 =&gt; (br 1)</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>                         <span class="dv">0</span>   <span class="co">;; p == 2 =&gt; (br 0)</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>                         <span class="dv">3</span>)) <span class="co">;; else =&gt; (br 3)</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>        <span class="co">;; Target for (br 0)</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>        (i32.const <span class="dv">100</span>)</span>
+<span id="cb3-13"><a href="#cb3-13"></a>        (<span class="kw">return</span>))</span>
+<span id="cb3-14"><a href="#cb3-14"></a>      <span class="co">;; Target for (br 1)</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>      (i32.const <span class="dv">101</span>)</span>
+<span id="cb3-16"><a href="#cb3-16"></a>      (<span class="kw">return</span>))</span>
+<span id="cb3-17"><a href="#cb3-17"></a>    <span class="co">;; Target for (br 2)</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>    (i32.const <span class="dv">102</span>)</span>
+<span id="cb3-19"><a href="#cb3-19"></a>    (<span class="kw">return</span>))</span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="co">;; Target for (br 3)</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  (i32.const <span class="dv">103</span>)</span>
+<span id="cb3-22"><a href="#cb3-22"></a>  (<span class="kw">return</span>))</span></code></pre></div>
+<p>This creates 4 nested <code>block</code>s to give the <code>br_table</code> 4 different branch targets to jump to. The last specified is the “default” branch which is taken when the value on the stack is not an index into the list of the branches. Since jumping to a <code>block</code> means jumping to its end the actual code for each of the branches follows the end of a more nested <code>block</code>. This also implies that in order to “leave” this “switch like” construct another branch is necessary. In this case I took the easy route and just exited the function (branch to the outermost block) via <code>(return)</code>. <code>switch_like(0)</code> will branch to branch target <code>2</code> (after the third enclosing block of the <code>br_table</code>, counted from inside to outside) and thus return 102.</p>
+<p>A slightly more complex example, showing more jumping:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb4-1"><a href="#cb4-1"></a>(global $A (<span class="kw">export</span> <span class="st">&quot;A&quot;</span>) (mut i32) (i32.const <span class="dv">0</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a>(global $B (<span class="kw">export</span> <span class="st">&quot;B&quot;</span>) (mut i32) (i32.const <span class="dv">0</span>))</span>
+<span id="cb4-3"><a href="#cb4-3"></a>(func (<span class="kw">export</span> <span class="st">&quot;set&quot;</span>) (param $select i32) (param $value i32)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  (<span class="kw">block</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    (<span class="kw">block</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>      (get_local $select)</span>
+<span id="cb4-7"><a href="#cb4-7"></a>      (br_table <span class="dv">1</span> <span class="dv">0</span> <span class="dv">2</span>)) <span class="co">;; default (br 2) == (return)</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="co">;; Branch target 0 of br_table, used for select == 1</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>    (get_local $value)</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    (set_global $A) <span class="co">;; set A = value</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    (get_local $value)</span>
+<span id="cb4-12"><a href="#cb4-12"></a>    (i32.const <span class="dv">42</span>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a>    (i32.<span class="kw">eq</span>)</span>
+<span id="cb4-14"><a href="#cb4-14"></a>    (br_if <span class="dv">0</span>) <span class="co">;; if value == 42, jump out of this block</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>    (<span class="kw">return</span>)) <span class="co">;; else, return from function</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>  <span class="co">;; Branch target 1 of br_table, used for select == 0</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>  <span class="co">;; Branch target 0 of br_if, used if value == 42</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>  (get_local $value)</span>
+<span id="cb4-19"><a href="#cb4-19"></a>  (set_global $B)) <span class="co">;; set B = value</span></span></code></pre></div>
+<ul>
+<li><code>set(0, 10)</code> sets <code>B = 10</code> and leaves <code>A</code> as it is</li>
+<li><code>set(1, 20)</code> sets <code>A = 20</code> and leaves <code>B</code> as it is</li>
+<li><code>set(2, 30)</code> does nothing</li>
+<li><code>set(0, 42)</code> sets <code>B = 42</code> and leaves <code>A</code> as it is</li>
+<li><code>set(1, 42)</code> sets <code>A = 42</code> and then also <code>B = 42</code></li>
+</ul>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2020/01/webassembly-text-br_table-example.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>

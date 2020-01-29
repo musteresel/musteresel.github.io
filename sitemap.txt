@@ -14,6 +14,7 @@ https://musteresel.github.io/posts/tagged/python/index.html
 https://musteresel.github.io/posts/tagged/security/index.html
 https://musteresel.github.io/posts/tagged/shell/index.html
 https://musteresel.github.io/posts/tagged/web/index.html
+https://musteresel.github.io/posts/tagged/webassembly/index.html
 https://musteresel.github.io/posts/tagged/windows/index.html
 https://musteresel.github.io/posts/tagged/xen/index.html
 https://musteresel.github.io/about.html
@@ -60,4 +61,7 @@ https://musteresel.github.io/posts/2019/10/regex-for-c-preprocessor-includes.htm
 https://musteresel.github.io/posts/2019/11/index.html
 https://musteresel.github.io/posts/2019/11/lines-of-code-is-a-useless-measurement.html
 https://musteresel.github.io/posts/2019/index.html
+https://musteresel.github.io/posts/2020/01/index.html
+https://musteresel.github.io/posts/2020/01/webassembly-text-br_table-example.html
+https://musteresel.github.io/posts/2020/index.html
 https://musteresel.github.io/privacy.html
