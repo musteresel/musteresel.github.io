@@ -39,7 +39,7 @@ structured block, which in this case is the entire function.
 Therefore the `drop` and push of the 42 won't be executed; thus this
 function returns 21.
 
-This also shows that in order for a `br_table` to be usefull (in the
+This also shows that in order for a `br_table` to be useful (in the
 sense that it may branch to different branch targets) it *has* to be
 wrapped in at least one `block` (or `loop` etc).  There is no way to
 continue *after* a `br_table` instruction.
