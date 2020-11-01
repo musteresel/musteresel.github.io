@@ -94,28 +94,28 @@
                     <a href="../../../posts/tagged/web/index.html">web</a></p>
               </header>
             <p>I don’t want to write something like <code>../../../posts/foo/bar.html</code> when linking from one blog post to another. A link like that would need to be changed when either the target (<code>bar.html</code>) or the starting post moved to another location.</p>
-<p>IMO it’s far more convenient to just write <code>posts/foo/bar.html</code>. This URL should be interpreted as relative with regard to the root directory of the blog / project.</p>
-<p>Initially I abused the HTML <code>&lt;base&gt;</code> tag for this. Adding</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">&lt;base</span><span class="ot"> href=</span><span class="st">&quot;../../../&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
-<p>to the head of a HTML page makes the browser prefix relative links like the above <code>posts/foo/bar.html</code> with the URL given in the <code>href</code> attribute (<code>../../../</code> in this case).</p>
-<p>This worked out pretty well at first. Or, at least until I needed a <em>real</em> relative link (as in relative to the current page). This is especially annoying because this</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;#section&quot;</span><span class="kw">&gt;</span>Go to some section<span class="kw">&lt;/a&gt;</span></span></code></pre></div>
-<p>is <em>also</em> a relative link. So with the above <code>&lt;base&gt;</code> tag, that link points to <code>../../../#section</code>.</p>
-<p><strong>This is extremely inconvenient!</strong> Thus I wrote a filter for Pandoc to turn absolute URLs (file paths, rather) into links relative to the project root. It leaves relative links like <code>appendix/data.txt</code> or <code>#section</code> unchanged and rather turns absolute file paths (<code>/posts/foo/bar.html</code>) into links relative to the project root by prefixing them with a given <code>pathToProjectRoot</code>.</p>
-<p>You can find the <a href="https://github.com/musteresel/pandoc-project-relative-links">filter on Github</a>. It’s written in Haskell. Contributions are welcome!</p>
-<p>Running</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">pandoc</span> -t markdown -i in.md \</span>
-<span id="cb3-2"><a href="#cb3-2"></a>  --filter pandoc-project-relative-links \</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  -M pathToProjectRoot=../../..</span></code></pre></div>
-<p>turns an <code>in.md</code> like</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1"></a>This is a <span class="ot">[relative link](relative/link.html)</span> and this a [project</span>
-<span id="cb4-2"><a href="#cb4-2"></a>relative link](/project/relative.html).  <span class="ot">[This](#thing)</span> is also</span>
-<span id="cb4-3"><a href="#cb4-3"></a>relative.</span></code></pre></div>
-<p>into</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1"></a>This is a <span class="ot">[relative link](relative/link.html)</span> and this a [project</span>
-<span id="cb5-2"><a href="#cb5-2"></a>relative link](../../../project/relative.html). <span class="ot">[This](#thing)</span> is also</span>
-<span id="cb5-3"><a href="#cb5-3"></a>relative.</span></code></pre></div>
-<p>The meta variable <code>pathToProjectRoot</code> can also be specified in the yaml front matter or any yaml files, of course. And even if you don’t use Pandoc to create your webpages, you still can make use the filter, because Pandoc can also “convert” HTML to HTML.</p>
+            <p>IMO it’s far more convenient to just write <code>posts/foo/bar.html</code>. This URL should be interpreted as relative with regard to the root directory of the blog / project.</p>
+            <p>Initially I abused the HTML <code>&lt;base&gt;</code> tag for this. Adding</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;base</span><span class="ot"> href=</span><span class="st">&quot;../../../&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+            <p>to the head of a HTML page makes the browser prefix relative links like the above <code>posts/foo/bar.html</code> with the URL given in the <code>href</code> attribute (<code>../../../</code> in this case).</p>
+            <p>This worked out pretty well at first. Or, at least until I needed a <em>real</em> relative link (as in relative to the current page). This is especially annoying because this</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;#section&quot;</span><span class="kw">&gt;</span>Go to some section<span class="kw">&lt;/a&gt;</span></span></code></pre></div>
+            <p>is <em>also</em> a relative link. So with the above <code>&lt;base&gt;</code> tag, that link points to <code>../../../#section</code>.</p>
+            <p><strong>This is extremely inconvenient!</strong> Thus I wrote a filter for Pandoc to turn absolute URLs (file paths, rather) into links relative to the project root. It leaves relative links like <code>appendix/data.txt</code> or <code>#section</code> unchanged and rather turns absolute file paths (<code>/posts/foo/bar.html</code>) into links relative to the project root by prefixing them with a given <code>pathToProjectRoot</code>.</p>
+            <p>You can find the <a href="https://github.com/musteresel/pandoc-project-relative-links">filter on Github</a>. It’s written in Haskell. Contributions are welcome!</p>
+            <p>Running</p>
+            <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> -t markdown -i in.md <span class="kw">\</span></span>
+            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--filter</span> pandoc-project-relative-links <span class="kw">\</span></span>
+            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-M</span> pathToProjectRoot=../../..</span></code></pre></div>
+            <p>turns an <code>in.md</code> like</p>
+            <div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>This is a <span class="co">[</span><span class="ot">relative link</span><span class="co">](relative/link.html)</span> and this a [project</span>
+            <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>relative link](/project/relative.html).  <span class="co">[</span><span class="ot">This</span><span class="co">](#thing)</span> is also</span>
+            <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>relative.</span></code></pre></div>
+            <p>into</p>
+            <div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>This is a <span class="co">[</span><span class="ot">relative link</span><span class="co">](relative/link.html)</span> and this a [project</span>
+            <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>relative link](../../../project/relative.html). <span class="co">[</span><span class="ot">This</span><span class="co">](#thing)</span> is also</span>
+            <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>relative.</span></code></pre></div>
+            <p>The meta variable <code>pathToProjectRoot</code> can also be specified in the yaml front matter or any yaml files, of course. And even if you don’t use Pandoc to create your webpages, you still can make use the filter, because Pandoc can also “convert” HTML to HTML.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/01/pandoc-project-relative-links.html">

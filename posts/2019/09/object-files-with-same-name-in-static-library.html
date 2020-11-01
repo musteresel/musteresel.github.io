@@ -95,26 +95,26 @@
                     <a href="../../../posts/tagged/cmake/index.html">cmake</a></p>
               </header>
             <p>The setup:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># find . -type f</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="ex">./foo/name.c</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ex">./bar/name.c</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ex">./CMakeLists.txt</span></span></code></pre></div>
-<p>The two <code>name.c</code> files each define a (dummy) function, with different names though!</p>
-<p><code>CMakeLists.txt</code> contains:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">cmake_minimum_required</span>(<span class="ot">VERSION</span> 3.12)</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">add_library</span>(foo <span class="ot">OBJECT</span> foo/name.c)</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">add_library</span>(bar <span class="ot">OBJECT</span> bar/name.c)</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">add_library</span>(final <span class="ot">STATIC</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:foo&gt;</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:bar&gt;</span>)</span></code></pre></div>
-<p>It creates two <code>OBJECT</code> libraries with names <code>foo</code> and <code>bar</code>, and a <code>libfinal.a</code> static library out of the object files of these two.</p>
-<p>Inspecting the created <code>libfinal.a</code> shows:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># ar t libfinal.a </span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ex">name.c.o</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ex">name.c.o</span></span></code></pre></div>
-<p>So both object files are in the library. Showing the offset of these files also clearly shows that these are different files:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># ar tO libfinal.a </span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">name.c.o</span> 0x94</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="ex">name.c.o</span> 0x570</span></code></pre></div>
-<p>Linking will search these libraries for the required symbols and just link them if necessary; the names don’t come into play there. Except of course in error messages / debugging output, so it would be <em>really</em> helpful if CMake could add a prefix to the object files somehow … I only found an unanswered <a href="https://cmake.org/pipermail/cmake/2014-April/057340.html">post on the mailing list</a> from 2014, though.</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># find . -type f</span></span>
+            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./foo/name.c</span></span>
+            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./bar/name.c</span></span>
+            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./CMakeLists.txt</span></span></code></pre></div>
+            <p>The two <code>name.c</code> files each define a (dummy) function, with different names though!</p>
+            <p><code>CMakeLists.txt</code> contains:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">cmake_minimum_required</span>(<span class="ot">VERSION</span> 3.12)</span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(foo <span class="ot">OBJECT</span> foo/name.c)</span>
+            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(bar <span class="ot">OBJECT</span> bar/name.c)</span>
+            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(final <span class="ot">STATIC</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:foo&gt;</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:bar&gt;</span>)</span></code></pre></div>
+            <p>It creates two <code>OBJECT</code> libraries with names <code>foo</code> and <code>bar</code>, and a <code>libfinal.a</code> static library out of the object files of these two.</p>
+            <p>Inspecting the created <code>libfinal.a</code> shows:</p>
+            <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ar t libfinal.a </span></span>
+            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">name.c.o</span></span>
+            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">name.c.o</span></span></code></pre></div>
+            <p>So both object files are in the library. Showing the offset of these files also clearly shows that these are different files:</p>
+            <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ar tO libfinal.a </span></span>
+            <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">name.c.o</span> 0x94</span>
+            <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">name.c.o</span> 0x570</span></code></pre></div>
+            <p>Linking will search these libraries for the required symbols and just link them if necessary; the names don’t come into play there. Except of course in error messages / debugging output, so it would be <em>really</em> helpful if CMake could add a prefix to the object files somehow … I only found an unanswered <a href="https://cmake.org/pipermail/cmake/2014-April/057340.html">post on the mailing list</a> from 2014, though.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/09/object-files-with-same-name-in-static-library.html">

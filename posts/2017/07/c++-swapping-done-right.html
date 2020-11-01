@@ -93,30 +93,30 @@
                     <a href="../../../posts/tagged/c++/index.html">c++</a></p>
               </header>
             <p>How to swap two objects? For example in a sorting function which is written as a template function so that it works for any type (which is comparable and swappable).</p>
-<p>The naive approach to swap <code>a</code> and <code>b</code> of type <code>T &amp;</code> is:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a>T temporary = a;</span>
-<span id="cb1-2"><a href="#cb1-2"></a>a = b;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>b = temporary;</span></code></pre></div>
-<p>But this means that <code>T</code> has to be copy constructible and copy assignable. These are pretty tough requirements, as it forces <code>T</code> to have such a constructor and operator defined. Moreover it creates a probably superfluous copy. One can possibly mitigate this later issue by adding <code>std::move</code> and requiring move construction and move assignment, but this still extremely limits the implementation of type <code>T</code>.</p>
-<p><em>Use the standard library!</em> That’s a good thought. There’s <code>std::swap</code> after all, and it hopefully get’s its job done, no? Well, <em>yes</em>. It requires the type to be move assignable and move constructible, just as above. That’s because it’s (at least in the GNU C++ library) <a href="https://github.com/gcc-mirror/gcc/blob/gcc-7_3_0-release/libstdc%2B%2B-v3/include/bits/move.h#L198">implemented</a> exactly like above (factoring in the moves, of course). But nonetheless, the following is a <em>not</em> how one should swap two objects:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">// Wrong!</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="bu">std::</span>swap(a, b);</span></code></pre></div>
-<p>This hard-codes <code>std::swap</code> as the function to use for swapping, and thus forces the type <code>T</code> to (correctly) implement the constructor and operator; even if they’re not needed or reasonably practicable.</p>
-<p>C++ also has a powerful (and sometimes confusing) mechanism to allow multiple namespaces to be searched for a function: <a href="http://en.cppreference.com/w/cpp/language/adl">argument dependent lookup (ADL)</a>. This requires the function to be called via an “unqualified name” (e.g. <code>foo</code> instead of <code>::foo</code> or <code>nspace::foo</code>) and results in the compiler searching for <code>foo</code> not only in the current scope but also in the namespaces in which the types of the arguments of the function are defined. Thus correct swapping is done like this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">// Correct!</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">using</span> <span class="bu">std::</span>swap;</span>
-<span id="cb3-3"><a href="#cb3-3"></a>swap(a, b);</span></code></pre></div>
-<p>In most cases, this will work exactly like the previous (wrong) code snippet: The compiler will find <code>std::swap</code> which was brought into scope with <code>using std::swap</code>. The type has to implement the discussed constructor and operator. But if there’s a reasonable implementation to swap objects of the type <code>T</code>, then the developer implementing <code>T</code> can write a <em>specialized</em> swap function in the same namespace in which <code>T</code> is defined. Calling <code>swap</code> (an unqualified name) will then invoke ADL and find and use this specialized swap function:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">namespace</span> nspace {</span>
-<span id="cb4-2"><a href="#cb4-2"></a>  <span class="kw">struct</span> foo {};</span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="dt">void</span> swap(foo &amp;, foo &amp;);</span>
-<span id="cb4-4"><a href="#cb4-4"></a>}</span>
-<span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="co">// somewhere in the code</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>nspace::foo a = get_some_foo();</span>
-<span id="cb4-8"><a href="#cb4-8"></a>nspace::foo b = get_some_foo();</span>
-<span id="cb4-9"><a href="#cb4-9"></a>swap(a, b); <span class="co">// will call nspace::foo through ADL</span></span></code></pre></div>
-<p>Thus to correctly swap two objects one first brings <code>std::swap</code> into scope as a kind of “fallback” (in case there’s no specialized swap function) and then calls <code>swap</code> unqualified, which enables ADL.</p>
+            <p>The naive approach to swap <code>a</code> and <code>b</code> of type <code>T &amp;</code> is:</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>T temporary = a;</span>
+            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>a = b;</span>
+            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>b = temporary;</span></code></pre></div>
+            <p>But this means that <code>T</code> has to be copy constructible and copy assignable. These are pretty tough requirements, as it forces <code>T</code> to have such a constructor and operator defined. Moreover it creates a probably superfluous copy. One can possibly mitigate this later issue by adding <code>std::move</code> and requiring move construction and move assignment, but this still extremely limits the implementation of type <code>T</code>.</p>
+            <p><em>Use the standard library!</em> That’s a good thought. There’s <code>std::swap</code> after all, and it hopefully get’s its job done, no? Well, <em>yes</em>. It requires the type to be move assignable and move constructible, just as above. That’s because it’s (at least in the GNU C++ library) <a href="https://github.com/gcc-mirror/gcc/blob/gcc-7_3_0-release/libstdc%2B%2B-v3/include/bits/move.h#L198">implemented</a> exactly like above (factoring in the moves, of course). But nonetheless, the following is a <em>not</em> how one should swap two objects:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Wrong!</span></span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>swap(a, b);</span></code></pre></div>
+            <p>This hard-codes <code>std::swap</code> as the function to use for swapping, and thus forces the type <code>T</code> to (correctly) implement the constructor and operator; even if they’re not needed or reasonably practicable.</p>
+            <p>C++ also has a powerful (and sometimes confusing) mechanism to allow multiple namespaces to be searched for a function: <a href="http://en.cppreference.com/w/cpp/language/adl">argument dependent lookup (ADL)</a>. This requires the function to be called via an “unqualified name” (e.g. <code>foo</code> instead of <code>::foo</code> or <code>nspace::foo</code>) and results in the compiler searching for <code>foo</code> not only in the current scope but also in the namespaces in which the types of the arguments of the function are defined. Thus correct swapping is done like this:</p>
+            <div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Correct!</span></span>
+            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="bu">std::</span>swap;</span>
+            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>swap(a, b);</span></code></pre></div>
+            <p>In most cases, this will work exactly like the previous (wrong) code snippet: The compiler will find <code>std::swap</code> which was brought into scope with <code>using std::swap</code>. The type has to implement the discussed constructor and operator. But if there’s a reasonable implementation to swap objects of the type <code>T</code>, then the developer implementing <code>T</code> can write a <em>specialized</em> swap function in the same namespace in which <code>T</code> is defined. Calling <code>swap</code> (an unqualified name) will then invoke ADL and find and use this specialized swap function:</p>
+            <div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">namespace</span> nspace {</span>
+            <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">struct</span> foo {};</span>
+            <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> swap(foo &amp;, foo &amp;);</span>
+            <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>}</span>
+            <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// somewhere in the code</span></span>
+            <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>nspace::foo a = get_some_foo();</span>
+            <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>nspace::foo b = get_some_foo();</span>
+            <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>swap(a, b); <span class="co">// will call nspace::foo through ADL</span></span></code></pre></div>
+            <p>Thus to correctly swap two objects one first brings <code>std::swap</code> into scope as a kind of “fallback” (in case there’s no specialized swap function) and then calls <code>swap</code> unqualified, which enables ADL.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2017/07/c++-swapping-done-right.html">

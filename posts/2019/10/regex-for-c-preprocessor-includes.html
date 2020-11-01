@@ -94,29 +94,29 @@
                     <a href="../../../posts/tagged/c++/index.html">c++</a></p>
               </header>
             <p>Yes I know .. “parsing” C or C++ with regular expressions is bad. There’s of course libclang (<a href="https://clang.llvm.org/doxygen/group__CINDEX.html">1</a>, <a href="https://clang.llvm.org/docs/Tooling.html">2</a>) and also some way to hook into GCC … but sometimes it’s just easier to slap a regex on the problem. In this case <strong>getting the names of the directly included files</strong>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">grep</span> -oP <span class="st">&#39;#[[:blank:]]*include[[:blank:]]*(&quot;|&lt;)\K[\w.\/]+(?=(&quot;|&gt;))&#39;</span> FILE</span></code></pre></div>
-<p>This calls grep with “Perl-compatible” regex support (<code>-P</code>) and prints only the matches (<code>-o</code>). The regex:</p>
-<ul>
-<li><code>#</code> … literally that character</li>
-<li><code>[[:blank:]]*</code>: some amount of whitespace; except newlines</li>
-<li><code>include</code> … literally that word</li>
-<li><code>[[:blank:]]*</code>: again some whitespace; no newlines</li>
-<li><code>("|&lt;)</code>: Either <code>"</code> or <code>&lt;</code></li>
-<li><code>\K</code> resets the starting point of the reported match. This basically means “only treat the following part of the match as <em>the</em> match” (which is then printed by grep)</li>
-<li><code>[\w.\/]+</code> 1 or more of “word characters” (a-z and A-Z), the literal dot <code>.</code> or forward slashes <code>/</code></li>
-<li><code>(?=     )</code> is a “positive lookahead” … meaning make sure that this comes next, but don’t add it the <em>the</em> reported match.</li>
-<li><code>("|&lt;)</code> (inside the positive lookahead): Either <code>"</code> or <code>&gt;</code></li>
-</ul>
-<p>I’ve found this regex to work well in practice, though of course it may return false positives due to:</p>
-<ul>
-<li><code>#include</code> in comments; these will be picked up, too</li>
-<li><code>#include &lt;foo"</code> and <code>#include "foo&gt;</code> will be picked up, too. This could be fixed … but honestly … I don’t think that this is a likely case to happen</li>
-</ul>
-<p>And of course it doesn’t care about conditional compilation … so this will yield <code>foo</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#if 0</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#include </span><span class="st">&quot;foo&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="pp">#endif</span></span></code></pre></div>
-<p>But that’s exactly what I need in my case.</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> -oP <span class="st">&#39;#[[:blank:]]*include[[:blank:]]*(&quot;|&lt;)\K[\w.\/]+(?=(&quot;|&gt;))&#39;</span> FILE</span></code></pre></div>
+            <p>This calls grep with “Perl-compatible” regex support (<code>-P</code>) and prints only the matches (<code>-o</code>). The regex:</p>
+            <ul>
+            <li><code>#</code> … literally that character</li>
+            <li><code>[[:blank:]]*</code>: some amount of whitespace; except newlines</li>
+            <li><code>include</code> … literally that word</li>
+            <li><code>[[:blank:]]*</code>: again some whitespace; no newlines</li>
+            <li><code>("|&lt;)</code>: Either <code>"</code> or <code>&lt;</code></li>
+            <li><code>\K</code> resets the starting point of the reported match. This basically means “only treat the following part of the match as <em>the</em> match” (which is then printed by grep)</li>
+            <li><code>[\w.\/]+</code> 1 or more of “word characters” (a-z and A-Z), the literal dot <code>.</code> or forward slashes <code>/</code></li>
+            <li><code>(?=     )</code> is a “positive lookahead” … meaning make sure that this comes next, but don’t add it the <em>the</em> reported match.</li>
+            <li><code>("|&lt;)</code> (inside the positive lookahead): Either <code>"</code> or <code>&gt;</code></li>
+            </ul>
+            <p>I’ve found this regex to work well in practice, though of course it may return false positives due to:</p>
+            <ul>
+            <li><code>#include</code> in comments; these will be picked up, too</li>
+            <li><code>#include &lt;foo"</code> and <code>#include "foo&gt;</code> will be picked up, too. This could be fixed … but honestly … I don’t think that this is a likely case to happen</li>
+            </ul>
+            <p>And of course it doesn’t care about conditional compilation … so this will yield <code>foo</code>:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#if 0</span></span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#include </span><span class="st">&quot;foo&quot;</span></span>
+            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div>
+            <p>But that’s exactly what I need in my case.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/10/regex-for-c-preprocessor-includes.html">

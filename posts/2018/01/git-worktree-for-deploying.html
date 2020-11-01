@@ -94,38 +94,38 @@
                     <a href="../../../posts/tagged/git/index.html">git</a></p>
               </header>
             <p>GitHub Pages can be <a href="https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/">configured</a> to publish from a <code>gh-pages</code> branch, or - in case of a “user page” - it uses the <code>master</code> branch for publishing.</p>
-<p>I generate the files for publishing with my own blog system, whose sources are in a <code>sources-master</code> branch. The generated files are written into a subfolder <code>build/</code> (which is in <code>.gitignore</code> so that generated files won’t end up on the sources branch). In order to add any changes in <code>build/</code> to the (in my case) <code>master</code> branch there are <a href="https://gist.github.com/cobyism/4730490">different approaches</a>, but I think I found a better one:</p>
-<h2 id="git-worktrees">git worktrees</h2>
-<p>git <a href="https://git-scm.com/docs/git-worktree">supports</a> multiple “worktrees”. A worktree is the part of your repository (except for bare repositories) you normally interact with when you change and add files. Normally one works with the single “main” worktree. Adding a new worktree is extremely easy though and allows one to keep the main worktree in any (however dirty) state it’s currently in:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">git</span> worktree add ./build master</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="bu">cd</span> ./build</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">touch</span> some-new-file</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">git</span> add some-new-file</span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">git</span> commit -m <span class="st">&quot;added some new file&quot;</span></span></code></pre></div>
-<p>This checks out the branch <code>master</code> into the subdirectory <code>./build</code> (can also be an absolute path, of course). Then it changes into said directory, creates and adds a new file to the repository and commits this change. This commit now goes directly to the <code>master</code> branch, regardless of which branch or commit the main worktree currently is on.</p>
-<p>The worktree (or better, the information about it in the <code>.git</code> repository) is eventually deleted when the containing directory (<code>./build</code> here) is removed.</p>
-<p>For deploying, this means I can:</p>
-<ol type="1">
-<li>Check if <code>./build</code> is a worktree using <code>git worktree list</code>
-<ul>
-<li><p>if it is, make sure it’s up to date:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> ./build</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">git</span> checkout master</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">git</span> pull</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="bu">cd</span> ..</span></code></pre></div></li>
-<li><p>else, create the new worktree: <code>git worktree add ./build master</code></p></li>
-</ul></li>
-<li>Build the files to publish in <code>./build</code></li>
-<li>Change into the the directory <code>./build</code></li>
-<li>Add all files <code>git add .</code></li>
-<li>Commit (and optionally push directly)</li>
-</ol>
-<p>For step 4 it’s important to have a <code>.gitignore</code> file on the <code>master</code> branch so that any files which should not be published (for example caches or auxilary files from the build) will be ignored.</p>
-<h2 id="advantages">Advantages</h2>
-<ul>
-<li><p>There are no generated files on the same branch (read visible during development / writing) as the source files. (The <code>git subtree</code> method suffers from this issue.)</p></li>
-<li><p>It’s a single (local) repository that I’m working with. No need to <code>clone</code>, no space wasted, no duplicate (local) repository configurations.</p></li>
-</ul>
+            <p>I generate the files for publishing with my own blog system, whose sources are in a <code>sources-master</code> branch. The generated files are written into a subfolder <code>build/</code> (which is in <code>.gitignore</code> so that generated files won’t end up on the sources branch). In order to add any changes in <code>build/</code> to the (in my case) <code>master</code> branch there are <a href="https://gist.github.com/cobyism/4730490">different approaches</a>, but I think I found a better one:</p>
+            <h2 id="git-worktrees">git worktrees</h2>
+            <p>git <a href="https://git-scm.com/docs/git-worktree">supports</a> multiple “worktrees”. A worktree is the part of your repository (except for bare repositories) you normally interact with when you change and add files. Normally one works with the single “main” worktree. Adding a new worktree is extremely easy though and allows one to keep the main worktree in any (however dirty) state it’s currently in:</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> worktree add ./build master</span>
+            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ./build</span>
+            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> some-new-file</span>
+            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add some-new-file</span>
+            <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit -m <span class="st">&quot;added some new file&quot;</span></span></code></pre></div>
+            <p>This checks out the branch <code>master</code> into the subdirectory <code>./build</code> (can also be an absolute path, of course). Then it changes into said directory, creates and adds a new file to the repository and commits this change. This commit now goes directly to the <code>master</code> branch, regardless of which branch or commit the main worktree currently is on.</p>
+            <p>The worktree (or better, the information about it in the <code>.git</code> repository) is eventually deleted when the containing directory (<code>./build</code> here) is removed.</p>
+            <p>For deploying, this means I can:</p>
+            <ol type="1">
+            <li>Check if <code>./build</code> is a worktree using <code>git worktree list</code>
+            <ul>
+            <li><p>if it is, make sure it’s up to date:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ./build</span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout master</span>
+            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span></code></pre></div></li>
+            <li><p>else, create the new worktree: <code>git worktree add ./build master</code></p></li>
+            </ul></li>
+            <li>Build the files to publish in <code>./build</code></li>
+            <li>Change into the the directory <code>./build</code></li>
+            <li>Add all files <code>git add .</code></li>
+            <li>Commit (and optionally push directly)</li>
+            </ol>
+            <p>For step 4 it’s important to have a <code>.gitignore</code> file on the <code>master</code> branch so that any files which should not be published (for example caches or auxilary files from the build) will be ignored.</p>
+            <h2 id="advantages">Advantages</h2>
+            <ul>
+            <li><p>There are no generated files on the same branch (read visible during development / writing) as the source files. (The <code>git subtree</code> method suffers from this issue.)</p></li>
+            <li><p>It’s a single (local) repository that I’m working with. No need to <code>clone</code>, no space wasted, no duplicate (local) repository configurations.</p></li>
+            </ul>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/01/git-worktree-for-deploying.html">

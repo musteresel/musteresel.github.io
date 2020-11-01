@@ -29,16 +29,16 @@
                     <a href="../../../posts/tagged/nixos/index.html">nixos</a></p>
               </header>
             <p>I don’t have a reliable internet connection at the moment. Yet still I need to build some software which I’m working on using <code>nix-build</code>. This shouldn’t be an issue, because all <code>buildInputs</code> (dependencies of the the build, so to say) are already in my <code>/nix/store</code>. But, calling <code>nix-build</code> showed me this today:</p>
-<pre><code>warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 300 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 519 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 1127 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 2757 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 4724 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 9981 ms
-warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 20990 ms
-error: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6)</code></pre>
-<p>Not nice. It took me some time to find the option to tell <code>nix</code> to <strong>not</strong> attempt to download anything it could easily build locally. <em>It’s <code>nix-build --option substitute false</code>.</em></p>
-<p>Not <code>--option binary-caches false</code>, or <code>--fallback</code> or whatever. Let’s hope I remember this the next time I need it.</p>
+            <pre><code>warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 300 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 519 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 1127 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 2757 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 4724 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 9981 ms
+            warning: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6); retrying in 20990 ms
+            error: unable to download &#39;https://cache.nixos.org/j7vdysvh2ikm3ksrdd1gzhmm702wg0nq.narinfo&#39;: Couldn&#39;t resolve host name (6)</code></pre>
+            <p>Not nice. It took me some time to find the option to tell <code>nix</code> to <strong>not</strong> attempt to download anything it could easily build locally. <em>It’s <code>nix-build --option substitute false</code>.</em></p>
+            <p>Not <code>--option binary-caches false</code>, or <code>--fallback</code> or whatever. Let’s hope I remember this the next time I need it.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/05/nix-disable-binary-cache.html">

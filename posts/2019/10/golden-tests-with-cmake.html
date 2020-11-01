@@ -95,124 +95,124 @@
                     <a href="../../../posts/tagged/cmake/index.html">cmake</a></p>
               </header>
             <p>“Golden tests” are tests which run a tool and compare it’s output to files with expected outputs, the so called <em>golden files</em>.</p>
-<p>To run such a golden test, the following steps are necessary:</p>
-<ol type="1">
-<li>Compile the tool, if it’s not already existing.</li>
-<li>Run the tool with some input, capturing its output.</li>
-<li>Compare the output with the expected output.</li>
-</ol>
-<p>To show how this can be done with CMake I use a small example project:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">/// src/implementation-to-test.cc</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="dt">bool</span> CountLines(<span class="bu">std::</span>istream &amp; in, <span class="dt">unsigned</span> &amp; lines)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>{</span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">char</span> c;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="cf">while</span> (in.get(c))</span>
-<span id="cb1-6"><a href="#cb1-6"></a>  {</span>
-<span id="cb1-7"><a href="#cb1-7"></a>    <span class="cf">if</span> (c == <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span>) ++lines;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>  }</span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="cf">return</span> ! c.bad();</span>
-<span id="cb1-10"><a href="#cb1-10"></a>}</span></code></pre></div>
-<p>To test this function I write a “tool” which uses it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">/// test/tool.cc</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="dt">char</span> **argv)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>{</span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="co">// Error handling ommitted</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  <span class="bu">std::</span>ifstream in(argv[<span class="dv">1</span>]);</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  <span class="bu">std::</span>ofstream out(argv[<span class="dv">2</span>]);</span>
-<span id="cb2-7"><a href="#cb2-7"></a>  <span class="dt">unsigned</span> lines = <span class="dv">0</span>;</span>
-<span id="cb2-8"><a href="#cb2-8"></a>  <span class="cf">if</span> (! CountLines(in, lines))</span>
-<span id="cb2-9"><a href="#cb2-9"></a>  {</span>
-<span id="cb2-10"><a href="#cb2-10"></a>    out &lt;&lt; <span class="st">&quot;Error</span><span class="sc">\n</span><span class="st">&quot;</span>;</span>
-<span id="cb2-11"><a href="#cb2-11"></a>    <span class="cf">return</span> <span class="dv">1</span>;</span>
-<span id="cb2-12"><a href="#cb2-12"></a>  }</span>
-<span id="cb2-13"><a href="#cb2-13"></a>  out &lt;&lt; lines &lt;&lt; <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>;</span>
-<span id="cb2-14"><a href="#cb2-14"></a>}</span></code></pre></div>
-<p>Now for the CMake part, there’s a top level <code>CMakeLists.txt</code> which creates a library from all the “implementation” files (if the end result should be an executable, then using a static library and linking against that works fine):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># top level CMakeLists.txt</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co"># example for executable as end result</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">add_library</span>(lib <span class="ot">STATIC</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  src/one.cc</span>
-<span id="cb3-5"><a href="#cb3-5"></a>  src/implementation-to-test.cc</span>
-<span id="cb3-6"><a href="#cb3-6"></a>  <span class="co"># ... probably more</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  )</span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="kw">add_executable</span>(exe src/main.cc)</span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="kw">target_link_libraries</span>(exe lib)</span>
-<span id="cb3-10"><a href="#cb3-10"></a></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="kw">enable_testing</span>()</span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="kw">add_subdirectory</span>(test)</span></code></pre></div>
-<p>So much for the setup, now to the important <code>test/CMakeLists.txt</code> which generates <code>tool</code> from <code>test/tool.cc</code> and the <code>lib</code> library and runs it:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># test/CMakeLists.txt</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># 1) Create tool</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">add_executable</span>(tool <span class="ot">EXCLUDE_FROM_ALL</span> tool.cc)</span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">target_link_libraries</span>(tool lib)</span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># 2) Run tool with an input to produce some output</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-1-run</span>
-<span id="cb4-10"><a href="#cb4-10"></a>  <span class="ot">COMMAND</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-in golden-1-out)</span>
-<span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="co"># 3) Compare output with expected output</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="kw">add_test</span>(golden-1-cmp</span>
-<span id="cb4-16"><a href="#cb4-16"></a>  <span class="dv">${CMAKE_COMMAND}</span> -E compare_files</span>
-<span id="cb4-17"><a href="#cb4-17"></a>  golden-1-out</span>
-<span id="cb4-18"><a href="#cb4-18"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-expected)</span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-20"><a href="#cb4-20"></a></span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="co"># A) cmake extra; run compare (3) only when running the tool</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a><span class="co">#    worked (2), and run that (2) only when the tool is actually</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="co">#    built (1)</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a><span class="kw">add_test</span>(tool_build</span>
-<span id="cb4-25"><a href="#cb4-25"></a>  <span class="st">&quot;</span><span class="dv">${CMAKE_COMMAND}</span><span class="st">&quot;</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>  --build <span class="st">&quot;</span><span class="dv">${CMAKE_BINARY_DIR}</span><span class="st">&quot;</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>  --config <span class="ot">$&lt;</span><span class="kw">CONFIG</span><span class="ot">&gt;</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>  --target tool</span>
-<span id="cb4-29"><a href="#cb4-29"></a>  )</span>
-<span id="cb4-30"><a href="#cb4-30"></a><span class="kw">set</span>_tests_properties(tool_build</span>
-<span id="cb4-31"><a href="#cb4-31"></a>  PROPERTIES FIXTURES_SETUP tool_fixture)</span>
-<span id="cb4-32"><a href="#cb4-32"></a><span class="kw">set</span>_tests_properties(golden-1-run</span>
-<span id="cb4-33"><a href="#cb4-33"></a>  PROPRETIES FIXTURES_REQUIRED tool_fixture)</span>
-<span id="cb4-34"><a href="#cb4-34"></a><span class="kw">set</span>_tests_properties(golden-1-run</span>
-<span id="cb4-35"><a href="#cb4-35"></a>  PROPERTIES FIXTURES_SETUP golden-1_fixture)</span>
-<span id="cb4-36"><a href="#cb4-36"></a><span class="kw">set</span>_tests_properties(golden-1-cmp</span>
-<span id="cb4-37"><a href="#cb4-37"></a>  PROPERTIES FIXTURES_REQUIRED golden-1_fixture)</span></code></pre></div>
-<p>There’s a few things going on …</p>
-<ol type="1">
-<li><p>The <code>tool</code> exectuable is created. It links to the (static in this case) <code>lib</code> library with the implementation and will thus directly use (and test) that compiled code.</p>
-<p>One important thing: I’ve specified <code>EXCLUDE_FROM_ALL</code> which means the <code>tool</code> executable won’t be built by <code>make all</code> <strong>or even <code>make test</code></strong>. This requires some boiler plate code (explained further down in “A)”). Removing the <code>EXCLUDE_FROM_ALL</code> means the tool will be built by <code>make</code> / <code>make all</code> … but <em>still</em> not by <code>make test</code>. This is a known bug / short comming of CMake, see <a href="https://stackoverflow.com/a/56448477/1116364">this stackoverflow.com answer and the questions / other answers</a> for more.</p></li>
-<li><p>Specify a golden test (“golden-1-run”) which runs the tool with an input file (<code>golden-1-in</code>) to produce some output (<code>golden-1-out</code>).</p>
-<p>I use the <code>add_test(NAME .. COMMAND tool ..)</code> version of <code>add_test</code> because <a href="https://cmake.org/cmake/help/latest/command/add_test.html?highlight=command-line">that uses the full path</a> to the <code>tool</code> exectuable (from the <code>tool</code> target) to run the test and thus does not interfere with possibly available other commands (think of <code>test</code> …).</p>
-<p>This reads the input file from the current source directory (the directory where that <code>CMakeLists.txt</code> is) and writes the output into the current binary directory.</p></li>
-<li><p>Specify the compare step of the golden test (“golden-1-cmp”). This uses the CMake command <code>compare_files</code> to compare the output produced by the previous test to the expected output from the <em>golden file</em> (<code>golden-1-expected</code>).</p>
-<p>The expected output file comes from the current source directory, whereas the generated output file is in the current binary directory.</p>
-<p>One short comming of using the CMake <code>compare_files</code> command: it cannot show what’s different, it just compares the files. For that using <code>diff</code> would be an option.</p></li>
-</ol>
-<p>And last but not least, the boiler plate code from <code>A)</code> …</p>
-<ul>
-<li><p><code>tool_build</code> is a “test” which runs CMake itself to build the <code>tool</code> target, thus making sure that the <code>tool</code> executable is actually there. Drawback: The build output is part of the test logs.</p></li>
-<li><p>Running any test which runs <code>tool</code> doesn’t make sense when <code>tool</code> failed to build. Similarly, running the compare step doesn’t make sense when running the tool with the input failed. Thus dependencies between these tests are needed. For tests, dependencies are best modeled by using fixtures.</p></li>
-</ul>
-<p><strong>Fixtures</strong> in CMake are modelled with 3 properties: <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_SETUP.html"><code>FIXTURES_SETUP</code></a>, <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_CLEANUP.html"><code>FIXTURES_CLEANUP</code></a> and <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_REQUIRED.html"><code>FIXTURES_REQUIRED</code></a>. The last one - <code>FIXTURES_REQUIRED</code> - is set on a test which <em>needs</em> a fixture. The other two <em>define</em> the fixture: Tests marked with <code>FIXTURES_SETUP</code> “setup” the fixture … so they’re run before any test which needs the fixture. Test marked with <code>FIXTURES_CLEANUP</code> are run after any tests which needs the fixture and do “cleanup” tasks.</p>
-<p>In the example, there are two fixtures - <code>tool_fixture</code> and <code>golden-1_fixture</code> - which each have a single setup test associated with them. The relationship is probably best to understand when visualized, so I’ve made an ASCII drawing:</p>
-<pre><code>vvvvvvvvvvvvvv
-| tool_build |
-^^^^^^^^^^^^^^
-     A
-     | calls for setup
-     |
-|--------------|               vvvvvvvvvvvvvvvv
-| tool_fixture | &lt;&lt;---needs--- | golden-1-run |
-|--------------|               ^^^^^^^^^^^^^^^^
-                                    A
-                                    | calls for setup
-                                    |
-vvvvvvvvvvvvvvvv               |------------------|
-| golden-1-cmp | ---needs---&gt;&gt; | golden-1_fixture |
-^^^^^^^^^^^^^^^^               |------------------|</code></pre>
-<p>So running <code>ctest -R golden-1-cmp</code> now runs first the <code>tool_build</code> test (building the <code>tool</code> exectuable), if that succeeds it runs <code>golden-1-run</code> (which produces the output) and only if that also succeeds it runs the requested <code>golden-1-cmp</code> test.</p>
-<p>All that boilerplate CMake code can be put into a function to make it easier to define golden test. I’ve written one adjusted for my own project … which I’ll generalize and publish if I have the time to do so.</p>
+            <p>To run such a golden test, the following steps are necessary:</p>
+            <ol type="1">
+            <li>Compile the tool, if it’s not already existing.</li>
+            <li>Run the tool with some input, capturing its output.</li>
+            <li>Compare the output with the expected output.</li>
+            </ol>
+            <p>To show how this can be done with CMake I use a small example project:</p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// src/implementation-to-test.cc</span></span>
+            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> CountLines(<span class="bu">std::</span>istream &amp; in, <span class="dt">unsigned</span> &amp; lines)</span>
+            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>{</span>
+            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> c;</span>
+            <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (in.get(c))</span>
+            <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  {</span>
+            <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (c == <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span>) ++lines;</span>
+            <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+            <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ! c.bad();</span>
+            <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>To test this function I write a “tool” which uses it:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// test/tool.cc</span></span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="dt">char</span> **argv)</span>
+            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>{</span>
+            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Error handling ommitted</span></span>
+            <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>ifstream in(argv[<span class="dv">1</span>]);</span>
+            <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>ofstream out(argv[<span class="dv">2</span>]);</span>
+            <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">unsigned</span> lines = <span class="dv">0</span>;</span>
+            <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (! CountLines(in, lines))</span>
+            <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  {</span>
+            <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    out &lt;&lt; <span class="st">&quot;Error</span><span class="sc">\n</span><span class="st">&quot;</span>;</span>
+            <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span>;</span>
+            <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+            <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  out &lt;&lt; lines &lt;&lt; <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>;</span>
+            <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>Now for the CMake part, there’s a top level <code>CMakeLists.txt</code> which creates a library from all the “implementation” files (if the end result should be an executable, then using a static library and linking against that works fine):</p>
+            <div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># top level CMakeLists.txt</span></span>
+            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># example for executable as end result</span></span>
+            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(lib <span class="ot">STATIC</span></span>
+            <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  src/one.cc</span>
+            <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  src/implementation-to-test.cc</span>
+            <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ... probably more</span></span>
+            <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+            <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(exe src/main.cc)</span>
+            <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(exe lib)</span>
+            <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">enable_testing</span>()</span>
+            <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">add_subdirectory</span>(test)</span></code></pre></div>
+            <p>So much for the setup, now to the important <code>test/CMakeLists.txt</code> which generates <code>tool</code> from <code>test/tool.cc</code> and the <code>lib</code> library and runs it:</p>
+            <div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test/CMakeLists.txt</span></span>
+            <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Create tool</span></span>
+            <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(tool <span class="ot">EXCLUDE_FROM_ALL</span> tool.cc)</span>
+            <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(tool lib)</span>
+            <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Run tool with an input to produce some output</span></span>
+            <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-1-run</span>
+            <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span></span>
+            <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-in golden-1-out)</span>
+            <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Compare output with expected output</span></span>
+            <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(golden-1-cmp</span>
+            <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_COMMAND}</span> -E compare_files</span>
+            <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  golden-1-out</span>
+            <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-expected)</span>
+            <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># A) cmake extra; run compare (3) only when running the tool</span></span>
+            <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#    worked (2), and run that (2) only when the tool is actually</span></span>
+            <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#    built (1)</span></span>
+            <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(tool_build</span>
+            <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;</span><span class="dv">${CMAKE_COMMAND}</span><span class="st">&quot;</span></span>
+            <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  --build <span class="st">&quot;</span><span class="dv">${CMAKE_BINARY_DIR}</span><span class="st">&quot;</span></span>
+            <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  --config <span class="ot">$&lt;</span><span class="kw">CONFIG</span><span class="ot">&gt;</span></span>
+            <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  --target tool</span>
+            <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+            <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(tool_build</span>
+            <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> tool_fixture)</span>
+            <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
+            <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  PROPRETIES <span class="ot">FIXTURES_REQUIRED</span> tool_fixture)</span>
+            <span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
+            <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> golden-1_fixture)</span>
+            <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-cmp</span>
+            <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_REQUIRED</span> golden-1_fixture)</span></code></pre></div>
+            <p>There’s a few things going on …</p>
+            <ol type="1">
+            <li><p>The <code>tool</code> exectuable is created. It links to the (static in this case) <code>lib</code> library with the implementation and will thus directly use (and test) that compiled code.</p>
+            <p>One important thing: I’ve specified <code>EXCLUDE_FROM_ALL</code> which means the <code>tool</code> executable won’t be built by <code>make all</code> <strong>or even <code>make test</code></strong>. This requires some boiler plate code (explained further down in “A)”). Removing the <code>EXCLUDE_FROM_ALL</code> means the tool will be built by <code>make</code> / <code>make all</code> … but <em>still</em> not by <code>make test</code>. This is a known bug / short comming of CMake, see <a href="https://stackoverflow.com/a/56448477/1116364">this stackoverflow.com answer and the questions / other answers</a> for more.</p></li>
+            <li><p>Specify a golden test (“golden-1-run”) which runs the tool with an input file (<code>golden-1-in</code>) to produce some output (<code>golden-1-out</code>).</p>
+            <p>I use the <code>add_test(NAME .. COMMAND tool ..)</code> version of <code>add_test</code> because <a href="https://cmake.org/cmake/help/latest/command/add_test.html?highlight=command-line">that uses the full path</a> to the <code>tool</code> exectuable (from the <code>tool</code> target) to run the test and thus does not interfere with possibly available other commands (think of <code>test</code> …).</p>
+            <p>This reads the input file from the current source directory (the directory where that <code>CMakeLists.txt</code> is) and writes the output into the current binary directory.</p></li>
+            <li><p>Specify the compare step of the golden test (“golden-1-cmp”). This uses the CMake command <code>compare_files</code> to compare the output produced by the previous test to the expected output from the <em>golden file</em> (<code>golden-1-expected</code>).</p>
+            <p>The expected output file comes from the current source directory, whereas the generated output file is in the current binary directory.</p>
+            <p>One short comming of using the CMake <code>compare_files</code> command: it cannot show what’s different, it just compares the files. For that using <code>diff</code> would be an option.</p></li>
+            </ol>
+            <p>And last but not least, the boiler plate code from <code>A)</code> …</p>
+            <ul>
+            <li><p><code>tool_build</code> is a “test” which runs CMake itself to build the <code>tool</code> target, thus making sure that the <code>tool</code> executable is actually there. Drawback: The build output is part of the test logs.</p></li>
+            <li><p>Running any test which runs <code>tool</code> doesn’t make sense when <code>tool</code> failed to build. Similarly, running the compare step doesn’t make sense when running the tool with the input failed. Thus dependencies between these tests are needed. For tests, dependencies are best modeled by using fixtures.</p></li>
+            </ul>
+            <p><strong>Fixtures</strong> in CMake are modelled with 3 properties: <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_SETUP.html"><code>FIXTURES_SETUP</code></a>, <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_CLEANUP.html"><code>FIXTURES_CLEANUP</code></a> and <a href="https://cmake.org/cmake/help/latest/prop_test/FIXTURES_REQUIRED.html"><code>FIXTURES_REQUIRED</code></a>. The last one - <code>FIXTURES_REQUIRED</code> - is set on a test which <em>needs</em> a fixture. The other two <em>define</em> the fixture: Tests marked with <code>FIXTURES_SETUP</code> “setup” the fixture … so they’re run before any test which needs the fixture. Test marked with <code>FIXTURES_CLEANUP</code> are run after any tests which needs the fixture and do “cleanup” tasks.</p>
+            <p>In the example, there are two fixtures - <code>tool_fixture</code> and <code>golden-1_fixture</code> - which each have a single setup test associated with them. The relationship is probably best to understand when visualized, so I’ve made an ASCII drawing:</p>
+            <pre><code>vvvvvvvvvvvvvv
+            | tool_build |
+            ^^^^^^^^^^^^^^
+                 A
+                 | calls for setup
+                 |
+            |--------------|               vvvvvvvvvvvvvvvv
+            | tool_fixture | &lt;&lt;---needs--- | golden-1-run |
+            |--------------|               ^^^^^^^^^^^^^^^^
+                                                A
+                                                | calls for setup
+                                                |
+            vvvvvvvvvvvvvvvv               |------------------|
+            | golden-1-cmp | ---needs---&gt;&gt; | golden-1_fixture |
+            ^^^^^^^^^^^^^^^^               |------------------|</code></pre>
+            <p>So running <code>ctest -R golden-1-cmp</code> now runs first the <code>tool_build</code> test (building the <code>tool</code> exectuable), if that succeeds it runs <code>golden-1-run</code> (which produces the output) and only if that also succeeds it runs the requested <code>golden-1-cmp</code> test.</p>
+            <p>All that boilerplate CMake code can be put into a function to make it easier to define golden test. I’ve written one adjusted for my own project … which I’ll generalize and publish if I have the time to do so.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/10/golden-tests-with-cmake.html">

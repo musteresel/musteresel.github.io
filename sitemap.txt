@@ -6,6 +6,7 @@ https://musteresel.github.io/posts/tagged/c++/index.html
 https://musteresel.github.io/posts/tagged/c++-templates/index.html
 https://musteresel.github.io/posts/tagged/cmake/index.html
 https://musteresel.github.io/posts/tagged/git/index.html
+https://musteresel.github.io/posts/tagged/linux/index.html
 https://musteresel.github.io/posts/tagged/make/index.html
 https://musteresel.github.io/posts/tagged/network/index.html
 https://musteresel.github.io/posts/tagged/nixos/index.html
@@ -63,5 +64,7 @@ https://musteresel.github.io/posts/2019/11/lines-of-code-is-a-useless-measuremen
 https://musteresel.github.io/posts/2019/index.html
 https://musteresel.github.io/posts/2020/01/index.html
 https://musteresel.github.io/posts/2020/01/webassembly-text-br_table-example.html
+https://musteresel.github.io/posts/2020/02/cmake-template-linux-kernel-module.html
+https://musteresel.github.io/posts/2020/02/index.html
 https://musteresel.github.io/posts/2020/index.html
 https://musteresel.github.io/privacy.html

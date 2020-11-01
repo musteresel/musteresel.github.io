@@ -95,73 +95,73 @@
                     <a href="../../../posts/tagged/programming-language-theory/index.html">programming-language-theory</a></p>
               </header>
             <p>Have you ever seen something like the following? Do you immediately see the issue?</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">// ...</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="cf">if</span> (size &lt; necessary_size) {</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  size = size * <span class="dv">2</span>;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>  buffer = realloc(buffer, size);</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="cf">if</span> (buffer == NULL) {</span>
-<span id="cb1-6"><a href="#cb1-6"></a>    <span class="co">// out of memory, sorry</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    <span class="co">// some kind of error handling / logging</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>  }</span>
-<span id="cb1-9"><a href="#cb1-9"></a>}</span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">// ...</span></span></code></pre></div>
-<p>This is a memory leak, because the memory <code>buffer</code> originally pointed to cannot be freed when <code>realloc</code> fails. There’s no pointer pointing to it anymore, after all.</p>
-<p>I’ll try to formulate rules which - when followed - would make the above error impossible to occur:</p>
-<ol type="1">
-<li>The pointer passed in as first argument must not be a temporary.</li>
-<li>The returned pointer must not be assigned to the pointer which was passed as first argument.</li>
-</ol>
-<p>Of course I can add such rules to the documentation of the <code>realloc</code> function, but - sadly - that won’t really help. People just don’t always read documentations. Or they forget what they read. Thus it would be much better if I could <em>specify these rules such that the compiler understands</em> and <strong>enforces</strong> them.</p>
-<p>In C++ I can acutally express rule 1, at least somewhat:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">using</span> void_p = <span class="dt">void</span> *</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">void</span> * foo(void_p &amp;) {</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="co">// stuff</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="cf">return</span> NULL;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>}</span></code></pre></div>
-<p>If I now try to use <code>foo</code> with a temporary, then the compiler will bark:</p>
-<pre><code>error: invalid initialization of non-const reference of type &#39;void*&amp;&#39; from an rvalue of type &#39;void*&#39;</code></pre>
-<p>A drawback here is that this only works with non-const references … and as such allows me to do nasty things:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">void</span> * foo(void_p &amp; x) {</span>
-<span id="cb4-2"><a href="#cb4-2"></a>  x = NULL; <span class="co">// there goes your pointer, HA!</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="co">// stuff</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  <span class="cf">return</span> NULL;</span>
-<span id="cb4-5"><a href="#cb4-5"></a>}</span></code></pre></div>
-<p>But, for rule 2, there’s no real way of telling the compiler what is allowed and what isn’t. I think, though, that a feature like this could turn out really helpfull. A completely blue-eyed take:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">auto</span> passed_pointer = <span class="er">$</span>function.arguments()[<span class="dv">0</span>].source_variable();</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="cf">if</span> (passed_pointer.aliases().size() == <span class="dv">0</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>    &amp;&amp; <span class="er">$</span>function.return_value().assigned_to(only_pointer)) {</span>
-<span id="cb5-4"><a href="#cb5-4"></a>  compiler.fail(<span class="st">&quot;Return value overwrites only available pointer to&quot;</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>                <span class="st">&quot; previously allocated memory!&quot;</span>);</span>
-<span id="cb5-6"><a href="#cb5-6"></a>}</span></code></pre></div>
-<p>The syntax for this thought experiment is borrowed from the <a href="https://www.fluentcpp.com/2017/08/04/metaclasses-cpp-summary/">metaclasses proposal for C++</a> (if you haven’t read about this, please do now! It’s an excellent idea). The example above though also shows why implementing such a feature could turn out to be somewhere between hard and impossible:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">void</span> baz(<span class="dt">void</span> **pointer_var, <span class="dt">void</span> *  buffer) {</span>
-<span id="cb6-2"><a href="#cb6-2"></a>  *pointer_var = foo(buffer);</span>
-<span id="cb6-3"><a href="#cb6-3"></a>}</span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="dt">void</span> bar() {</span>
-<span id="cb6-6"><a href="#cb6-6"></a>  <span class="dt">void</span> *pointers[] = {NULL, malloc(<span class="dv">10</span>), NULL};</span>
-<span id="cb6-7"><a href="#cb6-7"></a>  <span class="co">// imagine reliable error handling here</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>  <span class="dt">int</span> index = rand() % <span class="dv">3</span>;</span>
-<span id="cb6-9"><a href="#cb6-9"></a>  baz(pointers + index, pointers + <span class="dv">1</span>);</span>
-<span id="cb6-10"><a href="#cb6-10"></a>}</span></code></pre></div>
-<p>Inside of <code>baz</code>, there’s the parameter <code>buffer</code> which is a pointer to the allocated memory. It doesn’t get assigned, to. Thus everything seems fine. Until I leave <code>baz</code>. Do I now have a pointer to the allocated memory or not? This depends on the <em>runtime</em> value returned by <code>rand()</code>. Should the compiler be able to deal with such situations? Can it even? Or will this turn out to be a (another) lost case against the halting problem?</p>
-<p>Instead of giving the compiler <em>rules to enforce</em> - which leads to a conservative behaviour … if it cannot be sure that the rules are adhered to, then it’s an error - it could be easier to give the compiler <em>patterns for common errors</em>. These could be handled more permissive: If it cannot match the situation to any of the patterns, then it assumes that everything is fine. Only if a pattern that’s <em>known</em> to lead to an error is found, then issue an error.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1"></a><span class="cf">if</span> (<span class="er">$</span>function.arguments()[<span class="dv">0</span>].source_variable()</span>
-<span id="cb7-2"><a href="#cb7-2"></a>    == <span class="er">$</span>function.return_value().target_variable()) {</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  compiler.fail(<span class="st">&quot;Looks like you&#39;re assigning the return value to the&quot;</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>                <span class="st">&quot; same variable which you also used as first&quot;</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a>                <span class="st">&quot; argument; that&#39;s a bad idea!&quot;</span>);</span>
-<span id="cb7-6"><a href="#cb7-6"></a>}</span></code></pre></div>
-<p>This could also catch simpler issues, for example when the return value is not checked against “special” values (like <code>NULL</code>) inside the calling function and also not passed to any other function nor returned from the calling function:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">void</span> f(Cache &amp; cache) {</span>
-<span id="cb8-2"><a href="#cb8-2"></a>  <span class="dt">char</span> * b = cache.get_buffer(); <span class="co">// assume this could return nullptr</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">char</span> c;</span>
-<span id="cb8-4"><a href="#cb8-4"></a>  <span class="bu">std::</span>cin &gt;&gt; c;</span>
-<span id="cb8-5"><a href="#cb8-5"></a>  b[<span class="dv">0</span>] = c;</span>
-<span id="cb8-6"><a href="#cb8-6"></a>}</span></code></pre></div>
-<p>This could then also catch issues like <a href="https://github.com/uzbl/uzbl/issues/393">this one I found in uzbl</a> where <a href="https://developer.gnome.org/glib/stable/glib-IO-Channels.html#g-io-channel-write-chars"><code>g_io_channel_write_chars</code></a> was used but the special return value <code>G_IO_STATUS_AGAIN</code> (which indicates that the function should be called again … due to a non blocking socket not being ready, for example) wasn’t handled in any way.</p>
-<p><strong>But is this really the job of the compiler? Shouldn’t this be some kind of code analysis tool?</strong> I think in the end, this wouldn’t matter. Type checking is also some kind of code analysis. It’s part of the compiler. Style checking is another kind of code analysis. It’s most often not part of a compiler but a separate tool.</p>
-<p>Actually, I think there <em>are</em> already tools capable of finding errors like the ones I presented here. But I think the most important issue with these tools is that they have some kind of a database of “known error-prone patterns”. This database is continuously extended by the users of the analysis tool. <strong>It would be better if the developer writing a function could specify the correct handling of its return values in a standardized way, directly next to the function itself.</strong></p>
+            <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ...</span></span>
+            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (size &lt; necessary_size) {</span>
+            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  size = size * <span class="dv">2</span>;</span>
+            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  buffer = realloc(buffer, size);</span>
+            <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (buffer == NULL) {</span>
+            <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// out of memory, sorry</span></span>
+            <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// some kind of error handling / logging</span></span>
+            <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+            <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
+            <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// ...</span></span></code></pre></div>
+            <p>This is a memory leak, because the memory <code>buffer</code> originally pointed to cannot be freed when <code>realloc</code> fails. There’s no pointer pointing to it anymore, after all.</p>
+            <p>I’ll try to formulate rules which - when followed - would make the above error impossible to occur:</p>
+            <ol type="1">
+            <li>The pointer passed in as first argument must not be a temporary.</li>
+            <li>The returned pointer must not be assigned to the pointer which was passed as first argument.</li>
+            </ol>
+            <p>Of course I can add such rules to the documentation of the <code>realloc</code> function, but - sadly - that won’t really help. People just don’t always read documentations. Or they forget what they read. Thus it would be much better if I could <em>specify these rules such that the compiler understands</em> and <strong>enforces</strong> them.</p>
+            <p>In C++ I can acutally express rule 1, at least somewhat:</p>
+            <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> void_p = <span class="dt">void</span> *</span>
+            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> * foo(void_p &amp;) {</span>
+            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// stuff</span></span>
+            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> NULL;</span>
+            <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>If I now try to use <code>foo</code> with a temporary, then the compiler will bark:</p>
+            <pre><code>error: invalid initialization of non-const reference of type &#39;void*&amp;&#39; from an rvalue of type &#39;void*&#39;</code></pre>
+            <p>A drawback here is that this only works with non-const references … and as such allows me to do nasty things:</p>
+            <div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> * foo(void_p &amp; x) {</span>
+            <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  x = NULL; <span class="co">// there goes your pointer, HA!</span></span>
+            <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// stuff</span></span>
+            <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> NULL;</span>
+            <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>But, for rule 2, there’s no real way of telling the compiler what is allowed and what isn’t. I think, though, that a feature like this could turn out really helpfull. A completely blue-eyed take:</p>
+            <div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> passed_pointer = <span class="er">$</span>function.arguments()[<span class="dv">0</span>].source_variable();</span>
+            <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (passed_pointer.aliases().size() == <span class="dv">0</span></span>
+            <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &amp;&amp; <span class="er">$</span>function.return_value().assigned_to(only_pointer)) {</span>
+            <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  compiler.fail(<span class="st">&quot;Return value overwrites only available pointer to&quot;</span></span>
+            <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot; previously allocated memory!&quot;</span>);</span>
+            <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>The syntax for this thought experiment is borrowed from the <a href="https://www.fluentcpp.com/2017/08/04/metaclasses-cpp-summary/">metaclasses proposal for C++</a> (if you haven’t read about this, please do now! It’s an excellent idea). The example above though also shows why implementing such a feature could turn out to be somewhere between hard and impossible:</p>
+            <div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> baz(<span class="dt">void</span> **pointer_var, <span class="dt">void</span> *  buffer) {</span>
+            <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  *pointer_var = foo(buffer);</span>
+            <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>}</span>
+            <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+            <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> bar() {</span>
+            <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> *pointers[] = {NULL, malloc(<span class="dv">10</span>), NULL};</span>
+            <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">// imagine reliable error handling here</span></span>
+            <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> index = rand() % <span class="dv">3</span>;</span>
+            <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  baz(pointers + index, pointers + <span class="dv">1</span>);</span>
+            <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>Inside of <code>baz</code>, there’s the parameter <code>buffer</code> which is a pointer to the allocated memory. It doesn’t get assigned, to. Thus everything seems fine. Until I leave <code>baz</code>. Do I now have a pointer to the allocated memory or not? This depends on the <em>runtime</em> value returned by <code>rand()</code>. Should the compiler be able to deal with such situations? Can it even? Or will this turn out to be a (another) lost case against the halting problem?</p>
+            <p>Instead of giving the compiler <em>rules to enforce</em> - which leads to a conservative behaviour … if it cannot be sure that the rules are adhered to, then it’s an error - it could be easier to give the compiler <em>patterns for common errors</em>. These could be handled more permissive: If it cannot match the situation to any of the patterns, then it assumes that everything is fine. Only if a pattern that’s <em>known</em> to lead to an error is found, then issue an error.</p>
+            <div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="er">$</span>function.arguments()[<span class="dv">0</span>].source_variable()</span>
+            <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    == <span class="er">$</span>function.return_value().target_variable()) {</span>
+            <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  compiler.fail(<span class="st">&quot;Looks like you&#39;re assigning the return value to the&quot;</span></span>
+            <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot; same variable which you also used as first&quot;</span></span>
+            <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot; argument; that&#39;s a bad idea!&quot;</span>);</span>
+            <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>This could also catch simpler issues, for example when the return value is not checked against “special” values (like <code>NULL</code>) inside the calling function and also not passed to any other function nor returned from the calling function:</p>
+            <div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> f(Cache &amp; cache) {</span>
+            <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> * b = cache.get_buffer(); <span class="co">// assume this could return nullptr</span></span>
+            <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> c;</span>
+            <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cin &gt;&gt; c;</span>
+            <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  b[<span class="dv">0</span>] = c;</span>
+            <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+            <p>This could then also catch issues like <a href="https://github.com/uzbl/uzbl/issues/393">this one I found in uzbl</a> where <a href="https://developer.gnome.org/glib/stable/glib-IO-Channels.html#g-io-channel-write-chars"><code>g_io_channel_write_chars</code></a> was used but the special return value <code>G_IO_STATUS_AGAIN</code> (which indicates that the function should be called again … due to a non blocking socket not being ready, for example) wasn’t handled in any way.</p>
+            <p><strong>But is this really the job of the compiler? Shouldn’t this be some kind of code analysis tool?</strong> I think in the end, this wouldn’t matter. Type checking is also some kind of code analysis. It’s part of the compiler. Style checking is another kind of code analysis. It’s most often not part of a compiler but a separate tool.</p>
+            <p>Actually, I think there <em>are</em> already tools capable of finding errors like the ones I presented here. But I think the most important issue with these tools is that they have some kind of a database of “known error-prone patterns”. This database is continuously extended by the users of the analysis tool. <strong>It would be better if the developer writing a function could specify the correct handling of its return values in a standardized way, directly next to the function itself.</strong></p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2017/12/specify-correct-handling-return-values.html">
