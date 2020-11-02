@@ -92,19 +92,19 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/xen/index.html">xen</a></p>
               </header>
-            <p>I had a virtual disk (VDI) attached to one of my VMs which wasn’t full (according to <code>df</code> on the VM) but was causing IO errors for all applications running in the VM.</p>
-            <p>Running <code>xe vm-disk-list vm=$VM</code> (where in <code>VM</code> is either the UUID or the name of the VM the disk is attached to) shows both the disks as well as the (names of) the storage repositories these disks are stored in. This information is available under <code>sr-name-label</code>.</p>
-            <p><code>xe sr-list</code> gives a complete list of storage repositories, from which I could find the UUID of the storage repository in question. Running <code>xe sr-param-list uuid=$SRUUID</code> shows how full the storage repository is:</p>
-            <pre><code>      virtual-allocation ( RO): 4340072841216
-                physical-utilisation ( RO): 1320537186304
-                       physical-size ( RO): 1320538832896</code></pre>
-            <p>This one is almost completely full. But I had another storage repository available that wasn’t full. Thus I moved the VDI from one storage repository to the other:</p>
-            <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> vdi-pool-migrate uuid=<span class="va">$VDI</span> sr-uuid=<span class="va">$NEWSRUUID</span></span>
-            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># prints NEWVDI uuid</span></span></code></pre></div>
-            <p>After some time (depending on the size of the VDI that’s moved) this command returns and prints a new UUID which is the UUID of the moved VDI.</p>
-            <p><strong>Note:</strong> Above command only works when the VM is <em>running</em>, which seemed a bit weird to me, but well …</p>
-            <p>Using <code>xe vm-disk-list</code> I then checked that the VM has been updated to use that new VDI, which it thankfully had.</p>
-            <p>I’m posting this because I had a really hard time finding some documentation about how to do this <em>without</em> XenCenter.</p>
+      <p>I had a virtual disk (VDI) attached to one of my VMs which wasn’t full (according to <code>df</code> on the VM) but was causing IO errors for all applications running in the VM.</p>
+<p>Running <code>xe vm-disk-list vm=$VM</code> (where in <code>VM</code> is either the UUID or the name of the VM the disk is attached to) shows both the disks as well as the (names of) the storage repositories these disks are stored in. This information is available under <code>sr-name-label</code>.</p>
+<p><code>xe sr-list</code> gives a complete list of storage repositories, from which I could find the UUID of the storage repository in question. Running <code>xe sr-param-list uuid=$SRUUID</code> shows how full the storage repository is:</p>
+<pre><code>      virtual-allocation ( RO): 4340072841216
+    physical-utilisation ( RO): 1320537186304
+           physical-size ( RO): 1320538832896</code></pre>
+<p>This one is almost completely full. But I had another storage repository available that wasn’t full. Thus I moved the VDI from one storage repository to the other:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> vdi-pool-migrate uuid=<span class="va">$VDI</span> sr-uuid=<span class="va">$NEWSRUUID</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># prints NEWVDI uuid</span></span></code></pre></div>
+<p>After some time (depending on the size of the VDI that’s moved) this command returns and prints a new UUID which is the UUID of the moved VDI.</p>
+<p><strong>Note:</strong> Above command only works when the VM is <em>running</em>, which seemed a bit weird to me, but well …</p>
+<p>Using <code>xe vm-disk-list</code> I then checked that the VM has been updated to use that new VDI, which it thankfully had.</p>
+<p>I’m posting this because I had a really hard time finding some documentation about how to do this <em>without</em> XenCenter.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/02/xen-migrate-vdi-to-other-storage-repository.html">

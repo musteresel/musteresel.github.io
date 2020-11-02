@@ -92,23 +92,23 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/python/index.html">python</a></p>
               </header>
-            <p>I have a strong C / C++ background. Thus, a “string” for me is a <em>sequence of characters</em>. Normally, there are operations to access an individual element of such a sequence. For C strings, that’s <code>str[i]</code> which is just a nice way to hide pointer arithmetic (<code>str + i</code> and <code>i + str</code> and also <code>i[str]</code> are equivalent ways of saying the same thing). In C++, there’s an <code>operator[]</code>.</p>
-            <p>The semantic I expect from these operations - <em>get an individual element of a sequence</em> - could be expressed by the following Haskell type signature:</p>
-            <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getSomeElement ::</span> [a] <span class="ot">-&gt;</span> a</span></code></pre></div>
-            <p>In natural language: Given a sequence of things of type <code>a</code>, when accessing an individual element, we get a thing of type <code>a</code>.</p>
-            <p><strong>Fair enough.</strong></p>
-            <p>Python also has “sequence-like” data types. Lists. Tuples.</p>
-            <div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>] <span class="co"># a list of integers</span></span>
-            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>l[<span class="dv">1</span>] <span class="co"># gives 2, an integer</span></span>
-            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> (<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>) <span class="co"># a tuple with integers</span></span>
-            <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">2</span>] <span class="co"># gives 7, an integer</span></span></code></pre></div>
-            <p><strong>But strings are different:</strong></p>
-            <div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="st">&quot;help&quot;</span></span>
-            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(s) <span class="co"># &lt;class &#39;str&#39;&gt; ... seems legit</span></span>
-            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>s[<span class="dv">0</span>] <span class="co"># &quot;h&quot; ... huh? Isn&#39;t this ...</span></span>
-            <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(s[<span class="dv">0</span>]) <span class="co"># &lt;class &#39;str&#39;&gt; ... a STRING, too?!?!</span></span></code></pre></div>
-            <p>Does this hurt in practice? I doubt it. But I stumbled over it when I tested the prototype of an algorithm I wrote: Initially, I was only using strings as test input. The algorithm uses expressions like <code>data[index]</code> a lot - which in the case of strings returns new strings of length one. Thus, calling <code>len(data[index])</code> was returning <code>1</code>. When I changed the input to lists of integers, <code>len(data[index])</code> was then of course failing. I had to rewrite each <code>data[index]</code> into <code>data[index:index + 1]</code>.</p>
+      <p>I have a strong C / C++ background. Thus, a “string” for me is a <em>sequence of characters</em>. Normally, there are operations to access an individual element of such a sequence. For C strings, that’s <code>str[i]</code> which is just a nice way to hide pointer arithmetic (<code>str + i</code> and <code>i + str</code> and also <code>i[str]</code> are equivalent ways of saying the same thing). In C++, there’s an <code>operator[]</code>.</p>
+<p>The semantic I expect from these operations - <em>get an individual element of a sequence</em> - could be expressed by the following Haskell type signature:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getSomeElement ::</span> [a] <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>In natural language: Given a sequence of things of type <code>a</code>, when accessing an individual element, we get a thing of type <code>a</code>.</p>
+<p><strong>Fair enough.</strong></p>
+<p>Python also has “sequence-like” data types. Lists. Tuples.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>] <span class="co"># a list of integers</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>l[<span class="dv">1</span>] <span class="co"># gives 2, an integer</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> (<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>) <span class="co"># a tuple with integers</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">2</span>] <span class="co"># gives 7, an integer</span></span></code></pre></div>
+<p><strong>But strings are different:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="st">&quot;help&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(s) <span class="co"># &lt;class &#39;str&#39;&gt; ... seems legit</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>s[<span class="dv">0</span>] <span class="co"># &quot;h&quot; ... huh? Isn&#39;t this ...</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(s[<span class="dv">0</span>]) <span class="co"># &lt;class &#39;str&#39;&gt; ... a STRING, too?!?!</span></span></code></pre></div>
+<p>Does this hurt in practice? I doubt it. But I stumbled over it when I tested the prototype of an algorithm I wrote: Initially, I was only using strings as test input. The algorithm uses expressions like <code>data[index]</code> a lot - which in the case of strings returns new strings of length one. Thus, calling <code>len(data[index])</code> was returning <code>1</code>. When I changed the input to lists of integers, <code>len(data[index])</code> was then of course failing. I had to rewrite each <code>data[index]</code> into <code>data[index:index + 1]</code>.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2017/12/python-strings-are-no-sequences.html">

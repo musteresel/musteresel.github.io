@@ -92,26 +92,26 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/xen/index.html">xen</a></p>
               </header>
-            <p>Some time ago I <a href="../../../posts/2017/07/xen-vm-console-connection.html">accessed the “console” of a Xen VM over a http tunnel</a>, which was working but rather unpleasant due to a crippled terminal. Today I needed to do the same again, so I set out to look for a more comfortable alternative…</p>
-            <p>Thankfully, I do have SSH access to the Xen server on which my VM is running, so following <a href="https://www.citrix.com/blogs/2011/02/18/using-vnc-to-connect-to-a-xenserver-vms-console/">this post from Citrix</a> I am able to work with my VM without having to use XenCenter or a similar software:</p>
-            <ol type="1">
-            <li><p>Connect to the Xen Server per SSH, and run the following commands there.</p></li>
-            <li><p>Get the “domain id” of the virtual machine and the “host uuid” of the host it is running on (important when the Xen server manages multiple hosts), where <code>LABEL</code> is my virtual machine’s label:</p>
-            <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> vm-list params=dom-id,resident-on name-label=LABEL</span>
-            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># resident-on ( RO)    : UUID</span></span>
-            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#          dom-id ( RO): DOMID</span></span></code></pre></div></li>
-            <li><p>If the Xen server manages multiple hosts, then get the IP of the host on which the virtual machine is running:</p>
-            <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> pif-list management=true params=IP host-uuid=UUID</span>
-            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># IP ( RO)    : HOSTIP</span></span></code></pre></div>
-            <p>Connect per SSH to that host, and run the following command there.</p></li>
-            <li><p>Get the VNC port of the virtual machine:</p>
-            <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xenstore-read</span> /local/domain/DOMID/console/vnc-port</span>
-            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># PORT</span></span></code></pre></div></li>
-            <li><p>On the local machine, open a SSH tunnel to the host and redirect a local port (<code>LOCALPORT</code>) to the host’s <code>localhost:PORT</code> (where <code>PORT</code> is the VNC port from above):</p>
-            <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> -L LOCALPORT:localhost:PORT HOSTIP</span></code></pre></div></li>
-            <li><p>Use some VNC viewer on the local machine and connect to <code>localhost:LOCALPORT</code></p></li>
-            </ol>
-            <p>This works extremely well, just a bit laggy sometimes, but certainly good enough to setup a SSH server on the virtual machine.</p>
+      <p>Some time ago I <a href="../../../posts/2017/07/xen-vm-console-connection.html">accessed the “console” of a Xen VM over a http tunnel</a>, which was working but rather unpleasant due to a crippled terminal. Today I needed to do the same again, so I set out to look for a more comfortable alternative…</p>
+<p>Thankfully, I do have SSH access to the Xen server on which my VM is running, so following <a href="https://www.citrix.com/blogs/2011/02/18/using-vnc-to-connect-to-a-xenserver-vms-console/">this post from Citrix</a> I am able to work with my VM without having to use XenCenter or a similar software:</p>
+<ol type="1">
+<li><p>Connect to the Xen Server per SSH, and run the following commands there.</p></li>
+<li><p>Get the “domain id” of the virtual machine and the “host uuid” of the host it is running on (important when the Xen server manages multiple hosts), where <code>LABEL</code> is my virtual machine’s label:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> vm-list params=dom-id,resident-on name-label=LABEL</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># resident-on ( RO)    : UUID</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#          dom-id ( RO): DOMID</span></span></code></pre></div></li>
+<li><p>If the Xen server manages multiple hosts, then get the IP of the host on which the virtual machine is running:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xe</span> pif-list management=true params=IP host-uuid=UUID</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># IP ( RO)    : HOSTIP</span></span></code></pre></div>
+<p>Connect per SSH to that host, and run the following command there.</p></li>
+<li><p>Get the VNC port of the virtual machine:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xenstore-read</span> /local/domain/DOMID/console/vnc-port</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># PORT</span></span></code></pre></div></li>
+<li><p>On the local machine, open a SSH tunnel to the host and redirect a local port (<code>LOCALPORT</code>) to the host’s <code>localhost:PORT</code> (where <code>PORT</code> is the VNC port from above):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> -L LOCALPORT:localhost:PORT HOSTIP</span></code></pre></div></li>
+<li><p>Use some VNC viewer on the local machine and connect to <code>localhost:LOCALPORT</code></p></li>
+</ol>
+<p>This works extremely well, just a bit laggy sometimes, but certainly good enough to setup a SSH server on the virtual machine.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/02/vnc-ssh-tunnel-xen-vm.html">

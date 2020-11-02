@@ -92,37 +92,37 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/cmake/index.html">cmake</a></p>
               </header>
-            <p>For a CMake based project, my package manager (Nix) runs the following commands (plus some magic that isn’t relevant to this post):</p>
-            <ol type="1">
-            <li>CMake itself, with various flags to specify the non-FHS filesystem locations.</li>
-            <li><code>make</code> to build the project.</li>
-            <li><code>make check</code> if tests should be run.</li>
-            <li><code>make install</code> with some flags to create the final package.</li>
-            </ol>
-            <p>My current project has some (Doxygen based) documentation that I’d like to be built and also installed. The simplest way to do this seemed to be:</p>
-            <div class="sourceCode" id="cb1"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc <span class="ot">ALL</span></span>
-            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${DOXYGEN_COMMAND}</span>)</span></code></pre></div>
-            <p>The <code>ALL</code> specifies that this target should be added to the default build target. Furthermore, a target added like this has no “output” file and is thus <em>always</em> considered out of date.</p>
-            <p>Due to this Doxygen gets called twice: First during <code>make</code> and then again during <code>make check</code>. <strong>Suboptimal.</strong></p>
-            <p>I <a href="https://stackoverflow.com/q/49083580/1116364">asked for help</a> and got a solution that comes down to:</p>
-            <div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span>(documentation_file <span class="dv">${CMAKE_BINARY_DIR}</span>/doc_ready)</span>
-            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc <span class="ot">ALL</span></span>
-            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">DEPENDS</span> <span class="dv">${documentation_file}</span>)</span>
-            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_command</span>(<span class="ot">OUTPUT</span> <span class="dv">${documentation_file}</span></span>
-            <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${DOXYGEN_COMMAND}</span></span>
-            <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${CMAKE_COMMAND}</span> -E touch <span class="dv">${documentation_file}</span>)</span></code></pre></div>
-            <p>This creates a <code>doc_ready</code> file that indicates whether the documentation has already been built. Thus the <code>doc</code> target is still always considered out of date, but the documentation is actually build by its file dependency, which is never out of date since it hasn’t any dependencies. <strong>Wait!</strong></p>
-            <p><em>Never</em> out of date is an issue: Running <code>make doc</code> manually (e.g. while developing) now does not rebuild the documentation (it does nothing on subsequent runs). For that one needs to either:</p>
-            <ul>
-            <li>Delete the <code>doc_ready</code> file, or</li>
-            <li>Specify all the file dependencies (source files, images, …) for the Doxygen build.</li>
-            </ul>
-            <p>The second option would be the “cleaner” one, but it’s annoying. To delete the <code>doc_ready</code> file I added another target which does exactly that … after first generating the documentation:</p>
-            <div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc-manual</span>
-            <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${CMAKE_COMMAND}</span> -E remove <span class="dv">${documentation_file}</span>)</span>
-            <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_dependencies</span>(doc-manual doc)</span></code></pre></div>
-            <p><code>add_dependencies</code> is necessary because <code>DEPENDS</code> (in <code>add_custom_command</code>) should only be used for files, not other targets.</p>
-            <p>Now I can run <code>make doc-manual</code> when I want to update the built documentation during developing, and have Nix build the documentation only once during <code>make</code> (and no longer during <code>make check</code>).</p>
+      <p>For a CMake based project, my package manager (Nix) runs the following commands (plus some magic that isn’t relevant to this post):</p>
+<ol type="1">
+<li>CMake itself, with various flags to specify the non-FHS filesystem locations.</li>
+<li><code>make</code> to build the project.</li>
+<li><code>make check</code> if tests should be run.</li>
+<li><code>make install</code> with some flags to create the final package.</li>
+</ol>
+<p>My current project has some (Doxygen based) documentation that I’d like to be built and also installed. The simplest way to do this seemed to be:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc <span class="ot">ALL</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${DOXYGEN_COMMAND}</span>)</span></code></pre></div>
+<p>The <code>ALL</code> specifies that this target should be added to the default build target. Furthermore, a target added like this has no “output” file and is thus <em>always</em> considered out of date.</p>
+<p>Due to this Doxygen gets called twice: First during <code>make</code> and then again during <code>make check</code>. <strong>Suboptimal.</strong></p>
+<p>I <a href="https://stackoverflow.com/q/49083580/1116364">asked for help</a> and got a solution that comes down to:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span>(documentation_file <span class="dv">${CMAKE_BINARY_DIR}</span>/doc_ready)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc <span class="ot">ALL</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">DEPENDS</span> <span class="dv">${documentation_file}</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_command</span>(<span class="ot">OUTPUT</span> <span class="dv">${documentation_file}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${DOXYGEN_COMMAND}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${CMAKE_COMMAND}</span> -E touch <span class="dv">${documentation_file}</span>)</span></code></pre></div>
+<p>This creates a <code>doc_ready</code> file that indicates whether the documentation has already been built. Thus the <code>doc</code> target is still always considered out of date, but the documentation is actually build by its file dependency, which is never out of date since it hasn’t any dependencies. <strong>Wait!</strong></p>
+<p><em>Never</em> out of date is an issue: Running <code>make doc</code> manually (e.g. while developing) now does not rebuild the documentation (it does nothing on subsequent runs). For that one needs to either:</p>
+<ul>
+<li>Delete the <code>doc_ready</code> file, or</li>
+<li>Specify all the file dependencies (source files, images, …) for the Doxygen build.</li>
+</ul>
+<p>The second option would be the “cleaner” one, but it’s annoying. To delete the <code>doc_ready</code> file I added another target which does exactly that … after first generating the documentation:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(doc-manual</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span> <span class="dv">${CMAKE_COMMAND}</span> -E remove <span class="dv">${documentation_file}</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_dependencies</span>(doc-manual doc)</span></code></pre></div>
+<p><code>add_dependencies</code> is necessary because <code>DEPENDS</code> (in <code>add_custom_command</code>) should only be used for files, not other targets.</p>
+<p>Now I can run <code>make doc-manual</code> when I want to update the built documentation during developing, and have Nix build the documentation only once during <code>make</code> (and no longer during <code>make check</code>).</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2018/03/cmake-phony-like-target-for-docs.html">

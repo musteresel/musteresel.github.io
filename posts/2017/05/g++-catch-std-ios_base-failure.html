@@ -92,40 +92,40 @@
                         <p class="tags">tagged:
                     <a href="../../../posts/tagged/c++/index.html">c++</a></p>
               </header>
-            <p>So you like exceptions? You always write a wrapper function to get an <code>std::istream</code> (or <code>std::ostream</code>) with exceptions enabled? And you like C++11? Or newer? Then here’s some bad news:</p>
-            <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
-            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;fstream&gt;</span></span>
-            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;typeinfo&gt;</span></span>
-            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-            <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-            <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main() {</span>
-            <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;Let&#39;s try to catch &quot;</span></span>
-            <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            &lt;&lt; <span class="kw">typeid</span>(<span class="bu">std::</span>ios_base<span class="bu">::</span>failure).name() &lt;&lt; <span class="bu">std::</span>endl;</span>
-            <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> {</span>
-            <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>ifstream stream;</span>
-            <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Enable exceptions to be thrown on the stream</span></span>
-            <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    stream.exceptions(<span class="bu">std::</span>ifstream<span class="bu">::</span>failbit</span>
-            <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                      | <span class="bu">std::</span>ifstream<span class="bu">::</span>badbit</span>
-            <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                      | <span class="bu">std::</span>ifstream<span class="bu">::</span>eofbit);</span>
-            <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Now open a nonexisting file. This will set failbit and thus</span></span>
-            <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// throw std::ios_base::failure.</span></span>
-            <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    stream.open(<span class="st">&quot;NONEXISTING&quot;</span>);</span>
-            <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (<span class="bu">std::</span>ios_base<span class="bu">::</span>failure <span class="at">const</span> &amp; exception) {</span>
-            <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;caught std::ios_base::failure. what(): &quot;</span></span>
-            <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; exception.what() &lt;&lt; <span class="bu">std::</span>endl;</span>
-            <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (<span class="bu">std::</span>exception <span class="at">const</span> &amp; exception) {</span>
-            <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;caught std::exception. what(): &quot;</span></span>
-            <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; exception.what() &lt;&lt; <span class="bu">std::</span>endl</span>
-            <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; <span class="st">&quot;  type: &quot;</span> &lt;&lt; <span class="kw">typeid</span>(exception).name() &lt;&lt; <span class="bu">std::</span>endl;</span>
-            <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  }</span>
-            <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-            <p>This <em>should</em> catch an <code>std::ios_base::failure</code> exception, but if you compile above code with g++ 5.x or 6.x, then you’ll end up catching an <code>std::exception</code> instead!</p>
-            <pre><code>Let&#39;s try to catch NSt8ios_base7failureB5cxx11E
-            caught std::exception. what(): basic_ios::clear
-              type: NSt8ios_base7failureE</code></pre>
-            <p>Why is that? Well, in C++03 <code>std::ios_base::failure</code> derived directly from <code>std::exception</code>. But in C++11, this was changed such that <code>std::ios_base::failure</code> now derives from <code>std::runtime_error</code> instead. This is a so called ABI break.</p>
-            <p>Unfortunately, the standard library coming with g++ 5.x or 6.x doesn’t use the new C++11 ABI yet (apparently the change was just forgotten to be made), but the code compiled with these compilers <em>does</em> use the new ABI. So when an exception is thrown from within the library it has a different binary representation as expected by the compiled application code.</p>
-            <p>This is fixed in g++ 7. This is the <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145">relevant bug 66145</a>. I’ve stumbled over this issue while working with <a href="https://sourceforge.net/p/slam6d/">3DTK</a>. Relevant changes arround <a href="https://sourceforge.net/p/slam6d/code/1350/">r1350</a>; patches from me have been applied around that revision.</p>
+      <p>So you like exceptions? You always write a wrapper function to get an <code>std::istream</code> (or <code>std::ostream</code>) with exceptions enabled? And you like C++11? Or newer? Then here’s some bad news:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;fstream&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;typeinfo&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main() {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;Let&#39;s try to catch &quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            &lt;&lt; <span class="kw">typeid</span>(<span class="bu">std::</span>ios_base<span class="bu">::</span>failure).name() &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>ifstream stream;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Enable exceptions to be thrown on the stream</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    stream.exceptions(<span class="bu">std::</span>ifstream<span class="bu">::</span>failbit</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                      | <span class="bu">std::</span>ifstream<span class="bu">::</span>badbit</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                      | <span class="bu">std::</span>ifstream<span class="bu">::</span>eofbit);</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Now open a nonexisting file. This will set failbit and thus</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// throw std::ios_base::failure.</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    stream.open(<span class="st">&quot;NONEXISTING&quot;</span>);</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (<span class="bu">std::</span>ios_base<span class="bu">::</span>failure <span class="at">const</span> &amp; exception) {</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;caught std::ios_base::failure. what(): &quot;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; exception.what() &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (<span class="bu">std::</span>exception <span class="at">const</span> &amp; exception) {</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;caught std::exception. what(): &quot;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; exception.what() &lt;&lt; <span class="bu">std::</span>endl</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>              &lt;&lt; <span class="st">&quot;  type: &quot;</span> &lt;&lt; <span class="kw">typeid</span>(exception).name() &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This <em>should</em> catch an <code>std::ios_base::failure</code> exception, but if you compile above code with g++ 5.x or 6.x, then you’ll end up catching an <code>std::exception</code> instead!</p>
+<pre><code>Let&#39;s try to catch NSt8ios_base7failureB5cxx11E
+caught std::exception. what(): basic_ios::clear
+  type: NSt8ios_base7failureE</code></pre>
+<p>Why is that? Well, in C++03 <code>std::ios_base::failure</code> derived directly from <code>std::exception</code>. But in C++11, this was changed such that <code>std::ios_base::failure</code> now derives from <code>std::runtime_error</code> instead. This is a so called ABI break.</p>
+<p>Unfortunately, the standard library coming with g++ 5.x or 6.x doesn’t use the new C++11 ABI yet (apparently the change was just forgotten to be made), but the code compiled with these compilers <em>does</em> use the new ABI. So when an exception is thrown from within the library it has a different binary representation as expected by the compiled application code.</p>
+<p>This is fixed in g++ 7. This is the <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145">relevant bug 66145</a>. I’ve stumbled over this issue while working with <a href="https://sourceforge.net/p/slam6d/">3DTK</a>. Relevant changes arround <a href="https://sourceforge.net/p/slam6d/code/1350/">r1350</a>; patches from me have been applied around that revision.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2017/05/g++-catch-std-ios_base-failure.html">

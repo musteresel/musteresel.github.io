@@ -93,61 +93,61 @@
                     <a href="../../../posts/tagged/c/index.html">c</a>,
                     <a href="../../../posts/tagged/c++/index.html">c++</a></p>
               </header>
-            <p>I’ve recently been asked how many lines of code I’ve written for some project. There are already numerous stories about why “lines of code” is not a reasonable measurement. Nevertheless I’d like to add my own - a bit contrived - example.</p>
-            <p>Assuming the objective is to write a program which</p>
-            <ul>
-            <li>reads integer numbers from its standard input</li>
-            <li>marks the numbers which are greater than 10</li>
-            <li>prints out in reverse order a 1 for the numbers which are marked, and 0 otherwise</li>
-            </ul>
-            <p>I can then start off and write the following C++ program:</p>
-            <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main()</span>
-            <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>{ </span>
-            <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt; data;</span>
-            <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> i;</span>
-            <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="bu">std::</span>cin &gt;&gt; i)</span>
-            <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  {</span>
-            <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    data.push_back(i);</span>
-            <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-            <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (!<span class="bu">std::</span>cin.eof())</span>
-            <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  {</span>
-            <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// handle error</span></span>
-            <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  }</span>
-            <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
-            <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;::const_iterator it = data.begin();</span>
-            <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (it != data.end())</span>
-            <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  {</span>
-            <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> d = *it;</span>
-            <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (d &gt; <span class="dv">10</span>)</span>
-            <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    {</span>
-            <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      results.push_back(<span class="kw">true</span>);</span>
-            <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    }</span>
-            <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
-            <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    {</span>
-            <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      results.push_back(<span class="kw">false</span>);</span>
-            <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    }</span>
-            <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    ++it;</span>
-            <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  }</span>
-            <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt;::reverse_iterator it2 = results.rbegin();</span>
-            <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (it2 != results.rend())</span>
-            <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  {</span>
-            <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; *it2 &lt;&lt; <span class="bu">std::</span>endl;</span>
-            <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    ++it2;</span>
-            <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  }</span>
-            <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-            <p>This is reasonably short and can be understood fairly well. I count <strong>34 lines of code</strong>.</p>
-            <p>Of course this can also be written much more concisely:</p>
-            <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main() {</span>
-            <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
-            <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>transform(<span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(<span class="bu">std::</span>cin), <span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(),</span>
-            <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                 <span class="bu">std::</span>back_inserter(results),</span>
-            <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                 [] (<span class="dt">int</span> d) { <span class="cf">return</span> d &gt; <span class="dv">10</span>; });</span>
-            <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>copy(results.rbegin(), results.rend(),</span>
-            <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">std::</span>ostream_iterator&lt;<span class="dt">bool</span>&gt;(<span class="bu">std::</span>cout, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>));</span>
-            <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-            <p>That’s <strong>8 lines of code</strong>.</p>
-            <p>Now which is of those two versions is “better”? The first one requires less knowledge about the C++ standard library and can thus - presumably - be more easily understood. The second however is just so much more concise that it might be better for someone who knows - and thus understands - the used concepts from the C++ standard library.</p>
-            <p>Does the number of lines of code help in anyway? I don’t think so. For some projects it can be beneficial to sacrifice conciseness in order to have code that’s more easily approchable for new (in general or just new to the project) developers. Others require concise code to remain at least somewhat overseeable.</p>
+      <p>I’ve recently been asked how many lines of code I’ve written for some project. There are already numerous stories about why “lines of code” is not a reasonable measurement. Nevertheless I’d like to add my own - a bit contrived - example.</p>
+<p>Assuming the objective is to write a program which</p>
+<ul>
+<li>reads integer numbers from its standard input</li>
+<li>marks the numbers which are greater than 10</li>
+<li>prints out in reverse order a 1 for the numbers which are marked, and 0 otherwise</li>
+</ul>
+<p>I can then start off and write the following C++ program:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>{ </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt; data;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> i;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="bu">std::</span>cin &gt;&gt; i)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    data.push_back(i);</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (!<span class="bu">std::</span>cin.eof())</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// handle error</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;::const_iterator it = data.begin();</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (it != data.end())</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> d = *it;</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (d &gt; <span class="dv">10</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      results.push_back(<span class="kw">true</span>);</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      results.push_back(<span class="kw">false</span>);</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    ++it;</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt;::reverse_iterator it2 = results.rbegin();</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (it2 != results.rend())</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; *it2 &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    ++it2;</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This is reasonably short and can be understood fairly well. I count <strong>34 lines of code</strong>.</p>
+<p>Of course this can also be written much more concisely:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;<span class="dt">bool</span>&gt; results;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>transform(<span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(<span class="bu">std::</span>cin), <span class="bu">std::</span>istream_iterator&lt;<span class="dt">int</span>&gt;(),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                 <span class="bu">std::</span>back_inserter(results),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                 [] (<span class="dt">int</span> d) { <span class="cf">return</span> d &gt; <span class="dv">10</span>; });</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>copy(results.rbegin(), results.rend(),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">std::</span>ostream_iterator&lt;<span class="dt">bool</span>&gt;(<span class="bu">std::</span>cout, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>));</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>That’s <strong>8 lines of code</strong>.</p>
+<p>Now which is of those two versions is “better”? The first one requires less knowledge about the C++ standard library and can thus - presumably - be more easily understood. The second however is just so much more concise that it might be better for someone who knows - and thus understands - the used concepts from the C++ standard library.</p>
+<p>Does the number of lines of code help in anyway? I don’t think so. For some projects it can be beneficial to sacrifice conciseness in order to have code that’s more easily approchable for new (in general or just new to the project) developers. Others require concise code to remain at least somewhat overseeable.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2019/11/lines-of-code-is-a-useless-measurement.html">
