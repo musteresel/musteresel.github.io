@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2020-11-20">
+                <title>Kakoune change colorscheme with mode and clipboard integration – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Kakoune change colorscheme with mode and clipboard integration</h1>
+                                <p class="date">2020-11-20</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/kakoune/index.html">kakoune</a>,
+                    <a href="../../../posts/tagged/linux/index.html">linux</a>,
+                    <a href="../../../posts/tagged/editor/index.html">editor</a></p>
+              </header>
+      <p>I’m currently trying out [Kakoune][] as editor instead of Emacs. I won’t go into details about it - that’s easily findable on its website - but will cut straight to the point: It is a modal editor, similar to Vim. So instead of using key combinations during writing there is an “insert” mode, in which one can insert text, and a “normal” mode, which is used for commands. (There are more modes of course; but those two are the most important right now.)</p>
+<p>An issue I always had with Vim is that I never know which mode I’m currently in. People said I’d get used to it, but I didn’t, so for Kakoune I wanted to make sure I have a <em>strong</em> visual clue of the current mode. Changing colorschemes - especially from a dark to a light one - is a <strong>pretty</strong> strong visual clue:</p>
+<pre><code>hook global WinCreate &#39;.*&#39; %{
+  colorscheme window-solarized-dark
+  hook window ModeChange &#39;push:.*:insert&#39; &#39;colorscheme window-solarized-light&#39;
+  hook window ModeChange &#39;push:insert:.*&#39; &#39;colorscheme window-solarized-dark&#39;
+  hook window ModeChange &#39;pop:insert:.*&#39; &#39;colorscheme window-solarized-dark&#39;
+  hook window ModeChange &#39;pop:.*:insert&#39; &#39;colorscheme window-solarized-light&#39;
+}</code></pre>
+<p>This is a hook (with global scope) which executes on the creation of any window. It sets a colorscheme “window-solarized-dark” (under the assumption that the initial mode of a window is not insert mode) and then goes on to install 4 hooks in the scope of the just created window. These hooks execute when there is a mode change in the current window, and set a colorscheme “window-solarized-light” whenever the mode is changed to insert mode.</p>
+<p>Initially I thought 2 hooks would do: One for entering insert mode and one for leaving insert mode. But since modes in Kakoune are on a stack, you can enter insert mode, then push a new mode on the stack (and thus temporarily switching to that mode) and then pop back into insert mode. That’s why there’s 4 cases, in the same order as the hooks above:</p>
+<ul>
+<li>Push insert mode onto the stack.</li>
+<li>Push another mode onto the stack while in insert mode (and thus leaving insert mode).</li>
+<li>Pop insert mode from the stack, going to the previous mode. Note: I assume that this is <em>not</em> insert mode!</li>
+<li>Pop any other mode from the stack, going back to insert mode.</li>
+</ul>
+<p>The last thing missing is the colorscheme: I couldn’t just use any of the provided colorschemes, because they have code like this:</p>
+<pre><code>face global Whitespace &lt;some-color&gt;</code></pre>
+<p>They set the <em>faces</em> in the <em>global</em> scope. But I only want to change the colorscheme in a single window, thus I changed the colorschemes (in my case the solarized colorschemes which come by default with kakoune) to install the faces in <em>window</em> scope:</p>
+<pre><code>face window Whitespace &lt;some-color&gt;</code></pre>
+<p>And then I have a very strong visual clue in which mode I’m in!</p>
+<p>As an added bonus, here’s how I integrated the clipboard into Kakoune:</p>
+<pre><code>define-command yank-clipboard %{
+  execute-keys -draft &#39;&lt;a-|&gt;xclip -in -selection clipboard &gt;&amp;- 2&gt;&amp;-&lt;ret&gt;&#39;
+}
+define-command paste-clipboard %{
+  execute-keys -draft &#39;!xclip -out - -selection clipboard 0&gt;&amp;- 2&gt;&amp;-&lt;ret&gt;&#39;
+}</code></pre>
+<p><code>yank-clipboard</code> pipes the (Kakoune) selection(s) to <code>xclip</code>, which reads from stdin into the (X) selection “clipboard”. Additionally, due to how xclip works, I close it’s stderr and stdout.</p>
+<p><code>paste-clipboard</code> reads from the pipe connected to stdout of <code>xclip</code>, which reads out of the (X) selection “clipboard”. To avoid xclip hanging I close its stdin and stderr.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2020/11/kakoune-colorscheme-per-mode-clipboard-integration.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>
