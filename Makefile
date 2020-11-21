@@ -44,7 +44,8 @@ POSTS = \
   2019/10/golden-tests-with-cmake.html \
   2019/11/lines-of-code-is-a-useless-measurement.html \
   2020/01/webassembly-text-br_table-example.html \
-  2020/02/cmake-template-linux-kernel-module.html
+  2020/02/cmake-template-linux-kernel-module.html \
+  2020/11/kakoune-colorscheme-per-mode-clipboard-integration.html
 
 
 # Add the posts/ prefix to get paths to the post files.
