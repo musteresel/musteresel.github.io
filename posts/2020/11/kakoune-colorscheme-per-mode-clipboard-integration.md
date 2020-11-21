@@ -12,6 +12,8 @@ using key combinations during writing there is an "insert" mode, in which
 one can insert text, and a "normal" mode, which is used for commands. (There are
 more modes of course; but those two are the most important right now.)
 
+[Kakoune]: https://kakoune.org
+
 An issue I always had with Vim is that I never know which mode I'm currently in.
 People said I'd get used to it, but I didn't, so for Kakoune I wanted to make
 sure I have a *strong* visual clue of the current mode.  Changing colorschemes -
