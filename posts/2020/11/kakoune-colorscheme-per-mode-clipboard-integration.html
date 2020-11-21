@@ -30,7 +30,7 @@
                     <a href="../../../posts/tagged/linux/index.html">linux</a>,
                     <a href="../../../posts/tagged/editor/index.html">editor</a></p>
               </header>
-      <p>I’m currently trying out [Kakoune][] as editor instead of Emacs. I won’t go into details about it - that’s easily findable on its website - but will cut straight to the point: It is a modal editor, similar to Vim. So instead of using key combinations during writing there is an “insert” mode, in which one can insert text, and a “normal” mode, which is used for commands. (There are more modes of course; but those two are the most important right now.)</p>
+      <p>I’m currently trying out <a href="https://kakoune.org">Kakoune</a> as editor instead of Emacs. I won’t go into details about it - that’s easily findable on its website - but will cut straight to the point: It is a modal editor, similar to Vim. So instead of using key combinations during writing there is an “insert” mode, in which one can insert text, and a “normal” mode, which is used for commands. (There are more modes of course; but those two are the most important right now.)</p>
 <p>An issue I always had with Vim is that I never know which mode I’m currently in. People said I’d get used to it, but I didn’t, so for Kakoune I wanted to make sure I have a <em>strong</em> visual clue of the current mode. Changing colorschemes - especially from a dark to a light one - is a <strong>pretty</strong> strong visual clue:</p>
 <pre><code>hook global WinCreate &#39;.*&#39; %{
   colorscheme window-solarized-dark
