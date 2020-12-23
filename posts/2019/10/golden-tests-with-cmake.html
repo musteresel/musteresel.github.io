@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -149,16 +150,16 @@
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Run tool with an input to produce some output</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-1-run</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-<span class="ot">1</span>-run</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-in golden-1-out)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-<span class="ot">1</span>-in golden-<span class="ot">1</span>-out)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Compare output with expected output</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(golden-1-cmp</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(golden-<span class="ot">1</span>-cmp</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_COMMAND}</span> -E compare_files</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  golden-1-out</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-expected)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  golden-<span class="ot">1</span>-out</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-<span class="ot">1</span>-expected)</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># A) cmake extra; run compare (3) only when running the tool</span></span>
@@ -172,11 +173,11 @@
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(tool_build</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> tool_fixture)</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-run</span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  PROPRETIES <span class="ot">FIXTURES_REQUIRED</span> tool_fixture)</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-run</span>
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> golden-1_fixture)</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-cmp</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-cmp</span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_REQUIRED</span> golden-1_fixture)</span></code></pre></div>
 <p>There’s a few things going on …</p>
 <ol type="1">

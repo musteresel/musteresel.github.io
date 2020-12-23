@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -104,9 +105,9 @@
 <p><strong>This is extremely inconvenient!</strong> Thus I wrote a filter for Pandoc to turn absolute URLs (file paths, rather) into links relative to the project root. It leaves relative links like <code>appendix/data.txt</code> or <code>#section</code> unchanged and rather turns absolute file paths (<code>/posts/foo/bar.html</code>) into links relative to the project root by prefixing them with a given <code>pathToProjectRoot</code>.</p>
 <p>You can find the <a href="https://github.com/musteresel/pandoc-project-relative-links">filter on Github</a>. It’s written in Haskell. Contributions are welcome!</p>
 <p>Running</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> -t markdown -i in.md <span class="kw">\</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--filter</span> pandoc-project-relative-links <span class="kw">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-M</span> pathToProjectRoot=../../..</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="at">-t</span> markdown <span class="at">-i</span> in.md <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--filter</span> pandoc-project-relative-links <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-M</span> pathToProjectRoot=../../..</span></code></pre></div>
 <p>turns an <code>in.md</code> like</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>This is a <span class="co">[</span><span class="ot">relative link</span><span class="co">](relative/link.html)</span> and this a [project</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>relative link](/project/relative.html).  <span class="co">[</span><span class="ot">This</span><span class="co">](#thing)</span> is also</span>

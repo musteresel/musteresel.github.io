@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -102,7 +103,7 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> worktree list</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># /tmp/repo          &lt;COMMIT&gt; [master]</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># /tmp/repo/feature  &lt;COMMIT&gt; [feature]</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> -r feature</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-r</span> feature</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> worktree list</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># /tmp/repo          &lt;COMMIT&gt; [master]</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># /tmp/repo/feature  &lt;COMMIT&gt; [feature]</span></span>
@@ -118,7 +119,7 @@
 <p>…show that the worktree is really gone.</p>
 <p>Why is that? Because the man page is a bit unclear: git doesn’t really care about the <em>directory</em>, but rather about a hidden file it creates within said directory:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> worktree add new_feature</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> -a1 new_feature</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-a1</span> new_feature</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># .git</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ...</span></span></code></pre></div>
@@ -127,7 +128,7 @@
 <p>These settings are made in a <code>.git</code> file located at the top directory of the linked working tree.</p>
 </blockquote>
 <p>A quick look at the contents of the <code>.git</code> shows which settings are in there (note: there can be more than shown here):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gitdir</span>: /tmp/repo/.git/worktrees/new_feature</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gitdir:</span> /tmp/repo/.git/worktrees/new_feature</span></code></pre></div>
 <p>So it’s really the combination of keeping the path to the worktree and the <code>.git</code> file within the worktree to keep the worktree alive.</p>
 <p>You may ask how I could stumble over this? Or rather why I would want to remove the worktree directory. The answer is: My <code>make clean</code> command did just that … <code>rm -r build/</code> (where <code>build/</code> is a git worktree) … because it was the simplest solution.</p>
             <hr>

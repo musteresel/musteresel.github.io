@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2020-12-23">
+                <title>Using adb to transfer an Android app (apk and obb files) between devices – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Using adb to transfer an Android app (apk and obb files) between devices</h1>
+                                <p class="date">2020-12-23</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/android/index.html">android</a>,
+                    <a href="../../../posts/tagged/linux/index.html">linux</a></p>
+              </header>
+      <p><strong>Backstory:</strong> I have a (Amazon - so FireOs technically) tablet and want to have a specific app (Lego Boost Star Wars) on that device. The app is available for download via the Google Play Store. I can install the app on my smartphone. Installing the app via the Play Store on the table requires me to install the Google Play Store app on the tablet first. There are howto’s for that; but in the case of that specific tablet it just didn’t work. And: Installing the Play Store app (and the required other Google apps) seems like a bit of an <em>overkill</em> for just getting one app to that device. Alternatively I could trust one of the hundreds of more or less shady online Play Store download and totally not virus transmission serivces. <em>No thank you.</em></p>
+<p><em>I can install the app on my smartphone.</em></p>
+<p>Well … am I able to get the app “out” of my smartphone and “in” the tablet? <strong>Yes!</strong> As it turns out this was fairly easy once I knew about the correct paths. <em>Step by step:</em></p>
+<ol type="1">
+<li><p>Preparation: Enable developer settings / mode on both devices; enable USB debugging and connect to laptop (running Linux; should work the same on Windows though) with a working adb installation.</p></li>
+<li><p>Find the APK of the app on the phone: Use <code>adb -t &lt;TRANSPORT_ID_PHONE&gt; shell</code> to open a shell on the phone, then enter <code>pm list packages -f | grep lego</code> to get the location of the apk file:</p>
+<pre><code>#phone# pm list packages -f | grep lego
+package:/data/app/com.lego.boost.boost-92CgdA2ln-n4V_2TXlhQTA==/base.apk=com.lego.boost.boost
+package:/data/app/com.lego.boost.starwars-nNr5IayJsqUaHo9FIUU-lQ==/base.apk=com.lego.boost.starwars</code></pre>
+<p>The second line is for the app (the first is of another lego app). The syntax is:</p>
+<pre><code>package:&lt;PATH-to-APK&gt;=&lt;APP-IDENTIFIER&gt;</code></pre>
+<p>(If someone knows the correct term for <code>APP-IDENTIFIER</code> please let me know!)</p></li>
+<li><p>Pull the APK from the phone to the laptop:</p>
+<pre><code>#laptop# adb -t &lt;TRANSPORT_ID_PHONE&gt; pull &lt;PATH-to-APK&gt; the.apk</code></pre></li>
+<li><p>Install the APK on the tablet:</p>
+<pre><code>#laptop# adb -t &lt;TRANSPORT_ID_TABLET&gt; install the.apk</code></pre></li>
+<li><p>In case of the Lego Boost Star Wars app (which is built with Unity) there is an additional OBB file (with all the data in it) which needs to be transferred. OBB files are in <code>/storage/self/primary/Android/obb/&lt;APP-IDENTIFIER&gt;</code> on my smartphone and tablet.</p>
+<pre><code>#laptop# adb -t &lt;TRANSPORT_ID_PHONE&gt; pull /storage/self/primary/Android/obb/com.lego.boost.starwars/main.10025.com.lego.boost.starwars.obb
+#laptop# adb -t &lt;TRANSPORT_ID_TABLET&gt; shell
+#tablet# mkdir /storage/self/primary/Android/obb/com.lego.boost.starwars
+#tablet# exit
+#laptop# adb -t &lt;TRANSPORT_ID_TABLET&gt; push main.10025.com.lego.boost.starwars.obb /storage/self/primary/Android/obb/com.lego.boost.starwars/</code></pre></li>
+</ol>
+<p><em>Done.</em></p>
+<p><strong>Attention:</strong> This only works because my phone and tablet are both relatively compatible architectures. Otherwise the native part of the app (remember: Unity, so there are native libraries/JNI involved) wouldn’t be able to run.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2020/12/adb-transfer-android-app-between-devices-apk-and-obb.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>

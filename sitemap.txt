@@ -70,5 +70,7 @@ https://musteresel.github.io/posts/2020/02/cmake-template-linux-kernel-module.ht
 https://musteresel.github.io/posts/2020/02/index.html
 https://musteresel.github.io/posts/2020/11/index.html
 https://musteresel.github.io/posts/2020/11/kakoune-colorscheme-per-mode-clipboard-integration.html
+https://musteresel.github.io/posts/2020/12/adb-transfer-android-app-between-devices-apk-and-obb.html
+https://musteresel.github.io/posts/2020/12/index.html
 https://musteresel.github.io/posts/2020/index.html
 https://musteresel.github.io/privacy.html

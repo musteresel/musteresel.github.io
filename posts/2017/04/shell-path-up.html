@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -97,7 +98,7 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># later used like:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ch">$(</span><span class="kw">shell</span><span class="st"> </span><span class="ch">$(</span><span class="dt">path_up</span><span class="ch">))</span></span></code></pre></div>
 <p>As a shell command outside of a Makefile this can look like this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">realpath</span> -m --relative-to  <span class="va">$(</span><span class="fu">dirname</span> FILE<span class="va">)</span> BASEDIR</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">realpath</span> <span class="at">-m</span> <span class="at">--relative-to</span>  <span class="va">$(</span><span class="fu">dirname</span> FILE<span class="va">)</span> BASEDIR</span></code></pre></div>
 <p>Note that this is the <code>realpath</code> command from the GNU coreutils. As noted in <a href="https://unix.stackexchange.com/a/136527/23529">this answer on UNIX Stack Exchange</a> there are many different implementations of <code>realpath</code> with different features.</p>
             <hr>
       <footer>

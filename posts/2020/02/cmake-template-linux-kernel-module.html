@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -99,7 +100,7 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Additionally, if spilt in multiple source files:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># mymodule-objs := source1.o source2.o</span></span></code></pre></div>
 <p>Then one runs the following to build the module, from the directory which contains above file:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> -C /path/to/kernel/build M=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span> modules</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> /path/to/kernel/build M=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span> modules</span></code></pre></div>
 <p>But what if I want tests, coverage reports, configuration, packaging and other nice stuff? <strong>CMake can do this, so I’ve setup CMake to build a Linux kernel module:</strong></p>
 <h2 id="configuration-wheres-the-kernel-build-directory">Configuration: Where’s the kernel build directory?</h2>
 <p>CMake can ask (or even search!) for the kernel build directory; i.e. the directory which contains the Makefile which is actually called in the above <code>make</code> command.</p>

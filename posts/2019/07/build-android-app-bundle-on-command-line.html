@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -96,27 +97,27 @@
 <ol type="1">
 <li><p>Get the necessary tools: <code>aapt2</code> and <code>bundletool</code>. <code>aapt2</code> is the second version of the Android Asset Packaging Tool. It’s available (I used manual download from Maven) <a href="https://developer.android.com/studio/command-line/aapt2">here</a>. The downloaded jar file contained the <code>aapt2</code> executable. <code>bundletool</code> is used to work with App bundles, available from <a href="https://github.com/google/bundletool/releases">it’s GitHub repository</a>. I downloaded <code>bundletool-all-0.10.0.jar</code>, which can be run with <code>java -jar path/to/above/bundletool.jar</code>. Apart from these two the following steps need <code>javac</code> (the Java compiler), <code>jarsigner</code> (part of the JDK for me), <code>dx</code> (part of the Android SDK build tools; used to convert Java bytecode to Dalvik bytecode) and <code>zip</code>/<code>unzip</code>.</p></li>
 <li><p>“Compile” all resources using <code>aapt2</code>: Every resource file of the base module needs to be compiled:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aapt2</span> compile project/app/src/main/res/**/* -o compiled_resources</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aapt2</span> compile project/app/src/main/res/<span class="pp">**</span>/<span class="pp">*</span> <span class="at">-o</span> compiled_resources</span></code></pre></div>
 <p>This fills the <code>compiled_resources</code> directory with files such as <code>layout_activity_main.xml.flat</code>.</p></li>
 <li><p>“Link” the resources into a temporary APK, generating the <code>R.java</code> file along the way and converting the resources into protobuf format:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aapt2</span> link --proto-format -o temporary.apk <span class="kw">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>           <span class="ex">-I</span> android_sdk/platforms/android-NN/android.jar <span class="kw">\</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           <span class="ex">--manifest</span> project/app/src/main/AndroidManifest.xml <span class="kw">\</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           <span class="ex">-R</span> compiled_resources/*.flat <span class="kw">\</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>           <span class="ex">--auto-add-overlay</span> --java gen</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aapt2</span> link <span class="at">--proto-format</span> <span class="at">-o</span> temporary.apk <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">-I</span> android_sdk/platforms/android-NN/android.jar <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">--manifest</span> project/app/src/main/AndroidManifest.xml <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">-R</span> compiled_resources/<span class="pp">*</span>.flat <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">--auto-add-overlay</span> <span class="at">--java</span> gen</span></code></pre></div>
 <p>This creates the <code>temporary.apk</code> which contains the resources and the manifest in protobuf (Google Protocol Buffers) format and also generates <code>R.java</code> (under <code>gen/my/package/R.java</code>) which is used by Java code to reference resources. It needs to “include” (it doesn’t really contain it, just cross-checks references) the <code>android.jar</code> for the target platform (part of the Android SDK).</p></li>
 <li><p>Compile the Java source files. Since <code>R.java</code> is now generated, I can compile the Java sources:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">javac</span> -source 1.7 -target 1.7 <span class="kw">\</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>      <span class="ex">-bootclasspath</span> <span class="va">$JAVA_HOME</span>/jre/lib/rt.jar <span class="kw">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>      <span class="ex">-classpath</span> android_sdk/platforms/android-NN/android.jar <span class="kw">\</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="ex">-d</span> classes <span class="kw">\</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="ex">gen/**/*.java</span> project/app/src/main/java/**/*.java</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">javac</span> <span class="at">-source</span> 1.7 <span class="at">-target</span> 1.7 <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">-bootclasspath</span> <span class="va">$JAVA_HOME</span>/jre/lib/rt.jar <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">-classpath</span> android_sdk/platforms/android-NN/android.jar <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">-d</span> classes <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      gen/<span class="pp">**</span>/<span class="pp">*</span>.java project/app/src/main/java/<span class="pp">**</span>/<span class="pp">*</span>.java</span></code></pre></div>
 <p>This creates <code>.class</code> files in the <code>classes</code> directory. Depending on dependencies the classpath needs to include other paths/jars.</p></li>
 <li><p>Extract the previously generated temporary APK:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> temporary.apk -d staging   </span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> temporary.apk <span class="at">-d</span> staging   </span></code></pre></div>
 <p>An APK is nothing but a fancy zip file, so this puts all contents of the <code>temporary.apk</code> into the <code>staging</code> directory.</p></li>
 <li><p>Prepare files to be bundled as the base module. The end result is a <code>staging</code> directory which can be zipped as a base module. First step is to move the <code>staging/AndroidManifest.xml</code> into <code>staging/manifest/</code> (a directory to be created). Next I create <code>stating/dex/</code> and use <code>dx</code> to convert the Java bytecode (in the <code>.class</code> files) to Dalvik bytecode (suitable for running on Android):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dx</span> --dex --output=staging/dex/classes.dex classes/</span></code></pre></div></li>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dx</span> <span class="at">--dex</span> <span class="at">--output</span><span class="op">=</span>staging/dex/classes.dex classes/</span></code></pre></div></li>
 <li><p>Create a zip file of the contents of the base module: <code>(cd staging; zip -r ../base.zip *)</code></p></li>
 <li><p>Build the bundle: <code>bundletool build-bundle --modules=base.zip --output=bundle.aab</code></p></li>
 <li><p>Sign it: <code>jarsigner -keystore mykeystore.jks bundle.aab my-id</code></p></li>

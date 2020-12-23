@@ -16,6 +16,7 @@
       pre > code.sourceCode { white-space: pre; position: relative; }
       pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
       div.sourceCode { margin: 1em 0; }
       pre.sourceCode { margin: 0; }
@@ -101,7 +102,7 @@
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./CMakeLists.txt</span></span></code></pre></div>
 <p>The two <code>name.c</code> files each define a (dummy) function, with different names though!</p>
 <p><code>CMakeLists.txt</code> contains:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">cmake_minimum_required</span>(<span class="ot">VERSION</span> 3.12)</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">cmake_minimum_required</span>(<span class="ot">VERSION</span> <span class="dt">3.12</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(foo <span class="ot">OBJECT</span> foo/name.c)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(bar <span class="ot">OBJECT</span> bar/name.c)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(final <span class="ot">STATIC</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:foo&gt;</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:bar&gt;</span>)</span></code></pre></div>
