@@ -31,23 +31,3 @@ if (!window.__defineGetter__) {
     window.__defineSetter__("sessionStorage", StorageSetBlock);
 }
 
-// analytics.js
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-
-ga('create', 'UA-34701218-2', 'auto' , {
-    'storage': 'none',
-    'storeGac': false,
-    'clientId': Math.random().toString()
-});
-ga(function(tracker) {
-    console.log(tracker.get('clientId'));
-});
-ga('set', 'allowAdFeatures', false);
-ga('set', 'anonymizeIp', true);
-ga('send', 'pageview');
-ga('send', 'pageview', {'sessionControl': 'end'});
-ga('remove');
