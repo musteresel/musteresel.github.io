@@ -2,29 +2,20 @@
 title: Privacy / Datenschutz
 ...
 
-This site uses Google Analytics to collect data in order to help me
-improve the site.  Google Analytics is used **without** Cookies and
-with anonymized IP.  Therefore it cannot track you across the site or
-to/from different sites.  It counts pageviews and collects information
-such as used browser, display size, rough geographic origin and
-language setting of the browser.
-
-[Here you can learn more about how Google Analtics collects
-data][ga-info], though as stated before this site greatly restricts
-which data can be collected.
+This site is **not** using any tracking technologies or otherwise collecting
+your data.  It's just a (mostly static) website.
+If you follow the "Send me a message" link in the footer you'll end up on Google
+Forms (which most likely is collecting data from you for their own purposes)
+where you can give me your email address (if you want an answer from me).
+I will only use your email address to answer your message, and delete it from my
+records as soon as you request or no further correspondence is to be expected.
 
 <hr style="width:40%;">
 
-*Diese Seite verwendet Google Analytics um Nutzungsstatistiken zu
-sammeln mit dem Ziel mir bei der Optimierung der Seite zu helfen.
-Google Analytics wird **ohne** Cookies und mit anonymisierter IP
-verwendet.  Daher kann es Sie nicht über die Seite oder zu/von anderen
-Webseiten verfolgen.  Es werden Seitenaufrufe gezählt und
-Informationen über verwendeten Browser, Anzeigegröße, grober
-geographischer Ursprung und Spracheinstellung des Browsers gesammelt.*
-
-*[Auf dieser Seite finden Sie mehr Informationen darüber wie Google
-Analytics Informationen sammelt][ga-info], aber wie bereits dargelegt
-beschränkt diese Seite welche Daten gesammelt werden.*
-
-[ga-info]: https://policies.google.com/technologies/partner-sites
+*Diese Seite nutzt **keine** Tracking Technologien und sammelt auch **nicht** Ihre
+Daten.  Es ist einfach nur eine (größtenteils statische) Webseite.
+Wenn Sie dem "Send me a message" Link im Footer folgen landen sie bei Google
+Forms (was sicherlich Ihre Daten für Google's eigene Zwecke sammelt) wo sie mir
+Ihre Email Adresse geben können (wenn Sie eine Antwort von mir möchten).
+Ich werde Ihre Email Adresse nur verwenden um Ihnen zu antworten, und sie
+löschen wenn Sie es wünschen oder wenn keine weitere Unterhaltung zu erwarten ist.*
