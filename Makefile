@@ -104,7 +104,7 @@ about.html: ADD_POSTREF=
 # Build html files from markdown with pandoc
 %.html: %.md template.html.in
 	@mkdir -p $(dir $@)
-	pandoc --template $(filter %template.html.in,$^) -o $@ $< \
+	pandoc --template $(filter %template.html.in,$^) --wrap=none -o $@ $< \
 	  $(PANDOC_FLAGS) \
 	  $(relative_links_filter) \
 	  $(ADD_POSTREF) $(ADD_SUFFIX)
@@ -175,7 +175,7 @@ POSTLISTS += all-posts.html $(YEARSANDMONTHSLISTS)
 $(POSTLISTS): %.html: %.links template.html.in
 	@mkdir -p $(dir $@)
 	pandoc --template $(filter %template.html.in,$^) \
-	  -f html -t html \
+	  -f html -t html --wrap=none \
 	  -o $@ $< -V title=$(TITLE) -V pagetitle=$(TITLE) \
 	  $(relative_links_filter) $(ADD_SUFFIX)
 
@@ -187,7 +187,7 @@ recent-wrong-order.links: $(most_recent_posts:.html=.link)
 recent.links: recent-wrong-order.links
 	tac $< > $@
 recent.html.in: recent.links
-	pandoc -f html -t html -o $@ $< $(relative_links_filter)
+	pandoc -f html -t html --wrap=none -o $@ $< $(relative_links_filter)
 
 
 all-posts.html: TITLE="All posts, most recent first"
