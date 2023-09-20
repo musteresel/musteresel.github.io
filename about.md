@@ -5,9 +5,10 @@ lang: en
 ---
 
 My name is Daniel Jour.  Before I got married you'd call me Daniel
-Oertwig, though.  I'm an enthusiastic hobby programmer with more than
-10 years of experience.  I've a B.Sc. in Aerospace Computer Science
-and am currently finishing my M.Sc in Computer Science.  I've stumbled
+Oertwig, though.  I'm a freelance software engineer and an enthusiastic
+hobby programmer with more than 20 years of experience.
+I've a M.Sc in Computer Science and a
+B.Sc. in Aerospace Computer Science.  I've stumbled
 over (and into) all kinds of technologies, tools and stuff.
 
 Apart from Computer Science and Programming related stuff I really
