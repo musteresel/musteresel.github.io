@@ -51,7 +51,7 @@
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
       code span.at { color: #7d9029; } /* Attribute */
       code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
+      code span.bu { color: #008000; } /* BuiltIn */
       code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
       code span.ch { color: #4070a0; } /* Char */
       code span.cn { color: #880000; } /* Constant */
@@ -64,7 +64,7 @@
       code span.ex { } /* Extension */
       code span.fl { color: #40a070; } /* Float */
       code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
       code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
       code span.kw { color: #007020; font-weight: bold; } /* Keyword */
       code span.op { color: #666666; } /* Operator */
@@ -98,14 +98,14 @@
       <p>Scenario: A static library <code>lib</code> is to be installed. To link against this static library requires special link flags and a linker script <code>script.ld</code>.</p>
 <p>For “GCC compatible” linkers the linker script is specified via the <code>-T</code> flag, followed by the path to the script. During build of the static library itself the linker script is within the project source directory; referencing that is no different than any other file. Assuming the linker script is put under <code>${CMAKE_INSTALL_PREFIX}/share/script.ld</code> when installed the straightforward solution looks like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -T path/to/script.ld for build and install case</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_options</span>(lib <span class="ot">INTERFACE</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_options</span>(<span class="bn">lib</span> <span class="ot">INTERFACE</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  -T <span class="ot">$&lt;</span><span class="kw">BUILD_INTERFACE</span><span class="ot">:script.ld&gt;</span> <span class="ot">$&lt;</span><span class="kw">INSTALL_INTERFACE</span><span class="ot">:share/script.ld&gt;</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># actually install script.ld file</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">install</span>(<span class="ot">FILES</span> script.ld <span class="ot">DESTINATION</span> share/)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># install liblib.a library, prepare export</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">install</span>(<span class="ot">TARGETS</span> lib</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">install</span>(<span class="ot">TARGETS</span> <span class="bn">lib</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">EXPORT</span> lib-target</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">ARCHIVE</span> <span class="ot">DESTINATION</span> lib/)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -129,18 +129,18 @@
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># cross-prefix symbolic link such as /lib -&gt; /usr/lib.</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_realCurr</span> <span class="st">&quot;</span><span class="dv">${</span><span class="va">_IMPORT_PREFIX</span><span class="dv">}</span><span class="st">&quot;</span> <span class="ot">REALPATH</span>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_realOrig</span> <span class="st">&quot;/cmake&quot;</span> <span class="ot">REALPATH</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="va">_realCurr</span> <span class="ot">STREQUAL</span> <span class="va">_realOrig</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="va">_realCurr</span> <span class="ot">STREQUAL</span> <span class="va">_realOrig</span>)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">set</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;/cmake&quot;</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">unset</span>(<span class="va">_realOrig</span>)</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">unset</span>(<span class="va">_realCurr</span>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;</span><span class="dv">${</span><span class="va">_IMPORT_PREFIX</span><span class="dv">}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># (HERE, read about it below)</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="va">_IMPORT_PREFIX</span> <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="va">_IMPORT_PREFIX</span> <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">set</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span></code></pre></div>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span></code></pre></div>
 <p>This basically walks up from the location of <code>libTargets.cmake</code> to where <code>${CMAKE_INSTALL_PREFIX}</code> would be. In this case, since <code>libTargets.cmake</code> is to be installed in <code>${CMAKE_INSTALL_PREFIX}/cmake/</code> it goes up just one level (at the <code>HERE</code> comment), but if it had been put e.g. to <code>${CMAKE_INSTALL_PREFIX}/lib/share/cmake/</code> then there would be 3 <code>get_filename_component</code> calls instead of just one.</p>
 <p>That way, at “use time” (e.g. during the <code>find_package(lib)</code> call) CMake uses <code>/stage/cmake/libTargets.cmake</code> to compute an <code>${_IMPORT_PREFIX}</code> of <code>/stage</code> which allows it to use <code>${_IMPORT_PREFIX}/lib/liblib.a</code> to refer to <code>/stage/lib/liblib.a</code> - the correct path to the static library. <strong>The important point is that this happens not as part of the configure / build / install process of the library, but rather during the configuration of another CMake build (which uses <code>find_package(lib)</code>)</strong>.</p>
 <p>Fixing the issue with the path to the linker script can be done in (at least) two ways now:</p>
@@ -148,9 +148,9 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load information for each installed configuration.</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_DIR</span> <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">file</span>(<span class="ot">GLOB</span> CONFIG_FILES <span class="st">&quot;</span><span class="dv">${</span><span class="va">_DIR</span><span class="dv">}</span><span class="st">/libTargets-*.cmake&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span>(f <span class="dv">${CONFIG_FILES}</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span>(f <span class="dv">${CONFIG_FILES}</span>)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">include</span>(<span class="dv">${f}</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">endforeach</span>()</span></code></pre></div>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">endforeach</span>()</span></code></pre></div>
 <p>A custom <code>libTargets-script.cmake</code> file installed to <code>cmake/</code> has therefore access to <code>_IMPORT_PREFIX</code> and can use it to set link options appropriately:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># contents of libTargets-script.cmake</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># note use of namespaced target name!</span></span>
@@ -162,9 +162,9 @@
 <div class="sourceCode" id="cb6"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># contents of libConfig.cmake.in</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(MYDIR <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> (<span class="ot">NOT</span> <span class="ot">TARGET</span> <span class="bn">lib::lib</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="ot">NOT</span> <span class="ot">TARGET</span> <span class="bn">lib::lib</span>)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">include</span>(<span class="st">&quot;</span><span class="dv">${MYDIR}</span><span class="st">/multipleTargets.cmake&quot;</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span> ()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span> ()</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the installation prefix relative to this file, like </span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># CMake does in libTargets.cmake .. this needs to be kept in sync and</span></span>
@@ -172,15 +172,15 @@
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;</span><span class="dv">${CMAKE_CURRENT_LIST_FILE}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_realCurr</span> <span class="st">&quot;</span><span class="dv">${</span><span class="va">_IMPORT_PREFIX</span><span class="dv">}</span><span class="st">&quot;</span> <span class="ot">REALPATH</span>)</span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_realOrig</span> <span class="st">&quot;</span><span class="bn">@CMAKE_INSTALL_PREFIX@</span><span class="st">/cmake&quot;</span> <span class="ot">REALPATH</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="va">_realCurr</span> <span class="ot">STREQUAL</span> <span class="va">_realOrig</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="va">_realCurr</span> <span class="ot">STREQUAL</span> <span class="va">_realOrig</span>)</span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">set</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;</span><span class="bn">@CMAKE_INSTALL_PREFIX@</span><span class="st">/cmake&quot;</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="kw">unset</span>(<span class="va">_realOrig</span>)</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="kw">unset</span>(<span class="va">_realCurr</span>)</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="kw">get_filename_component</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;</span><span class="dv">${</span><span class="va">_IMPORT_PREFIX</span><span class="dv">}</span><span class="st">&quot;</span> <span class="ot">PATH</span>)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="va">_IMPORT_PREFIX</span> <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="va">_IMPORT_PREFIX</span> <span class="ot">STREQUAL</span> <span class="st">&quot;/&quot;</span>)</span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">set</span>(<span class="va">_IMPORT_PREFIX</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co"># note use of namespaced target name!</span></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_options</span>(<span class="bn">lib::lib</span></span>

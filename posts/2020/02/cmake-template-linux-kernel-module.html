@@ -51,7 +51,7 @@
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
       code span.at { color: #7d9029; } /* Attribute */
       code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
+      code span.bu { color: #008000; } /* BuiltIn */
       code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
       code span.ch { color: #4070a0; } /* Char */
       code span.cn { color: #880000; } /* Constant */
@@ -64,7 +64,7 @@
       code span.ex { } /* Extension */
       code span.fl { color: #40a070; } /* Float */
       code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
       code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
       code span.kw { color: #007020; font-weight: bold; } /* Keyword */
       code span.op { color: #666666; } /* Operator */
@@ -106,20 +106,20 @@
 <p>CMake can ask (or even search!) for the kernel build directory; i.e. the directory which contains the Makefile which is actually called in the above <code>make</code> command.</p>
 <p>For me a pretty simple approach works fine: Let the user provide the path (via <code>-Dkerneldir=/the/path</code> when calling CMake) or use a sensible default (works on Ubuntu, for example):</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">set</span>(kerneldir <span class="st">&quot;&quot;</span> <span class="ot">CACHE</span> <span class="ot">STRING</span> <span class="st">&quot;Path to the kernel build directory&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="st">&quot;</span><span class="dv">${kerneldir}</span><span class="st">&quot;</span> <span class="ot">STREQUAL</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="st">&quot;</span><span class="dv">${kerneldir}</span><span class="st">&quot;</span> <span class="ot">STREQUAL</span> <span class="st">&quot;&quot;</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">execute_process</span>(<span class="ot">COMMAND</span> uname -r <span class="ot">OUTPUT_VARIABLE</span> uname_r</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                  <span class="ot">OUTPUT_STRIP_TRAILING_WHITESPACE</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">set</span>(kerneldir <span class="st">&quot;/lib/modules/</span><span class="dv">${uname_r}</span><span class="st">/build&quot;</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">find_file</span>(kernel_makefile <span class="ot">NAMES</span> Makefile</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                          <span class="ot">PATHS</span> <span class="dv">${kerneldir}</span> <span class="ot">NO_DEFAULT_PATH</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span>(<span class="ot">NOT</span> kernel_makefile)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="ot">NOT</span> kernel_makefile)</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">message</span>(<span class="ot">FATAL_ERROR</span> <span class="st">&quot;There is no Makefile in kerneldir!&quot;</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">endif</span>()</span></code></pre></div>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span></code></pre></div>
 <p>Of course it’s possible to go crazy here and extends this to try multiple paths or whatever.</p>
 <h2 id="gather-the-source-files">Gather the source files</h2>
 <p>For testing, coverage and so on I often prefer to having a non-kernel build of the most important functionality; therefore I split the module into a static library and a <code>module.c</code> file, where only the later contains acutal “really” Linux kernel specific code. However, I don’t use the static library for linking in the kernel module as there might be preprocessor defines or similar which need to be set differently for a kernel module build. Therefore I use the source files of the static library directly for the kernel module:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(mymodule-lib <span class="ot">STATIC</span> source1.c source2.c)</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(<span class="bn">mymodule-lib</span> <span class="ot">STATIC</span> source1.c source2.c)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">get_target_property</span>(module_sources mymodule-lib <span class="ot">SOURCES</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">list</span>(<span class="ot">APPEND</span> module_sources module.c)</span></code></pre></div>
 <h2 id="generate-a-kbuild-file">Generate a <code>Kbuild</code> file</h2>
@@ -131,9 +131,9 @@
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">mymodule-objs </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">pathsubst</span><span class="er"> </span><span class="dt">%.c,%.o,</span><span class="er"> </span><span class="ch">$(</span><span class="kw">filter</span><span class="st"> %.c</span><span class="kw">,</span><span class="st"> @module_sources_string@</span><span class="ch">))</span></span></code></pre></div>
 <h2 id="make-the-source-files-accessible-to-the-kernel-makefile">Make the source files accessible to the kernel Makefile</h2>
 <p>Of course the source files are in the source directory. But the kernel Makefile is working in the binary directory; therefore I just copy the source files over:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">foreach</span>(src <span class="dv">${module_sources}</span>)</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span>(src <span class="dv">${module_sources}</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">configure_file</span>(<span class="dv">${src}</span> <span class="dv">${src}</span> <span class="ot">COPYONLY</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">endforeach</span>()</span></code></pre></div>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">endforeach</span>()</span></code></pre></div>
 <p>This means that an “in-tree-build” is not advised, but I wasn’t planning on that either way. Perhaps one should add a warning if an in-tree-build was attempted, though …</p>
 <h2 id="add-a-custom-target-to-build-the-module">Add a custom target to build the module</h2>
 <p>Last but not least, a custom command to invoke the kernel Makefile. Note that I use a special target <code>module-clean</code> to call the kernel Makefile <code>clean</code> target; another alternative would be to try and add files generated by a build as <code>BYPRODUCTS</code> of the custom command.</p>
@@ -143,8 +143,8 @@
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">WORKING_DIRECTORY</span> <span class="dv">${CMAKE_CURRENT_BINARY_DIR}</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">DEPENDS</span> <span class="dv">${module_sources}</span> <span class="dv">${CMAKE_CURRENT_BINARY_DIR}</span>/Kbuild</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">VERBATIM</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(module <span class="ot">DEPENDS</span> mymodule.ko)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(module-clean <span class="ot">COMMAND</span> <span class="dv">${module_cmd}</span> clean)</span></code></pre></div>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(<span class="bn">module</span> <span class="ot">DEPENDS</span> mymodule.ko)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">add_custom_target</span>(<span class="bn">module-clean</span> <span class="ot">COMMAND</span> <span class="dv">${module_cmd}</span> clean)</span></code></pre></div>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2020/02/cmake-template-linux-kernel-module.html">

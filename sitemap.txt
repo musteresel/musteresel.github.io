@@ -3,8 +3,8 @@ https://musteresel.github.io/posts/tagged/bash/index.html
 https://musteresel.github.io/posts/tagged/blog/index.html
 https://musteresel.github.io/posts/tagged/c/index.html
 https://musteresel.github.io/posts/tagged/c++/index.html
-https://musteresel.github.io/posts/tagged/c++-templates/index.html
 https://musteresel.github.io/posts/tagged/cmake/index.html
+https://musteresel.github.io/posts/tagged/c++-templates/index.html
 https://musteresel.github.io/posts/tagged/editor/index.html
 https://musteresel.github.io/posts/tagged/git/index.html
 https://musteresel.github.io/posts/tagged/kakoune/index.html

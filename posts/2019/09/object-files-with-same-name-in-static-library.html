@@ -51,7 +51,7 @@
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
       code span.at { color: #7d9029; } /* Attribute */
       code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
+      code span.bu { color: #008000; } /* BuiltIn */
       code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
       code span.ch { color: #4070a0; } /* Char */
       code span.cn { color: #880000; } /* Constant */
@@ -64,7 +64,7 @@
       code span.ex { } /* Extension */
       code span.fl { color: #40a070; } /* Float */
       code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
       code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
       code span.kw { color: #007020; font-weight: bold; } /* Keyword */
       code span.op { color: #666666; } /* Operator */
@@ -103,9 +103,9 @@
 <p>The two <code>name.c</code> files each define a (dummy) function, with different names though!</p>
 <p><code>CMakeLists.txt</code> contains:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">cmake_minimum_required</span>(<span class="ot">VERSION</span> <span class="dt">3.12</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(foo <span class="ot">OBJECT</span> foo/name.c)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(bar <span class="ot">OBJECT</span> bar/name.c)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(final <span class="ot">STATIC</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:foo&gt;</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:bar&gt;</span>)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(<span class="bn">foo</span> <span class="ot">OBJECT</span> foo/name.c)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(<span class="bn">bar</span> <span class="ot">OBJECT</span> bar/name.c)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(<span class="bn">final</span> <span class="ot">STATIC</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:foo&gt;</span> <span class="ot">$&lt;</span><span class="kw">TARGET_OBJECTS</span><span class="ot">:bar&gt;</span>)</span></code></pre></div>
 <p>It creates two <code>OBJECT</code> libraries with names <code>foo</code> and <code>bar</code>, and a <code>libfinal.a</code> static library out of the object files of these two.</p>
 <p>Inspecting the created <code>libfinal.a</code> shows:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ar t libfinal.a </span></span>

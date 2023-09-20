@@ -51,7 +51,7 @@
       code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
       code span.at { color: #7d9029; } /* Attribute */
       code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
+      code span.bu { color: #008000; } /* BuiltIn */
       code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
       code span.ch { color: #4070a0; } /* Char */
       code span.cn { color: #880000; } /* Constant */
@@ -64,7 +64,7 @@
       code span.ex { } /* Extension */
       code span.fl { color: #40a070; } /* Float */
       code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
       code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
       code span.kw { color: #007020; font-weight: bold; } /* Keyword */
       code span.op { color: #666666; } /* Operator */
@@ -131,13 +131,13 @@
 <p>Now for the CMake part, there’s a top level <code>CMakeLists.txt</code> which creates a library from all the “implementation” files (if the end result should be an executable, then using a static library and linking against that works fine):</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># top level CMakeLists.txt</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># example for executable as end result</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(lib <span class="ot">STATIC</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">add_library</span>(<span class="bn">lib</span> <span class="ot">STATIC</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  src/one.cc</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  src/implementation-to-test.cc</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ... probably more</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(exe src/main.cc)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(exe lib)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(<span class="bn">exe</span> src/main.cc)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(<span class="bn">exe</span> lib)</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">enable_testing</span>()</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">add_subdirectory</span>(test)</span></code></pre></div>
@@ -145,21 +145,21 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode cmake"><code class="sourceCode cmake"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test/CMakeLists.txt</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Create tool</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(tool <span class="ot">EXCLUDE_FROM_ALL</span> tool.cc)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(tool lib)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">add_executable</span>(<span class="bn">tool</span> <span class="ot">EXCLUDE_FROM_ALL</span> tool.cc)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">target_link_libraries</span>(<span class="bn">tool</span> lib)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Run tool with an input to produce some output</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-<span class="ot">1</span>-run</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(<span class="ot">NAME</span> golden-1-run</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">COMMAND</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-<span class="ot">1</span>-in golden-<span class="ot">1</span>-out)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  tool <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-in golden-1-out)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Compare output with expected output</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(golden-<span class="ot">1</span>-cmp</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">add_test</span>(golden-1-cmp</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_COMMAND}</span> -E compare_files</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  golden-<span class="ot">1</span>-out</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-<span class="ot">1</span>-expected)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  golden-1-out</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dv">${CMAKE_CURRENT_SOURCE_DIR}</span>/golden-1-expected)</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># A) cmake extra; run compare (3) only when running the tool</span></span>
@@ -173,11 +173,11 @@
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(tool_build</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> tool_fixture)</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-run</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  PROPRETIES <span class="ot">FIXTURES_REQUIRED</span> tool_fixture)</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-run</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-run</span>
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_SETUP</span> golden-1_fixture)</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-<span class="ot">1</span>-cmp</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="kw">set_tests_properties</span>(golden-1-cmp</span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="ot">PROPERTIES</span> <span class="ot">FIXTURES_REQUIRED</span> golden-1_fixture)</span></code></pre></div>
 <p>There’s a few things going on …</p>
 <ol type="1">
