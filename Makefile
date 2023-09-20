@@ -114,7 +114,7 @@ about.html: ADD_POSTREF=
 # one of the many post lists.
 %.link: %.md extract-link.html.in
 	@mkdir -p $(dir $@)
-	pandoc --template $(filter %extract-link.html.in,$^) \
+	pandoc --template $(filter %extract-link.html.in,$^) -t plain --wrap=none \
 	  -V path=$(patsubst %.link,%.html,$@) -o $@.new $<
 	cmp --silent $@ $@.new && rm $@.new || mv $@.new $@
 
