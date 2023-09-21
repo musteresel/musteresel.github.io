@@ -61,6 +61,7 @@ an answer, though.
  -
    [Stack Overflow][SO] and [related sites][SE-accounts]
  - [SourceForge](https://sourceforge.net/u/musteresel/profile)
+ - [Linkedin](https://www.linkedin.com/in/musteresel/)
  - [Xing](https://www.xing.com/profile/Daniel_Jour)
 
 [SO]: https://stackoverflow.com/users/1116364/daniel-jour
