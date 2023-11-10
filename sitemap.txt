@@ -73,4 +73,7 @@ https://musteresel.github.io/posts/2020/11/kakoune-colorscheme-per-mode-clipboar
 https://musteresel.github.io/posts/2020/12/adb-transfer-android-app-between-devices-apk-and-obb.html
 https://musteresel.github.io/posts/2020/12/index.html
 https://musteresel.github.io/posts/2020/index.html
+https://musteresel.github.io/posts/2023/11/index.html
+https://musteresel.github.io/posts/2023/11/linux-link-serial-ports.html
+https://musteresel.github.io/posts/2023/index.html
 https://musteresel.github.io/privacy.html
