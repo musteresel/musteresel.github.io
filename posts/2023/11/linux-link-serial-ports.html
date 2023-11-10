@@ -33,6 +33,7 @@
 <pre><code>socat -v /dev/ttyUSB0,rawer,b921600 /dev/ttyUSB1,rawer,b921600</code></pre>
 <p>The <code>-v</code> tells socat to write any transferred data also to stderr, but with some conversions for readability. And also with a prefix of <code>&gt;</code> or <code>&lt;</code> to indicate flow direction. One could also use <code>-x</code> to get the data as hex (with flow direction indication).</p>
 <p>Usage of <code>rawer</code> was necessary in my case - most likely to avoid any conversions (line endings?) from happening. The <code>b921600</code> is just the baudrate. <code>socat</code> of course also has options to specify things like parity and so on. Those options should be documented in <code>man socat</code> on any linux distribution.</p>
+<p>Side note: This of course affects the timing of the communication line quite a bit! So not really an alternative if timing related issues have to be solved.</p>
             <hr>
       <footer>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2023/11/linux-link-serial-ports.html">
