@@ -16,3 +16,5 @@ socat -v /dev/ttyUSB0,rawer,b921600 /dev/ttyUSB1,rawer,b921600
 The `-v` tells socat to write any transferred data also to stderr, but with some conversions for readability. And also with a prefix of `>` or `<` to indicate flow direction. One could also use `-x` to get the data as hex (with flow direction indication).
 
 Usage of `rawer` was necessary in my case - most likely to avoid any conversions (line endings?) from happening. The `b921600` is just the baudrate. `socat` of course also has options to specify things like parity and so on. Those options should be documented in `man socat` on any linux distribution.
+
+Side note: This of course affects the timing of the communication line quite a bit! So not really an alternative if timing related issues have to be solved.
