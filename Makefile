@@ -165,6 +165,7 @@ include tags.mk
 # Create and include a makefile with rules and prerequisites for each
 # of the lists (YYYY.links and YYYY/MM.links)
 links.mk: Makefile
+	@echo > $@
 	$(foreach ym,$(YEARSANDMONTHS),\
 	  echo "posts/$(ym)/index.html: TITLE=$(ym)" >> $@; \
 	  echo "posts/$(ym)/index.links: $(filter posts/$(ym)%, $(POSTFILES:.html=.link))" >> $@;)
