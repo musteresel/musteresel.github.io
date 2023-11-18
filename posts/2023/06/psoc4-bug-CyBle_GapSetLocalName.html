@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2023-06-29">
+                <title>Bug in CyBle_GapSetLocalName PSoC4 generated BLE API function – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+        <style>
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { color: #008000; } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Bug in CyBle_GapSetLocalName PSoC4 generated BLE API function</h1>
+                                <p class="date">2023-06-29</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/c/index.html">c</a>,
+                    <a href="../../../posts/tagged/embedded/index.html">embedded</a></p>
+              </header>
+      <p>I’m using a PSoC4 BLE module from Cypress / Infineon, and have defined the configuration of the BLE subsystem via the PSoC Creator BLE component. This includes a setting for the “local name” of the device, which will be accessible as “Device name” characteristic (UUID 0x2A00) in the “Generic Access Service” (UUID 0x1800).</p>
+<p>The PSoC Creator component creates, in the end, a big data structure (called <code>cyBle_gattDB</code>) with memory for every characteristic and their values. As this data structure is static, the length of a characteristic (that is, the number of bytes its value needs) cannot increase at runtime. The data structure however also stores the actual length of each characteristic, meaning that the length of a characteristic can be reduced at runtime. Or put differently, the length which is chosen via the PSoC Creator component configuration is actually the maximum length of the respective characteristic.</p>
+<p>In my case I need to change the device name at runtime, after learning some facts about the runtime environment. Therefore, I set the local name in the component configuration dialog to a long(er) placeholder value (“xxxxxxxx” for example) and update the value shortly after reset in <code>main</code>.</p>
+<p>For that, I initially used <code>CyBle_GapSetLocalName</code> which is a function from <code>Generated_Source/PSoC4/BLE.c</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">/******************************************************************************</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">    * Function Name: CyBle_GapSetLocalName</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">    ***************************************************************************//**</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">    *  This function is used to set the local device name - a Characteristic of the </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    *  GAP Service. If the characteristic length entered in the component customizer</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    *  is shorter than the string specified by the &quot;name&quot; parameter, the local device</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    *  name will be cut to the length specified in the customizer.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    * </span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    *  </span><span class="an">\param</span><span class="co"> </span><span class="cv">name:</span><span class="co"> The local device name string. The name string to be written as</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    *              the local device name. It represents a UTF-8 encoded User</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    *              Friendly Descriptive Name for the device. The length of the local</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    *              device string is entered into the component customizer and it can</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    *              be set to a value from 0 to 248 bytes. If the name contained in</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    *              the parameter is shorter than the length from the customizer, the</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    *              end of the name is indicated by a NULL octet (0x00).</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">    * </span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    * </span><span class="an">\return</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    *  CYBLE_API_RESULT_T : Return value indicates if the function succeeded or </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">    *  failed. Following are the possible error codes.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    *</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">    *   Errors codes                       | Description</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    *   ------------                       | -----------</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    *   CYBLE_ERROR_OK                     | Function completed successfully.</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    *   CYBLE_ERROR_INVALID_PARAMETER      | On specifying NULL as input parameter</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">    *  </span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">    *******************************************************************************/</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    CYBLE_API_RESULT_T CyBle_GapSetLocalName<span class="op">(</span><span class="dt">const</span> char8 name<span class="op">[])</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="co">// ... function body ...</span></span></code></pre></div>
+<p>Unfortunately, even though the function body contains a comment declaring …</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Set new actual length */</span></span></code></pre></div>
+<p>… <strong>it does not actually do that!</strong> So if I change the name to “Jon” via that function, the characteristic will contain the value</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;Jon</span><span class="sc">\0</span><span class="st">xxxx&quot;</span></span></code></pre></div>
+<p>So, the string “Jon” including its terminating null character, followed by the rest of the placeholder string. This behaviour is also somewhat explained by the function documentation.</p>
+<p>Interestingly, it is also not possible to adjust the length of the characteristic using the “standard” function to set attribute values, <code>CyBle_GattsWriteAttributeValue</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>attributeValue<span class="op">.</span>attrHandle <span class="op">=</span> <span class="dv">3</span><span class="op">;</span> <span class="co">// handle of local device name!</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>attributeValue<span class="op">.</span>value<span class="op">.</span>val <span class="op">=</span> <span class="op">(</span><span class="dt">uint8_t</span> <span class="op">*</span> <span class="dt">const</span><span class="op">)</span> new_name<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>attributeValue<span class="op">.</span>value<span class="op">.</span>len <span class="op">=</span> strlen<span class="op">(</span>new_name<span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> flag <span class="op">=</span> CYBLE_GATT_DB_LOCALLY_INITIATED<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>CyBle_GattsWriteAttributeValue<span class="op">(&amp;</span>attributeValue<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="op">&amp;</span>cyBle_connHandle<span class="op">,</span> flag<span class="op">);</span> <span class="co">// DOES NOT CHANGE LENGTH!</span></span></code></pre></div>
+<p><strong>However, it is possible to adjust the actual length of a characteristic value using:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>CYBLE_GATT_DB_ATTR_SET_ATTR_GEN_LEN<span class="op">(</span><span class="dv">3</span><span class="op">,</span> strlen<span class="op">(</span>new_name<span class="op">));</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 3 == handle of local device name == cyBle_gaps.deviceNameCharHandle</span></span></code></pre></div>
+<p>I’ve also written about this in the <a href="https://community.infineon.com/t5/AIROC-Bluetooth/Set-BLE-local-name-to-shorter-name/m-p/450873#M4101">Infineon developer forum</a>. There’s also <a href="https://community.infineon.com/t5/PSoC-4/CyBle-GapSetLocalName-doesn-t-affect-Device-Name-characteristic/m-p/177239#M27232">an older post</a>, which I’ve found somewhat later, which describes a similar way using the “get” variant of above macro.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2023/06/psoc4-bug-CyBle_GapSetLocalName.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>

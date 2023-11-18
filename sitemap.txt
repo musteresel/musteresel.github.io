@@ -6,6 +6,7 @@ https://musteresel.github.io/posts/tagged/c++/index.html
 https://musteresel.github.io/posts/tagged/cmake/index.html
 https://musteresel.github.io/posts/tagged/c++-templates/index.html
 https://musteresel.github.io/posts/tagged/editor/index.html
+https://musteresel.github.io/posts/tagged/embedded/index.html
 https://musteresel.github.io/posts/tagged/git/index.html
 https://musteresel.github.io/posts/tagged/kakoune/index.html
 https://musteresel.github.io/posts/tagged/linux/index.html
@@ -73,6 +74,8 @@ https://musteresel.github.io/posts/2020/11/kakoune-colorscheme-per-mode-clipboar
 https://musteresel.github.io/posts/2020/12/adb-transfer-android-app-between-devices-apk-and-obb.html
 https://musteresel.github.io/posts/2020/12/index.html
 https://musteresel.github.io/posts/2020/index.html
+https://musteresel.github.io/posts/2023/06/index.html
+https://musteresel.github.io/posts/2023/06/psoc4-bug-CyBle_GapSetLocalName.html
 https://musteresel.github.io/posts/2023/11/index.html
 https://musteresel.github.io/posts/2023/11/linux-link-serial-ports.html
 https://musteresel.github.io/posts/2023/index.html
