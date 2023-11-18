@@ -14,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="../../../css.min.css">
         <style>
       pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span { line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
       .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -157,7 +157,7 @@
 <div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> f<span class="op">(</span>Cache <span class="op">&amp;</span> cache<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span> b <span class="op">=</span> cache<span class="op">.</span>get_buffer<span class="op">();</span> <span class="co">// assume this could return nullptr</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> c<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cin<span class="op"> &gt;&gt;</span> c<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>cin <span class="op">&gt;&gt;</span> c<span class="op">;</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  b<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> c<span class="op">;</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>This could then also catch issues like <a href="https://github.com/uzbl/uzbl/issues/393">this one I found in uzbl</a> where <a href="https://developer.gnome.org/glib/stable/glib-IO-Channels.html#g-io-channel-write-chars"><code>g_io_channel_write_chars</code></a> was used but the special return value <code>G_IO_STATUS_AGAIN</code> (which indicates that the function should be called again … due to a non blocking socket not being ready, for example) wasn’t handled in any way.</p>

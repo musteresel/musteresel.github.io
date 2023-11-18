@@ -14,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="../../../css.min.css">
         <style>
       pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span { line-height: 1.25; }
       pre > code.sourceCode > span:empty { height: 1.2em; }
       .sourceCode { overflow: visible; }
       code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -97,10 +97,10 @@
       <p>I don’t want to write something like <code>../../../posts/foo/bar.html</code> when linking from one blog post to another. A link like that would need to be changed when either the target (<code>bar.html</code>) or the starting post moved to another location.</p>
 <p>IMO it’s far more convenient to just write <code>posts/foo/bar.html</code>. This URL should be interpreted as relative with regard to the root directory of the blog / project.</p>
 <p>Initially I abused the HTML <code>&lt;base&gt;</code> tag for this. Adding</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;base</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;../../../&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">base</span><span class="ot"> href</span><span class="op">=</span><span class="st">&quot;../../../&quot;</span><span class="dt">&gt;</span></span></code></pre></div>
 <p>to the head of a HTML page makes the browser prefix relative links like the above <code>posts/foo/bar.html</code> with the URL given in the <code>href</code> attribute (<code>../../../</code> in this case).</p>
 <p>This worked out pretty well at first. Or, at least until I needed a <em>real</em> relative link (as in relative to the current page). This is especially annoying because this</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;#section&quot;</span><span class="kw">&gt;</span>Go to some section<span class="kw">&lt;/a&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> href</span><span class="op">=</span><span class="st">&quot;#section&quot;</span><span class="dt">&gt;</span>Go to some section<span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span></code></pre></div>
 <p>is <em>also</em> a relative link. So with the above <code>&lt;base&gt;</code> tag, that link points to <code>../../../#section</code>.</p>
 <p><strong>This is extremely inconvenient!</strong> Thus I wrote a filter for Pandoc to turn absolute URLs (file paths, rather) into links relative to the project root. It leaves relative links like <code>appendix/data.txt</code> or <code>#section</code> unchanged and rather turns absolute file paths (<code>/posts/foo/bar.html</code>) into links relative to the project root by prefixing them with a given <code>pathToProjectRoot</code>.</p>
 <p>You can find the <a href="https://github.com/musteresel/pandoc-project-relative-links">filter on Github</a>. It’s written in Haskell. Contributions are welcome!</p>
