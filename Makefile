@@ -86,7 +86,7 @@ tags:
 # tag to make relative links work everywhere.
 path_up = realpath -m --relative-to $(abspath $(dir $@)) $(CURDIR)
 relative_links_filter = \
-  --filter pandoc-project-relative-links \
+  --lua-filter $(path_to_this_makefile)/utils/prefix-path.lua \
   -M pathToProjectRoot=$(shell $(path_up))
 
 
