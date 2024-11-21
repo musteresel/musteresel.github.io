@@ -3,8 +3,8 @@ https://musteresel.github.io/posts/tagged/bash/index.html
 https://musteresel.github.io/posts/tagged/blog/index.html
 https://musteresel.github.io/posts/tagged/c/index.html
 https://musteresel.github.io/posts/tagged/c++/index.html
-https://musteresel.github.io/posts/tagged/cmake/index.html
 https://musteresel.github.io/posts/tagged/c++-templates/index.html
+https://musteresel.github.io/posts/tagged/cmake/index.html
 https://musteresel.github.io/posts/tagged/editor/index.html
 https://musteresel.github.io/posts/tagged/embedded/index.html
 https://musteresel.github.io/posts/tagged/git/index.html
@@ -79,4 +79,7 @@ https://musteresel.github.io/posts/2023/06/psoc4-bug-CyBle_GapSetLocalName.html
 https://musteresel.github.io/posts/2023/11/index.html
 https://musteresel.github.io/posts/2023/11/linux-link-serial-ports.html
 https://musteresel.github.io/posts/2023/index.html
+https://musteresel.github.io/posts/2024/11/index.html
+https://musteresel.github.io/posts/2024/11/rootless-docker-pass-device.html
+https://musteresel.github.io/posts/2024/index.html
 https://musteresel.github.io/privacy.html

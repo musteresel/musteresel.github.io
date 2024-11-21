@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2024-11-21">
+                <title>Pass a (serial or other) device into rootless docker containers – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+        <style>
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          color: #aaaaaa;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+      code span.at { color: #7d9029; } /* Attribute */
+      code span.bn { color: #40a070; } /* BaseN */
+      code span.bu { color: #008000; } /* BuiltIn */
+      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #4070a0; } /* Char */
+      code span.cn { color: #880000; } /* Constant */
+      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+      code span.dt { color: #902000; } /* DataType */
+      code span.dv { color: #40a070; } /* DecVal */
+      code span.er { color: #ff0000; font-weight: bold; } /* Error */
+      code span.ex { } /* Extension */
+      code span.fl { color: #40a070; } /* Float */
+      code span.fu { color: #06287e; } /* Function */
+      code span.im { color: #008000; font-weight: bold; } /* Import */
+      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+      code span.op { color: #666666; } /* Operator */
+      code span.ot { color: #007020; } /* Other */
+      code span.pp { color: #bc7a00; } /* Preprocessor */
+      code span.sc { color: #4070a0; } /* SpecialChar */
+      code span.ss { color: #bb6688; } /* SpecialString */
+      code span.st { color: #4070a0; } /* String */
+      code span.va { color: #19177c; } /* Variable */
+      code span.vs { color: #4070a0; } /* VerbatimString */
+      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">Pass a (serial or other) device into rootless docker containers</h1>
+                                <p class="date">2024-11-21</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/linux/index.html">linux</a>,
+                    <a href="../../../posts/tagged/embedded/index.html">embedded</a></p>
+              </header>
+      <p>I wanted to write some firmware for an ESP chip. I’ve been using Docker containers for development, specifically via VS Code and the devcontainer extension lately, so naturally I wanted to do the same here and install esp-idf with its tools into a docker container.</p>
+<p>Obviously that container then needs to be able to access the ESP device, /dev/ttyUSB0 in my case. To test this, I ran:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-it</span> <span class="at">--rm</span> <span class="at">--device</span><span class="op">=</span>/dev/ttyUSB0 alpine ls <span class="at">-la</span> /dev/ttyUSB0</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span>    1 nobody   nobody     188,   0 Nov 20 14:50 /dev/ttyUSB0</span></code></pre></div>
+<p>So in the container, the passed in device is owned by <code>nobody:nobody</code> and is thus not accessible even though I’m “root” in the container:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ... After adding picocom to the container</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> id</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">uid</span><span class="op">=</span>0<span class="kw">(</span><span class="ex">root</span><span class="kw">)</span> <span class="va">gid</span><span class="op">=</span>0<span class="kw">(</span><span class="ex">root</span><span class="kw">)</span> <span class="va">groups</span><span class="op">=</span>0<span class="kw">(</span><span class="ex">root</span><span class="kw">)</span><span class="ex">,1</span><span class="er">(</span><span class="ex">bin</span><span class="kw">)</span><span class="ex">,2</span><span class="er">(</span><span class="ex">daemon</span><span class="kw">)</span><span class="ex">,3</span><span class="er">(</span><span class="ex">sys</span><span class="kw">)</span><span class="ex">,4</span><span class="er">(</span><span class="ex">adm</span><span class="kw">)</span><span class="ex">,6</span><span class="er">(</span><span class="ex">disk</span><span class="kw">)</span><span class="ex">,10</span><span class="er">(</span><span class="ex">wheel</span><span class="kw">)</span><span class="ex">,11</span><span class="er">(</span><span class="ex">floppy</span><span class="kw">)</span><span class="ex">,20</span><span class="er">(</span><span class="ex">dialout</span><span class="kw">)</span><span class="ex">,26</span><span class="er">(</span><span class="ex">tape</span><span class="kw">)</span><span class="ex">,27</span><span class="er">(</span><span class="ex">video</span><span class="kw">)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> picocom <span class="at">-b</span> 115200 <span class="at">--imap</span> lfcrlf /dev/ttyUSB0 </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">picocom</span> v3.1</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ... (info about port settings omitted)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">FATAL:</span> cannot open /dev/ttyUSB0: Permission denied</span></code></pre></div>
+<p>Outside of the container, <code>/dev/ttyUSB0</code> is owned by <code>root:dialout</code>. <strong>Now, the device can be made accessible from within the container by changing that to <code>root:users</code></strong> where <code>users</code> is the primary group of my user <code>musteresel</code>, which is also running the docker daemon. Moreover the docker daemon is also running as this (effective, real) group.</p>
+<p>With the group ownership changed I get inside the container:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-it</span> <span class="at">--rm</span> <span class="at">--device</span><span class="op">=</span>/dev/ttyUSB0 alpine ls <span class="at">-la</span> /dev/ttyUSB0</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span>    1 nobody   root      188,   0 Nov 21 19:01 /dev/ttyUSB0</span></code></pre></div>
+<p>In other words, the docker container has the group “root” (inside the container) mapped to the group “users” outside the container; in the same way as it has the user “root” (inside the container) mapped to the user “musteresel” (who is running the docker daemon) on the host. For that mapping to work, the two files (on the host) <code>/etc/subuid</code> and <code>/etc/subgid</code> play an important role.</p>
+<p><em>Obviously changing the ownership of the device file on the host is not what I really want (even though it is a quick solution … but well).</em></p>
+<p>Concentrating only on groups, and thus on the <code>/etc/subgid</code> file:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat /etc/subgid</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">musteresel:100000:65536</span></span></code></pre></div>
+<p>This means (see also <code>man newgidmap</code>) roughly that the user “musteresel” is allowed to map GIDs from a user namespace (“inside the container”) to group ids on the host starting from GID 100000 up to 100000 + 65536 - 1. This can also be seen when inspecting the gid map of a process inside the container:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Running in one terminal</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-it</span> <span class="at">--rm</span> alpine watch <span class="at">-n</span> 100 echo</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># In another terminal, we first get the PID of the watch command:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ps aux <span class="kw">|</span> <span class="fu">grep</span> watch</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">mustere+</span>  982849  0.0  0.0   1612   760 pts/0    S+   19:41   0:00 watch <span class="at">-n</span> 100 echo</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># And then we inspect its GID mapping</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat /proc/982849/gid_map</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>         <span class="ex">0</span>        100          1</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>         <span class="ex">1</span>     100000      65536</span></code></pre></div>
+<p>I do not know why the first line is there (which tells us that group 0 in the container can be mapped to group 100 on the host). But the second line is a directy consequence of the <code>/etc/subgid</code> line, meaning the groups 1 up to groups 1 + 65536 - 1 (inside the container) will be mapped to groups 100000 up to 100000 + 65536 - 1.</p>
+<p>What we need in order to access <code>/dev/ttyUSB0</code> with group ownership (on the host) <code>dialout</code> is a way to map a GID (inside the container) to that GID of the <code>dialout</code> group on the host. For that we can add a line to <code>/etc/subgid</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat /etc/subgid</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">musteresel:100000:65536</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">musteresel:27:1</span></span></code></pre></div>
+<p><code>dialout</code> has GID 27 on my host system; therefore user “musteresel” can now map one (1) GID (of unspecified number atm) inside the container to the one GID 27 on the host. This is also visible if we again inspect the <code>gid_map</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat /proc/982878/gid_map</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /proc/982849/gid_map </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>         <span class="ex">0</span>        100          1</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>         <span class="ex">1</span>     100000      65536</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>     <span class="ex">65537</span>         27          1</span></code></pre></div>
+<p>Now we see that GID 65537 (inside the container) is mapped to GID 27 (<code>dialout</code>) outside of the container. If we now inspect the device file (with its original ownership of <code>root:dialout</code> on the host) in a docker container:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-it</span> <span class="at">--rm</span> <span class="at">--device</span><span class="op">=</span>/dev/ttyUSB0 alpine ls <span class="at">-la</span> /dev/ttyUSB0</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span>    1 nobody   65537     188,   0 Nov 21 19:45 /dev/ttyUSB0</span></code></pre></div>
+<p>Now this device file has a proper group inside the container. I can now either use the <code>--group-add</code> flag to docker (with the GID from inside the container 65537) or just create a group inside the container and add root to it:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inside the container, picocom already installed</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls <span class="at">-la</span> /dev/ttyUSB0</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span>    1 nobody   65537     188,   0 Nov 21 19:45 /dev/ttyUSB0</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> picocom <span class="at">-b</span> 115200 <span class="at">--imap</span> lfcrlf /dev/ttyUSB0</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... (some output omitted)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">FATAL:</span> cannot open /dev/ttyUSB0: Permission denied</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a group with that number, and add root to it</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> addgroup <span class="at">-g</span> 65537 host_dialout</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> adduser root host_dialout</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a new shell with the new group available</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> su</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> id</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="va">uid</span><span class="op">=</span>0<span class="kw">(</span><span class="ex">root</span><span class="kw">)</span> <span class="va">gid</span><span class="op">=</span>0<span class="kw">(</span><span class="ex">root</span><span class="kw">)</span> <span class="va">groups</span><span class="op">=</span>65537<span class="kw">(</span><span class="ex">host_dialout</span><span class="kw">)</span><span class="ex">,0</span><span class="er">(</span><span class="ex">root</span><span class="kw">)</span><span class="ex">,0</span><span class="er">(</span><span class="ex">root</span><span class="kw">)</span><span class="ex">,1</span><span class="er">(</span><span class="ex">bin</span><span class="kw">)</span><span class="ex">,2</span><span class="er">(</span><span class="ex">daemon</span><span class="kw">)</span><span class="ex">,3</span><span class="er">(</span><span class="ex">sys</span><span class="kw">)</span><span class="ex">,4</span><span class="er">(</span><span class="ex">adm</span><span class="kw">)</span><span class="ex">,6</span><span class="er">(</span><span class="ex">disk</span><span class="kw">)</span><span class="ex">,10</span><span class="er">(</span><span class="ex">wheel</span><span class="kw">)</span><span class="ex">,11</span><span class="er">(</span><span class="ex">floppy</span><span class="kw">)</span><span class="ex">,20</span><span class="er">(</span><span class="ex">dialout</span><span class="kw">)</span><span class="ex">,26</span><span class="er">(</span><span class="ex">tape</span><span class="kw">)</span><span class="ex">,27</span><span class="er">(</span><span class="ex">video</span><span class="kw">)</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls <span class="at">-la</span> /dev/ttyUSB0</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span>    1 nobody   host_dia  188,   0 Nov 21 19:45 /dev/ttyUSB0</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> picocom <span class="at">-b</span> 115200 <span class="at">--imap</span> lfcrlf /dev/ttyUSB0</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># This works now, output omitted :)</span></span></code></pre></div>
+<p>… now, quite honestly – this is a lot more work and changes to the host than I want. Moreover, on different hosts (development machines) the GID of dialout on the host and also the resulting GID inside the host may be different. So building a single container image to fit them all is difficult (not impossible, just grab the device file GID at runtime and change the GID of some previously created group to that). But hey, it works.</p>
+<p>Side note: To make the addition to <code>/etc/subgid</code> on my NixOS machine I had to add to my <code>configuration.nix</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># More stuff ...</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  users.users.musteresel = <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># More stuff ...</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">subGidRanges</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">startGid</span> <span class="op">=</span> <span class="dv">100000</span><span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">count</span> <span class="op">=</span> <span class="dv">65536</span><span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">startGid</span> <span class="op">=</span> config.users.groups.dialout.gid<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">count</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">];</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="va">subUidRanges</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      <span class="op">{</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">startUid</span> <span class="op">=</span> <span class="dv">100000</span><span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">count</span> <span class="op">=</span> <span class="dv">65536</span><span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">];</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span>;</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co"># More stuff ...</span></span></code></pre></div>
+<p>Some related links:</p>
+<ul>
+<li><a href="https://stackoverflow.com/q/24225647/1116364" class="uri">https://stackoverflow.com/q/24225647/1116364</a></li>
+<li><a href="https://stackoverflow.com/a/76685087/1116364" class="uri">https://stackoverflow.com/a/76685087/1116364</a></li>
+<li><a href="https://discourse.nixos.org/t/docker-userns-remap/42805" class="uri">https://discourse.nixos.org/t/docker-userns-remap/42805</a></li>
+<li><a href="https://discourse.nixos.org/t/how-to-refer-to-another-users-uid-gid/4045" class="uri">https://discourse.nixos.org/t/how-to-refer-to-another-users-uid-gid/4045</a></li>
+<li><a href="https://stackoverflow.com/questions/68139659/is-there-a-way-to-see-the-actual-computed-generated-output-system-configurat" class="uri">https://stackoverflow.com/questions/68139659/is-there-a-way-to-see-the-actual-computed-generated-output-system-configurat</a></li>
+</ul>
+<p><strong>Ok, if you’ve managed to follow my ramblings so far, here’s what I ended up doing:</strong></p>
+<p>The devcontainer will later of course have the root folder of the firmware source code mounted as volume. So any files inside there will be accessible to the container. Now, the devcontainer just assumes the existence of an <code>esp</code> file in the toplevel directory of the workspace; and will use that as device file (as it would <code>/dev/ttyUSB0</code>).</p>
+<p>On each development machine I create that file (outside of the container) by taking major and minor number of the “real” device file <code>/dev/ttyUSB0</code>, creating a new device file named “esp” and changing the ownership accordingly:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Still on the host</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls <span class="at">-la</span> /dev/ttyUSB0 </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-rw----</span> 1 root dialout 188, 0 21. Nov 22:15 /dev/ttyUSB0</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># From above, take the &quot;c&quot; (character device), the &quot;188&quot; (major) and &quot;0&quot; (minor) values</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo mknod esp c 188 0</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo chown musteresel:users esp</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls <span class="at">-la</span> .</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># other directory contents omitted</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-r--r--</span>  1 musteresel users 188, 0 21. Nov 22:10 esp</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Now get into the container</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-it</span> <span class="at">--rm</span> <span class="at">-v</span> .:/workspace alpine ls <span class="at">-la</span> /workspace</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="ex">total</span> 8</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="ex">drwxr-xr-x</span>    2 root     root          4096 Nov 21 21:10 .</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="ex">drwxr-xr-x</span>    1 root     root          4096 Nov 21 21:22 ..</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="ex">crw-r--r--</span>    1 root     root      188,   0 Nov 21 21:10 esp</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># File can be used normaly in the container now</span></span></code></pre></div>
+<p>This has the benefit that it requires no special configuration for docker, neither on the host nor in the image. I can just create the new device file (as required on each development machine) and it works. It also works when unplugging and replugging the device - and at least on my laptop also if I plug the device into a different usb port. Of course this falls apart if I plug in more devices of the same kind, in varying orders - but in my use case I just have a single ESP board here and that’s it.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2024/11/rootless-docker-pass-device.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>
