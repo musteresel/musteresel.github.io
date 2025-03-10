@@ -74,7 +74,8 @@ TOPLEVEL_HTML = \
 default: $(TOPLEVEL_HTML) $(POSTFILES) $(YEARSANDMONTHSLISTS) \
          tags robots.txt \
          housekeeping js.min.js css.min.css \
-         googleaa3542155d10c4ea.html sitemap.txt
+         googleaa3542155d10c4ea.html sitemap.txt \
+         daniel-jour.vcf
 
 
 # Meta target to build all tag index sites.
@@ -211,6 +212,10 @@ robots.txt: robots.orig.txt
 
 googleaa3542155d10c4ea.html: googleaa3542155d10c4ea.orig.html
 	cp $< $@
+
+.PHONY: daniel-jour.vcf
+daniel-jour.vcf: daniel-jour.orig.vcf
+	sed "s/REV:/REV:$$(git log -1 --pretty="format:%cI" $< | date -f - '+%Y%m%dT%H%M%S%z')/" $< > $@
 
 DOMAIN=https://musteresel.github.io
 
