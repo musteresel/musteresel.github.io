@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0,
+                                   user-scalable=yes">
+    <meta name="author" content="Daniel Jour">
+            <meta name="dcterms.date" content="2025-11-04">
+                <title>sudo, but for groups – musteresel's blog</title>
+    <script async defer src="../../../js.min.js"></script>
+    <style>code{white-space: pre;}</style>
+        <link rel="stylesheet" type="text/css" href="../../../css.min.css">
+            <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <header>
+      <p class="heading"><a href="../../../index.html">musteresel's blog</a></p>
+    </header>
+    <hr>
+    <article>
+            <header>
+        <h1 class="title">sudo, but for groups</h1>
+                                <p class="date">2025-11-04</p>
+                        <p class="tags">tagged:
+                    <a href="../../../posts/tagged/linux/index.html">linux</a></p>
+              </header>
+      <p>Ever had the situation that you need your Linux user to be in some special group (looking at you, dialout and docker) in order to perform some operation? Somehow I’ve never realized that good old <code>sudo</code> can not only change your effective user id, but also the group:</p>
+<pre><code>groups
+# users wheel dialout networkmanager plugdev adbusers
+sudo -g docker groups
+# docker wheel dialout networkmanager users plugdev adbusers</code></pre>
+<p>Nice.</p>
+            <hr>
+      <footer>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfV7TfT4OIcpopar3hBoLnzHBmbOi85ysjX23cQsvKzBCy4Dw/viewform?usp=pp_url&entry.1949939362=posts/2025/11/sudo-but-for-groups.html">
+          Send me a message regarding this post</a>
+      </footer>
+      
+    </article>
+    <hr>
+    <footer>
+      <a href="../../../legal.html">Legal Notice / Impressum</a>
+      &nbsp;&nbsp;
+      <a href="../../../privacy.html">Privacy / Datenschutz</a>
+    </footer>
+  </body>
+</html>
