@@ -1,6 +1,6 @@
 ---
 title: Pass a (serial or other) device into rootless docker containers
-tags: [linux, embedded]
+tags: [linux, embedded, docker]
 date: 2024-11-21
 language: en
 ...
