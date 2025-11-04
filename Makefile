@@ -49,7 +49,8 @@ POSTS = \
   2020/12/adb-transfer-android-app-between-devices-apk-and-obb.html \
   2023/06/psoc4-bug-CyBle_GapSetLocalName.html \
   2023/11/linux-link-serial-ports.html \
-  2024/11/rootless-docker-pass-device.html
+  2024/11/rootless-docker-pass-device.html \
+  2025/11/sudo-but-for-groups.html
 
 # Add the posts/ prefix to get paths to the post files.
 POSTFILES = $(addprefix posts/,$(POSTS))
