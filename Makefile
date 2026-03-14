@@ -218,7 +218,7 @@ googleaa3542155d10c4ea.html: googleaa3542155d10c4ea.orig.html
 daniel-jour.vcf: daniel-jour.orig.vcf
 	sed "s/REV:/REV:$$(git log -1 --pretty="format:%cI" $< | date -f - '+%Y%m%dT%H%M%S%z')/" $< > $@
 
-DOMAIN=https://musteresel.github.io
+DOMAIN=https://www.musteresel.com
 
 sitemap.txt: Makefile all-tags
 	while read tag; do \
