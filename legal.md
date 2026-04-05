@@ -2,7 +2,7 @@
 title: Legal Notice / Impressum
 ---
 
-Information in accordance with §5 TMG / *Angaben gemäß §5 TMG*:
+Information in accordance with §5 DDG / *Angaben gemäß §5 DDG*:
 
 <script type="text/javascript">
 function makeMyInfoAccessible() {
